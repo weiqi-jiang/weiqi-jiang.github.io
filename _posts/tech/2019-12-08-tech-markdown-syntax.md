@@ -1,7 +1,7 @@
 ---
 layout: post
 title: MarkDown 语法
-category: 技术
+category: Tech
 tags: MarkDown
 description: markdown 常用语法
 ---
@@ -23,10 +23,10 @@ _test_ / *test*  斜体
 ~~test~~ 删除线
 ```
 效果展示: 
-*test*
-**test**
-_**test**_ 
-~~test~~
+1： *test* 
+2： **test**
+3： _**test**_ 
+4： ~~test~~
 
 
 
@@ -76,8 +76,8 @@ _**test**_
 3： 自动链接
 <url> 自动把文字变成链接
 
-4：锚点 仅限于跳转到标题
- title{#index}
+4：锚点 貌似只支持标题 
+ ## <a id='index'> xxx </a>
  跳转到[xxx](#index)
 ```
 
@@ -90,8 +90,6 @@ _**test**_
 [1]:xxxx "测试地址"
 [2]:xxx
 
-3: <'https://xxxx'>
+3:  <'https://xxxx'>
 
-4: 
-
-跳转到[主标题](#index)
+4:  跳转到[主标题](#index)
