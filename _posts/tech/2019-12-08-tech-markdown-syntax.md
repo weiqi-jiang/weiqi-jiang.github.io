@@ -6,7 +6,7 @@ tags: MarkDown
 description: markdown 常用语法
 ---
 
-# MarkDown 基本语法{#index}
+# <a id='index' >MarkDown 基本语法 </a>
 
 reference :  [简书： markdown语法手册]( https://www.jianshu.com/p/8c1b2b39deb0 )
 
