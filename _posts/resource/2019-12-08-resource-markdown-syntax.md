@@ -1,6 +1,6 @@
 ---
 layout: post
-title: MarkDown 基本语法
+title: MarkDown 语法
 category: Resource
 tags: MarkDown
 description: markdown 常用语法
