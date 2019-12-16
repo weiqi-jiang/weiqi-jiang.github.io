@@ -47,7 +47,8 @@ hadoop fs -tail file 输出最后1kb的内容
 
 ```
 hadoop fs -get  hdfsPath localPath  成功返回0 失败返回-1 如果本地有同名文件，则失败 
-hadoop fs -copyToLocal  hdfsPath localPath //在公司工程机上不支持，不知道是否是版本问题 hadoop fs -put  local/path/to/file   hdfs/path // 如果有同名文件，则失败
+hadoop fs -copyToLocal  hdfsPath localPath 在公司工程机上不支持，不知道是否是版本问题 
+hadoop fs -put  local/path/to/file   hdfs/path  如果有同名文件，则失败
 ```
 
 ## 查看前几行，后几行,行数
