@@ -221,13 +221,26 @@ SELECT c1, c2, c3 from table_name where rental_rate> (SELECT AVG(rental_rate) fr
 
 
 
-
-**EXISTS 用法/WHERE 和 HAVING 的区别** 
-
+**EXISTS/ANY/ALL 用法/WHERE 和 HAVING 的区别** 
+_EXISTS/ANY/ALL 都是配合where 和 having 使用的_
 EXISTS(subquery) 返回TRUE or FALSE subquery 返回至少一条数据为TRUE 否则为FALSE
+EXISTS 表示subquery 只有有返回任何一条record，exists 为True, 否则为False
+ANY 满足任何一个条件返回True，否则False
+ALL 满足所有条件返回True，否则False
+
+```
+e.g.
+
+#ALL 必须大于female 最大的age 才主查询才算是满足条件
+select * from student where gender='male' and age > all(select age from student where gender='female')
+
+# ANY 大于最小的female的age就算是满足条件
+select * from student where gender='male' and age> any(select age from student where gender='female')
+
+```
+
 where 针对的是原始数据
 Having 针对where 之后的数据，可以处理aggregate function
-
 
 
 
@@ -241,7 +254,6 @@ SELECT e1.employ_name FROM employee AS e1,join employee AS e2 on e1.employee_loc
 
 
 
-
 **INSERT**
 
 INSERT into table_name (col1,col2,col3...)
@@ -252,6 +264,38 @@ INSERT INTO table_name SELECT * FROM table_name
 
 
 
+
+ **Case When 语句（SWITCH）**
+
+CASE
+	WHEN condition1 THEN value1
+	WHEN condition2 THEN value2
+	...
+	WHEN conditionN THEN valueN
+
+ELSE
+	ELSE_value 
+END
+
+相当于其他语言中的switch语句，***如果满足第一个条件，则后面的判断不会执行***
+
+
+
+
+**NULL**
+
+- IFNULL( col, default_value)    -> MySQL
+- COALESCE(col, default_value)  -> MySQL
+- ISNULL(col, default_value) -> SQL Server
+
+** Comments** 
+Single line comments start with '--'
+Multiline comments start with /\*and end with '\*/ '
+
+
+
+
+#### TABLE RELATED
 **UPDATE TABLE**
 
 update table_name
@@ -260,19 +304,31 @@ set col1 = value1, col2 = value2... where condition
 
 
 
+
 **CRATE TABLE**
 
 - create table table_name [like another_table]
 - create table table_name (col1 dataType constraint, col2 dataType constraint, table constraint, [inherits exist_table_name])
+- create table table_name as select col1,col2 from table2 where conditions
 
- 
+
+
 
  **DELETE**
 
 - delete statement return number of rows deleted
 - DELETE FROM table_name where condition [returning * (col1,col2,...)]
-
 - DELETE FROM table
+
+
+
+**DROP**
+
+- DROP TABLE[ IF EXIST] table_name [cascade]  (drop dependence together)
+- TRUNCATE TABLE table_name (delete records inside the table, not the table itself)
+
+
+
 
 **Alter Table**
 
@@ -282,50 +338,26 @@ actions:
 2. set default value for columns
 3. add check constraint to a column
 4. rename table
-
-5. drop table[ if exist] table_name [cascade]  (drop dependence together)
-6. alter table table_name add column col_name dtype
-
-7. alter table table_name drop column col_name
-
-8. alter table table_name rename col_old_name to new_name
-
+5. alter table table_name add column col_name dtype
+6. alter table table_name drop column col_name
+7. alter table table_name rename col_old_name to new_name
 9. alter table table_name alter col_name type new_type
 
- 
-
- 
-
-# **HIVE**
-
-hive的语法与sql 有些许区别，记录一些工作中用到的有区别的指令
-
-### **Alter Table**
-
-ALTER TABLE name RENAME TO new_name
-ALTER TABLE name ADD COLUMNS (col_spec[, col_spec ...])
-ALTER TABLE name DROP COLUMN column_name
-ALTER TABLE name *CHANGE* column_name new_name new_type  # sql语句用的是alter
-ALTER TABLE name REPLACE COLUMNS (col_spec[, col_spec ...])
-
-同时想删除掉一个字段的时候 用drop指令会出现
-
-mismatched input 'column' expecting PARTITION near 'drop' in drop partition statement报错，目前没有解决
-
-### **Case when 语句（SWITCH）**
-
-**case when** condition1 **then** value1
-
-**when** condition2 **then** value2
-
-...
-
-**when** conditionN **then** valueN
-
-**else** else_value **end** as columns_name
-
-相当于其他语言中的switch语句，***如果满足第一个条件，则后面的判断不会执行***
 
 
 
-1.19 z31 软卧
+#### DATABASE RELATED
+
+- CREATE DATABASE  databasename
+- DROP DATABASE databasename
+- BACKUP DATABASE TO DISK ='filepath'
+
+
+
+
+## **HIVE**
+
+hive的语法与sql 有些许区别，记录一些遇到的有区别的指令
+
+- ALTER TABLE name *CHANGE* column_name new_name new_type  # sql语句用的是alter
+
