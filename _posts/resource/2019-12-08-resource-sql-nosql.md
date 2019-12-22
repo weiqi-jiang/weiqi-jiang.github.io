@@ -82,6 +82,7 @@ DDL:  创建或删除表格
 - Not null
 - unique
 - reference(must exist in a columns in other table)
+- AUTO_INCREMENT
 
  
 
@@ -147,14 +148,26 @@ every table in relational database is an entity, a row is a specific instance of
 
 ## **视图**
 
-create view viewName as { subquery }
 
-drop view（viewName）
+
+CREATE VIEW viewName AS SELECT * FROM table_name WHERE condition; 
+
+DROP VIEW（viewName）
 
 - 隐藏行与列
 - 显示计算结果
 - 隐藏复杂的SQL语法
 - 分层组织内置函数
+
+
+
+## 索引 
+
+索引可以理解成一个hash table， SQL SERVER 提供两种索引，clustered index 聚类索引，nonclustered index 非聚类索引。
+
+聚类索引和非聚类索引的区别可以用字典很好的示例，聚类索引类似拼音排序，字典本身就是按照拼音的顺序排序的，所以查询一个知道拼音的字的时候，只需要翻看拼音首字母所在的区域，不需要翻看整个字典。非聚类索引类似于偏旁部首查询，有一个中间的hash table 每一个字对应一个在字典中的位置，然后根据位置拿到具体内容，查询一个字的速度很快，但是查询大块的连续值表现不如聚类索引。
+
+**每个表只能有一个聚类索引**
 
 
 
@@ -193,6 +206,8 @@ HAVING clause 是配合aggregate function 使用的，用来指定聚合之后�
 **Subquery**
 
 SELECT c1, c2, c3 from table_name where rental_rate> (SELECT AVG(rental_rate) from film)
+
+
 
 
 **IN/Between/LIKE 语句**
@@ -254,13 +269,7 @@ SELECT e1.employ_name FROM employee AS e1,join employee AS e2 on e1.employee_loc
 
 
 
-**INSERT**
 
-INSERT into table_name (col1,col2,col3...)
-
-values (v1,v2,v3...),(v1,v2,v3...)...
-自己指定数据的方式太繁琐，可以通过select 语句批量导入数据
-INSERT INTO table_name SELECT * FROM table_name
 
 
 
@@ -301,6 +310,16 @@ Multiline comments start with /\*and end with '\*/ '
 update table_name
 
 set col1 = value1, col2 = value2... where condition
+
+
+
+**INSERT**
+
+INSERT into table_name (col1,col2,col3...)
+
+values (v1,v2,v3...),(v1,v2,v3...)...
+自己指定数据的方式太繁琐，可以通过select 语句批量导入数据
+INSERT INTO table_name SELECT * FROM table_name
 
 
 
@@ -345,12 +364,27 @@ actions:
 
 
 
+**Index**
+
+- CREATE INDEX index_name ON table_name (col1, col2, ...)
+- CREATE UNIQUE INDEX index_name ON table_name (col1, col2, ...)
+- DROP INDEX index_name ON table_name;   --> MS access
+- ALTER TABLE table_name DROP INDEX index_name;  --> MySQL
+
+
+
 
 #### DATABASE RELATED
 
 - CREATE DATABASE  databasename
+
 - DROP DATABASE databasename
+
 - BACKUP DATABASE TO DISK ='filepath'
+
+- BACKUP DATABASE TO DISK ='filepath' WITH DIFFERENTIAL (only backs up the parts of the database that have changed since the last full backup)
+
+  
 
 
 
