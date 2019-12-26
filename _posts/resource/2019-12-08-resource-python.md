@@ -1,6 +1,6 @@
 ---
 layout: post
-title: python 资源
+title: Python
 category: Resource
 tags: python
 description: 主要是记录一些平时不经常用，但是偶尔还挺有用的python语法

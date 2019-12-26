@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Maven 资源
+title: Maven
 category: Resource
 tags: maven
 description: 实习期间第一次接触的maven，秉承着实用主义，只记录常用的指令即可

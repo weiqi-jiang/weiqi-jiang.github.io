@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 编程通用资源
+title: Common
 category: Resource
 tags: coding common info
 description: 一些编程语言通用的知识，例如正则表达式

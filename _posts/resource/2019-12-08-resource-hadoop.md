@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Hadoop 资源
+title: Hadoop
 category: Resource
 tags: Hadoop
 description: Hadoop 的一些架构知识，和常用指令

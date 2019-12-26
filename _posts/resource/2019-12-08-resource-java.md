@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Java 语法
+title: Java
 category: Resource
 tags: java
 description: 记录java常用语法，便于查看

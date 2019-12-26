@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 常见算法和数据结构
+title: Data Structure& Algorithm
 category: Resource
 tags: algorithm
 description: 常用的一些数据结构和算法，例如最短路径，BFS,DFS

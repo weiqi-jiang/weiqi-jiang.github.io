@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 计算机网络
+title: Computer Network
 category: Resource
 tags: computer network
 description: 计算机网络基本知识，信息主要来源<计算机网络：自顶而下方法> 

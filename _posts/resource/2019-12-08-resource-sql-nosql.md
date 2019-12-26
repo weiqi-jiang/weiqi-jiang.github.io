@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 	SQL 语法
+title: 	SQL&NoSQL
 category: Resource
 tags: SQL
 description: SQL常用语法
@@ -272,8 +272,6 @@ SELECT e1.employ_name FROM employee AS e1,join employee AS e2 on e1.employee_loc
 
 
 
-
-
  **Case When 语句（SWITCH）**
 
 CASE
@@ -386,7 +384,20 @@ actions:
 
   
 
+#### **Advanced Usage** 
 
+**COUNT conditional filtering**
+
+```
+SELECT COUNT( CASE WHEN fea >0 THEN fea ELSE NULL END) FROM TABLENAME 
+# 统计fea >0 的条数
+```
+
+
+
+
+
+ 
 
 
 ## **HIVE**
