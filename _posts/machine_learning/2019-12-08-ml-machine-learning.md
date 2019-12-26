@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 一站式 Machine Learning
-category: Machine Learning
+category: ML
 tags: Machine Learning
 description: machine learning 
 ---
