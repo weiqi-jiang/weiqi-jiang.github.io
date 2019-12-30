@@ -1,5 +1,5 @@
 ---
-layout: pose
+layout: post
 title: 二维码原理
 category: Tech
 tags: qr code
