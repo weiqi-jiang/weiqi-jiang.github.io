@@ -12,11 +12,10 @@ description: TensorFlow 用法
 
 深度模型强调两个点： ***多层，非线性***
 
-非线性：多层线性模型等价于一层线性模型，线性模型解决的问题很有限，所有强调非线性
+**非线性**：多层线性模型等价于一层线性模型，线性模型解决的问题很有限，所有强调非线性
 
-多层： 这里的多层并不是指很多个hidden layer，实际上一层hidden layer就足够了，如果没有hidden layer 就是perceptron, perceptron是不能解决异或问题的
+**多层**： 这里的多层并不是指很多个hidden layer，实际上一层hidden layer就足够了，如果没有hidden layer 就是perceptron,  perceptron是不能解决异或问题的
 
-#  
 
 # 入门
 
@@ -24,7 +23,7 @@ description: TensorFlow 用法
 
 > tensorflow每一个计算都是都是计算图上的一个节点，而节点之间的边描述了计算之间的依赖关系
 
-系统自动维护一个默认的计算图,tf.get_default_graph 得到这个图。通过tf.Graph() 创建新的图。不同图上的张量和运算都不共享
+系统自动维护一个默认的计算图, tf.get_default_graph 得到这个图。通过tf.Graph() 创建新的图。不同图上的张量和运算都不共享
 
 ### 张量
 
@@ -34,30 +33,33 @@ description: TensorFlow 用法
 
 ### 会话
 
-**tensorflow会自动生成默认的计算图，但是不会生成默认的session**，如果没有指定模型session，with sess.as_default(), tf.Tensor.eval()需要指定session才能得到tensor的值
+**tensorflow会自动生成默认的计算图，但是不会生成默认的session**，如果没有指定模型session，with sess.as_default(),  tf.Tensor.eval()需要指定session才能得到tensor的值
 
 config = tf.ConfigProto() 来配合生成的会话，最常用allow_soft_placement=True,这个参数允许GPU在特定情况下可以在CPU上运行，而不是报错。
 
 **tf中collection的概念**
 
-```
-tf.GraphKeys.VARIABLES   所有变量
-通过tf.global_varibles() 获取
-tf.GraphKeys.TRAINABLE_VARIABLES  可学习的变量
-通过tf.trainable_variables() 获得
-tf.GraphKeys.SUMMARIES  日志生成相关的张量
-tf.GraphKeys.QUEUE_RUNNERS 处理输入的QueueRunner
-tf.GraphKeys.MOVING_AVERAGE_VARIABLES  所有计算了滑动平均的变量
+```python
+tf.GraphKeys.VARIABLES   #所有变量
+#通过tf.global_varibles() 获取
+
+tf.GraphKeys.TRAINABLE_VARIABLES  #可学习的变量
+#通过tf.trainable_variables() 获得
+
+tf.GraphKeys.SUMMARIES  #日志生成相关的张量
+
+tf.GraphKeys.QUEUE_RUNNERS #处理输入的QueueRunner
+
+tf.GraphKeys.MOVING_AVERAGE_VARIABLES  #所有计算了滑动平均的变量
 ```
 
 **TF随机数生成函数**
 
-```
-tf.random_normal   正太分布；   参数：mean,stddev,dtype,seed,name
-tf.truncated_normal 受限正太分布，如果偏移均值两个标准差，重新随机；
-参数： mean,stddev,dtype,seed,name
-tf.random_uniform   均匀分布； 参数： maxval，minval,dtype,seed,name
-tf.random_gamma   gamma分布  参数，alpha,beta,dtype
+```python
+tf.random_normal   #正太分布；   参数：mean,stddev,dtype,seed,name
+tf.truncated_normal #受限正太分布，如果偏移均值两个标准差，重新随机 mean,stddev,dtype,seed,name
+tf.random_uniform   #均匀分布； 参数： maxval，minval,dtype,seed,name
+tf.random_gamma   #gamma分布  参数，alpha,beta,dtype
 ```
 
  
