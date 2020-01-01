@@ -1,7 +1,7 @@
 ---
 layout: post
 title: TF(TensorFlow) Boys
-category: Deep Learning
+category: DeepLearning
 tags: tensorflow
 description: TensorFlow 用法
 ---
