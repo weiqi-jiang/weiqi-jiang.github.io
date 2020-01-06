@@ -8,16 +8,81 @@ description: TensorFlow 用法
 
 
 
-# 理论
+## 背景知识
 
+### 理论
 深度模型强调两个点： ***多层，非线性***
 
 **非线性**：多层线性模型等价于一层线性模型，线性模型解决的问题很有限，所有强调非线性
 
 **多层**： 这里的多层并不是指很多个hidden layer，实际上一层hidden layer就足够了，如果没有hidden layer 就是perceptron,  perceptron是不能解决异或问题的
 
+### 底层
+**Protocol Buffer**
 
-# 入门
+类似于JSON 和XML用于处理结构化数据，但是不同于XML,JSON，Protocol Buffer序列化之后的数据不是可读的字符串而是二进制流，并且**Protocol Buffer需要先定义数据的格式(schema)**。由多个message构成，每个message代表一类结构化的数据类似于编程语言中的class。message 中的变量有optional，repeated，required 三种修饰
+
+```
+message user{
+optional string name = 1;
+required int32  id = 2 ;
+repeated string email = 3;
+
+}
+message item {
+ required string name = 1;
+ optional string categories = 2;
+}
+```
+
+其中 变量后面的数字表示编号，在进行编码解码的时候用来保证顺序不会错位。
+
+**TFRecord**
+
+TFRecord 内部有一系列的Example， example是protocolbuf 协议下的消息体，protocol buffer 和json差不多
+
+```
+Example{
+Features features = 1
+}
+
+Features{
+map<string, Feature> feature = 1  # map feature name to feature
+}
+
+Feature{
+  oneof kind{
+  ByteList bytes_list = 1;
+  FloatList float_list = 2;
+  Int64List int64_list = 3;
+  }
+}
+
+所以Example 就是一系列map 每个map中把featurename map 到feature 
+key-value 都是列表形式
+```
+
+下图是Example 的一个示例，把一张图片分为“image”“label”两个维度来存储
+
+![img](http://www.jiangwq.com/wp-content/uploads/2019/01/20180915164530504-300x193.png)
+
+生成TFRecord之后使用tf.parse_single_example() 或者parse_example() API 去读取TFRecord
+
+```
+tf.parse_single_example{
+  serialized;
+  features;
+  name = None;
+  examplename = None
+}
+
+serialized: 序列化之后的tensor
+features： 一个map 把featurename map to FixedLenFeatures/VarLenFeatures/SparseTensor 类型中的一个
+```
+
+ 
+
+## 入门
 
 ### 计算图
 
@@ -37,7 +102,7 @@ description: TensorFlow 用法
 
 config = tf.ConfigProto() 来配合生成的会话，最常用allow_soft_placement=True,这个参数允许GPU在特定情况下可以在CPU上运行，而不是报错。
 
-**tf中collection的概念**
+### Collection
 
 ```python
 tf.GraphKeys.VARIABLES   #所有变量
@@ -53,8 +118,7 @@ tf.GraphKeys.QUEUE_RUNNERS #处理输入的QueueRunner
 tf.GraphKeys.MOVING_AVERAGE_VARIABLES  #所有计算了滑动平均的变量
 ```
 
-**TF随机数生成函数**
-
+### 随机数生成函数
 ```python
 tf.random_normal   #正太分布；   参数：mean,stddev,dtype,seed,name
 tf.truncated_normal #受限正太分布，如果偏移均值两个标准差，重新随机 mean,stddev,dtype,seed,name
@@ -62,9 +126,8 @@ tf.random_uniform   #均匀分布； 参数： maxval，minval,dtype,seed,name
 tf.random_gamma   #gamma分布  参数，alpha,beta,dtype
 ```
 
- 
 
-**TF中变量的创建**
+### 变量的创建
 
 ```
 # 主要是两个方式 tf.Variable tf.get_variable
@@ -88,9 +151,8 @@ with tf.variable_scope('',reuse=True):
   v3 = tf.get_variable('foo/v2',[1])
 ```
 
- 
 
-**TF 持久化**
+### 持久化
 
 ```
 # 保存模型
@@ -114,30 +176,121 @@ with tf.Session() as sess:
   sess.run(tf.get_default_graph().get_tensor_by_name('add:0'))
 ```
 
- 
+### IO stream
 
-## Protocol Buffer
-
-类似于JSON 和XML用于处理结构化数据，但是不同于XML,JSON，Protocol Buffer序列化之后的数据不是可读的字符串而是二进制流，并且**Protocol Buffer需要先定义数据的格式(schema)**。由多个message构成，每个message代表一类结构化的数据类似于编程语言中的class。message 中的变量有optional，repeated，required 三种修饰
+使用queue 读取硬盘中的数据
 
 ```
-message user{
-optional string name = 1;
-required int32  id = 2 ;
-repeated string email = 3;
-
-}
-message item {
- required string name = 1;
- optional string categories = 2;
-}
+def read_and_decode(filename):
+    #根据文件名生成一个队列
+    filename_queue = tf.train.string_input_producer([filename])
+    # 初始化一个reader
+    reader = tf.TFRecordReader()
+    _, serialized_example = reader.read(filename_queue)   #返回文件名和文件
+    features = tf.parse_single_example(serialized_example,
+                                       features={
+                                           'label': tf.FixedLenFeature([], tf.int64),
+                                           'img_raw' : tf.FixedLenFeature([], tf.string),
+                                       }) #解析数据
 ```
 
-其中 变量后面的数字表示编号，在进行编码解码的时候用来保证顺序不会错位。
+使用Dataset API(目前基于queue的方法在新版中已经移除，推荐使用dataset api)
+
+[tf.data.Dataset 文档](https://www.tensorflow.org/api_docs/python/tf/data/Dataset)
+
+```python
+import tensorflow as tf
+from tf.data.Dataset import *
+
+# 数据集放在内存中 使用tf.data.Dataset.from_tensor_slices or tf.data.Dataset.from_tensors()
+dataset = tf.data.Dataset.from_tensor_slices(np.array([1,2,3,4,5,6]))
+iterator = dataset.make_one_shot_iterator()
+one_element = iterator.get_next()
+with tf.Session() as sess:
+  try:
+    while True:
+      print(sess.run(one_element)) # 打印1 到6
+  except tf.errors.OutOfRangeError:
+    print('end!')
+
+# 从csv 文件中读取数据生成dataset,第一种方法是data.experimental.make_csv_dataset()函数，
+# 返回一个dict结构的dataset元素列表，一个feature_name对应一个tensor
+# 所以可以用dict访问方式 访问指定feature 或者label对应的tensor
+def read_dataset_from_csv(filename):
+    dataset = tf.data.experimental.make_csv_dataset(
+        filename, batch_size = BATCH_SIZE, column_defaults=[0.0]*10, num_epochs=20, shuffle=True)
+    iterator = dataset.maek_one_shot_iterator()
+    return iterator.get_next()
+
+# 还有一种是tf.data.CsvDataset()
+dataset = tf.data.CsvDataset(filenames, record_defaults, header = ...)
+
+# 从tfrecord 文件构建dataset, filename 可以是string 也可以是list of string
+dataset = tf.data.TFRecordDataset(filename)
+
+# 从文本文件构建dataset, filename 可以是string 也可以是list of string， 默认每次读取每个文件的一行
+dataset = tf.data.TextLineDataset(filename).skip(1).filter(lambda line: conditions...)
+
+# dataset 元素变换
+dataset1 = dataset1.map(lambda x: ...)
+dataset2 = dataset2.flat_map(lambda x,y: ...)
+dataset3 = dataset3.filter(lambda x,(y,z): ...)
+
+# dataset 聚合, 重复， 打乱
+batch = dataset.batch(BATCH_SIZE)
+dataset = dataset.repeat(n) # 如果不指定n 无限重复
+dataset = dataset.shuffle(buffer_size = bs)
+```
+
+Dataset 类是***相同元素的有序列表\*，**元素类型很多，可以是字符串，图片，tuple，或是dict， 一个元素有多个tf.Tensor对象，对象被称为组件，可以为元素中各个组件命名，形式为dict， {‘name1’: tensor1, 'name2': tensor2} 。从dataset中把元素取出来的方法是通过迭代Iterator。iterator.get_next()返回的只是一个tensor并不是真实的值，只有通过sess.run() 才能真正的得到一个值, 每次eval tensor之后 迭代器才会进入下一个状态。如果dataset 元素读取完毕，再尝试sess.run(), 会抛出tf.error.OutOfRangeError错误。try, except机制去判断是否读取结束。
+
+### SparseTensor Class
+
+```
+# tensorflow 用三个独立的稠密张量来表示SparseTensor
+# indices, value, dense_shape
+# indices 表示稀疏表示中非零项的index 例如indices = [[1,2],[3,4]]表示索引为[1,2][3,4]的元素值为非零
+# values 和indices 的维度一样，对应每个非零元素的元素值
+# dense_shape 指定稠密张量的形状
+```
+
+sparse_reorder 接受一个SparseTensor 类 返回一个维度不变的类 但是index和value 重新按照row-major规则排序好。
+
+```
+tf.sparse_reorder(
+ sp_input,name = None
+)
+```
+
+tf.nn.embedding_lookup_sparse 计算embedding
+
+按照sp_id 找params对应行，乘上weights ， 按照strategy 进行reduction 最后组成一个tensor返回
+
+```
+tf.nn.embedding_lookup_sparse(
+    params,
+    sp_ids,
+    sp_weights,
+    partition_strategy='mod',
+    name=None,
+    combiner=None,
+    max_norm=None
+)
+
+# params ： embedding matrix
+# sp_ids: sparseTensor 类型 需要使用 tf.sparse_reorder(sp_ids) 提前把indices 化为规范的row-major 
+# sp_weights： 可以使具有float /double weight的SparseTensor 或者是none sp_weights 必须和sp_ids 完全相同的shape 和 indices
+# partition_strategy 指定分割模式，支持div 和mod 默认mod
+# combiner 指定reduction的操作符 目前支持“mean”,“sqrtn”和“sum”.“sum”计算每行的 embedding 结果的加权和.“mean”是加权和除以总 weight.“sqrtn”是加权和除以 weight 平方和的平方根. 
+```
 
  
 
-# TF基本示例
+ 
+
+
+
+## 示例
 
 ```
 # 一个简单的正向传播过程
@@ -211,294 +364,18 @@ with tf.Session() as sess:
 
  
 
-# IO stream
 
-使用queue 读取硬盘中的数据
 
-```
-def read_and_decode(filename):
-    #根据文件名生成一个队列
-    filename_queue = tf.train.string_input_producer([filename])
-    # 初始化一个reader
-    reader = tf.TFRecordReader()
-    _, serialized_example = reader.read(filename_queue)   #返回文件名和文件
-    features = tf.parse_single_example(serialized_example,
-                                       features={
-                                           'label': tf.FixedLenFeature([], tf.int64),
-                                           'img_raw' : tf.FixedLenFeature([], tf.string),
-                                       }) #解析数据
-```
 
- 
+## Distributed TF
 
-使用Dataset API(目前基于queue的方法在新版中已经移除，推荐使用dataset api)
-
-[tf.data.Dataset 文档](https://www.tensorflow.org/api_docs/python/tf/data/Dataset)
-
-```
-import tensorflow as tf
-from tf.data.Dataset import *
-
-# 数据集放在内存中 使用tf.data.Dataset.from_tensor_slices or tf.data.Dataset.from_tensors()
-dataset = tf.data.Dataset.from_tensor_slices(np.array([1,2,3,4,5,6]))
-iterator = dataset.make_one_shot_iterator()
-one_element = iterator.get_next()
-with tf.Session() as sess:
-  try:
-    while True:
-      print(sess.run(one_element)) # 打印1 到6
-  except tf.errors.OutOfRangeError:
-    print('end!')
-
-# 从csv 文件中读取数据生成dataset,第一种方法是data.experimental.make_csv_dataset()函数，
-# 返回一个dict结构的dataset元素列表，一个feature_name对应一个tensor
-# 所以可以用dict访问方式 访问指定feature 或者label对应的tensor
-def read_dataset_from_csv(filename):
-    dataset = tf.data.experimental.make_csv_dataset(
-        filename, batch_size = BATCH_SIZE, column_defaults=[0.0]*10, num_epochs=20, shuffle=True)
-    iterator = dataset.maek_one_shot_iterator()
-    return iterator.get_next()
-
-# 还有一种是tf.data.CsvDataset()
-dataset = tf.data.CsvDataset(filenames, record_defaults, header = ...)
-
-# 从tfrecord 文件构建dataset, filename 可以是string 也可以是list of string
-dataset = tf.data.TFRecordDataset(filename)
-
-# 从文本文件构建dataset, filename 可以是string 也可以是list of string， 默认每次读取每个文件的一行
-dataset = tf.data.TextLineDataset(filename).skip(1).filter(lambda line: conditions...)
-
-# dataset 元素变换
-dataset1 = dataset1.map(lambda x: ...)
-dataset2 = dataset2.flat_map(lambda x,y: ...)
-dataset3 = dataset3.filter(lambda x,(y,z): ...)
-
-# dataset 聚合, 重复， 打乱
-batch = dataset.batch(BATCH_SIZE)
-dataset = dataset.repeat(n) # 如果不指定n 无限重复
-dataset = dataset.shuffle(buffer_size = bs)
-```
-
-Dataset 类是***相同元素的有序列表\*，**元素类型很多，可以是字符串，图片，tuple，或是dict， 一个元素有多个tf.Tensor对象，对象被称为组件，可以为元素中各个组件命名，形式为dict， {‘name1’: tensor1, 'name2': tensor2} 。从dataset中把元素取出来的方法是通过迭代Iterator。iterator.get_next()返回的只是一个tensor并不是真实的值，只有通过sess.run() 才能真正的得到一个值, 每次eval tensor之后 迭代器才会进入下一个状态。如果dataset 元素读取完毕，再尝试sess.run(), 会抛出tf.error.OutOfRangeError错误。try, except机制去判断是否读取结束。
-
- 
-
- 
-
-# TFRecord
-
-TFRecord 内部有一系列的Example， example是protocolbuf 协议下的消息体，protocol buffer 和json差不多
-
-```
-Example{
-Features features = 1
-}
-
-Features{
-map<string, Feature> feature = 1  # map feature name to feature
-}
-
-Feature{
-  oneof kind{
-  ByteList bytes_list = 1;
-  FloatList float_list = 2;
-  Int64List int64_list = 3;
-  }
-}
-
-所以Example 就是一系列map 每个map中把featurename map 到feature 
-key-value 都是列表形式
-```
-
-下图是Example 的一个示例，把一张图片分为“image”“label”两个维度来存储
-
-![img](http://www.jiangwq.com/wp-content/uploads/2019/01/20180915164530504-300x193.png)
-
-生成TFRecord之后使用tf.parse_single_example() 或者parse_example() API 去读取TFRecord
-
-```
-tf.parse_single_example{
-  serialized;
-  features;
-  name = None;
-  examplename = None
-}
-
-serialized: 序列化之后的tensor
-features： 一个map 把featurename map to FixedLenFeatures/VarLenFeatures/SparseTensor 类型中的一个
-```
-
- 
-
-##  
-
-# SparseTensor Class
-
-```
-# tensorflow 用三个独立的稠密张量来表示SparseTensor
-# indices, value, dense_shape
-# indices 表示稀疏表示中非零项的index 例如indices = [[1,2],[3,4]]表示索引为[1,2][3,4]的元素值为非零
-# values 和indices 的维度一样，对应每个非零元素的元素值
-# dense_shape 指定稠密张量的形状
-```
-
-sparse_reorder 接受一个SparseTensor 类 返回一个维度不变的类 但是index和value 重新按照row-major规则排序好。
-
-```
-tf.sparse_reorder(
- sp_input,name = None
-)
-```
-
-tf.nn.embedding_lookup_sparse 计算embedding
-
-按照sp_id 找params对应行，乘上weights ， 按照strategy 进行reduction 最后组成一个tensor返回
-
-```
-tf.nn.embedding_lookup_sparse(
-    params,
-    sp_ids,
-    sp_weights,
-    partition_strategy='mod',
-    name=None,
-    combiner=None,
-    max_norm=None
-)
-
-# params ： embedding matrix
-# sp_ids: sparseTensor 类型 需要使用 tf.sparse_reorder(sp_ids) 提前把indices 化为规范的row-major 
-# sp_weights： 可以使具有float /double weight的SparseTensor 或者是none sp_weights 必须和sp_ids 完全相同的shape 和 indices
-# partition_strategy 指定分割模式，支持div 和mod 默认mod
-# combiner 指定reduction的操作符 目前支持“mean”,“sqrtn”和“sum”.“sum”计算每行的 embedding 结果的加权和.“mean”是加权和除以总 weight.“sqrtn”是加权和除以 weight 平方和的平方根. 
-```
-
- 
-
- 
-
- 
-
-##  
-
-# Variable
-
-```
-tf.Variable(
- initial_value = None , trainable = True, ....
-)
-
-tf.get_variable（
-  name, shape = None, dtype = None, initializer = None ,
-  regularizer = None,trainable = True ...
-）
-
-# get_variable 和Variable的区别，Variable 如果命名冲突，系统自动处理，get_varibale 报错
-```
-
- 
-
-所有的变量会被自动加入到GraphKeys.VARIABLES这个collection中，通过tf.global_variables()这个函数可以得到当前graph上所有的变量。如果在变量声明函数中trainable参数指定为True, 那么这个变量会被加入到GraphKeys.TRAINABLE_VARIANCES, 并通过tf.trainable_variables()得到所有需要优化的参数。TensorFlow 中的优化算法会默认优化GraphKeys.TRAINABLE_VARIABLES 集合中的参数。
-
-# Train.
-
-- string_input_producer(): output strings to
-
-   filename queue
-
-   for an input pipeline
-
-  ```
-  tf.train.string_input_producer(
-      string_tensor,
-      num_epochs=None,
-      shuffle=True,  // shuffle by default
-      seed=None,
-      capacity=32,
-      shared_name=None,
-      name=None,
-      cancel_op=None
-  )
-  ```
-
-- Coordinator 线程协调器，用来管理session中的multiple thread
-
-- start_queue_runners, 启动tensor的入队线程，将tensors 推入filename queue ，只有调用该函数之后，tensor才真正被推入内存序列中，否则由于内存序列为空，数据流图会一直处于等待状态。
-
-  ```
-  coord = tf.train.Coordinator()
-  threads = tf.train.start_queue_runner(sess,coord)
-  
-  #
-  #do something
-  #
-  
-  coord.request_stop()# 发出终止所有进程的信号
-  coord.join(threads) #把开启的进程加入主进程，等待threads结束
-  ```
-
-- tf.train.MonitoredTrainingSession()
-
-  ```
-  MonitoredTrainingSession(
-      master='',
-      is_chief=True,
-      checkpoint_dir=None,
-      scaffold=None,
-      hooks=None,
-      chief_only_hooks=None,
-      save_checkpoint_secs=600,
-      save_summaries_steps=USE_DEFAULT,
-      save_summaries_secs=USE_DEFAULT,
-      config=None,
-      stop_grace_period_secs=120,
-      log_step_count_steps=100
-  )
-  
-  Args:
-   is_chief：用于分布式系统中，用于判断该系统是否是chief，
-   如果为True，它将负责初始化并恢复底层TensorFlow会话。如果为False，它将等待chief初始化或恢复TensorFlow会话。
-  
-   checkpoint_dir：一个字符串。指定一个用于恢复变量的checkpoint文件路径。
-  
-   scaffold：用于收集或建立支持性操作的脚手架。如果未指定，则会创建默认一个默认的scaffold。它用于完成图表
-  
-   hooks：SessionRunHook对象的可选列表。可自己定义SessionRunHook对象，也可用已经预定义好的SessionRunHook对象，
-   如：tf.train.StopAtStepHook()设置停止训练的条件；tf.train.NanTensorHook(loss):如果loss的值为Nan则停止训练；
-   chief_only_hooks：SessionRunHook对象列表。如果is_chief== True，则激活这些挂钩，否则忽略。
-  
-   save_checkpoint_secs：用默认的checkpoint saver保存checkpoint的频率（以秒为单位）。
-   save_checkpoint_steps: 如果save_checkpoint_step 和 save_checkpoint_secs 都设为none 则不会调用 默认的 saver去保存cp。
-   这个很重要 如果不同时指定为none，如果有其他程序加载最新的cp，进行一些操作之后，会产生一个空间占用较小的新的cp污染原来的目录
-  
-   save_summaries_steps：使用默认summaries saver将摘要写入磁盘的频率（以全局步数表示）。
-   如果save_summaries_steps和save_summaries_secs都设置为None，则不使用默认的summaries saver保存summaries。默认为100
-   
-   save_summaries_secs：使用默认summaries saver将摘要写入磁盘的频率（以秒为单位）。
-   如果save_summaries_steps和save_summaries_secs都设置为None，则不使用默认的摘要保存。默认未启用。
-  
-   config：用于配置会话的tf.ConfigProtoproto的实例。它是tf.Session的构造函数的config参数。
-  
-   stop_grace_period_secs：调用close（）后线程停止的秒数。
-  
-   log_step_count_steps：记录全局步/秒的全局步数的频率
-  
-  Returns:          
-         一个MonitoredSession（） 实例。
-  ```
-
-- placeholder
-
-#  
-
-# Distributed TF
-
-单机多GPU的工作模式：
+### 单机多GPU的工作模式：
 
 由CPU 负责把batch发给多GPU，多个GPU 负责计算梯度更新，等待所有GPU 运算完毕，梯度更新数据发送给CPU，CPU 计算平均更新梯度，进行梯度更新，接着发送新的batch给多个GPU，时间消耗取决于最慢的GPU 和CPU,GPU 通信时间。
 
  
 
-多机多GPU 模式：
+### 多机多GPU 模式：
 
 当数据量急剧增大的时候，参数更新的速度就成了一个大问题，于是单机模式下单CPU 进行参数更新的模式就行不通了，引入Parameter Server (PS)的概念。组成集群进行梯度更新
 
@@ -516,7 +393,7 @@ Tensorflow 分布式给予gRPC通信框架(google Remote Proceduce Call), 简单
 
 worker和ps之间的通信都由worker发出pull和push请求，什么时候发出请求是由scheduler调度。
 
-同步参数更新：
+**同步参数更新：**
 
 workers 运算得到梯度更新参数，等到所有worker跑完一个batchsize，把参数更新信息发送给ps，计算平均梯度，ps进行梯度更新，然后把更新后的参数值传回worker，循环进行。
 
@@ -526,7 +403,7 @@ workers 运算得到梯度更新参数，等到所有worker跑完一个batchsize
 
  
 
-异步参数更新：
+**异步参数更新：**
 
 任何一个worker计算完参数更新就把信息发送给ps，ps立即按照信息进行参数更新，以后worker pull到的参数就是更新后的参数。但是这就产生了过期梯度的问题，假设一个worker的计算速度很慢，拿参数的时候拿的v1版本的参数，在计算期间，ps上的参数已经更新到了v3，那么ps就会根据v1版本参数计算得到的梯度来更新v3版本的梯度，得到v4版本，这就会产生震荡，但是最后一般都还是收敛。过期梯度问题可以设置阈值，如果worker上参数的版本比ps的版本差距若干版本以上，则放弃该次更新，防止某一个worker运行速度慢导致梯度更新收过期梯度影响过大。
 
@@ -534,7 +411,11 @@ workers 运算得到梯度更新参数，等到所有worker跑完一个batchsize
 
 缺点： 更新速度快不意味着收敛速度快，过期梯度问题
 
-# Others
+
+
+
+
+## Others
 
 1: **查看tensor的值**，直接键入print(tensorName) 是不行的，这样只会返回tensorname， shape，dtype等信息，不会输出具体数值
 
@@ -581,7 +462,7 @@ t.eval() is a shortcut for calling tf.get_default_session().run(t)
 
  
 
-# **DEBUG**
+## DEBUG
 
 Bug: TypeError: Can not convert a float32 into a Tensor or Operation
 

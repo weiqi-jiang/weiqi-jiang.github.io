@@ -6,7 +6,7 @@ tags: Machine Learning
 description: machine learning 
 ---
 
-# 机器学习思想
+## 机器学习背景知识
 
 > 机器学习的本质就是对问题真实模型的逼近
 
@@ -95,9 +95,9 @@ bias-variance曲线大概是这样的一个样子，当total 在拐点右边时�
 
 既然增长函数不一定能取到上限，VC维指得是假设空间H，在数据集D上能实现全打散，即增长函数可以取到上限时，数据集空间的大小，例如二维空间下，模型是线性模型，对于异或的情况不线性可分，则VC维是3，但是如果模型不是线性模型，VC维就增加，说明VC维一定程度上反映了模型的复杂度
 
-### **机器学习中距离的衡量**
+### **距离的衡量**
 
-reference:https://blog.mythsman.com/post/5d2d440da2005d74040ef6e8/
+reference: [常见的距离测度](https://blog.mythsman.com/post/5d2d440da2005d74040ef6e8/)
 
 作为距离测度满足几个条件：
 
@@ -108,7 +108,7 @@ reference:https://blog.mythsman.com/post/5d2d440da2005d74040ef6e8/
 
 **闵科夫斯基距离**
 
-![img](https://www.nowcoder.com/equation?tex=L_%7Bp%7D(x_%7Bi%7D%2Cx_%7Bj%7D)%3D(%5Csum_%7Bl%3D1%7D%5E%7Bn%7D%7B%7Cx_%7Bi%7D%5E%7B(l)%7D-x_%7Bj%7D%5E%7B(l)%7D%7D%7C%5E%7Bp%7D)%5E%7B%5Cfrac%7B1%7D%7Bp%7D%7D)
+![img](https://www.nowcoder.com/equation?tex=L_%7Bp%7D(x_%7Bi%7D%2Cx_%7Bj%7D)%3D(%5Csum_%7Bl%3D1%7D%5E%7Bn%7D%7B%7Cx_%7Bi%7D%5E%7B(l)%7D-x_%7Bj%7D%5E%7B(l)%7D%7D%7C%5E%7Bp%7D))
 
 上面是闵科夫斯基距离公式，可以看到p=2时称为欧式距离；当p=1时，称为曼哈顿距离；当p为无穷大时，是各个坐标距离的最大值，称为切比雪夫距离。
 
@@ -144,7 +144,7 @@ reference:https://blog.mythsman.com/post/5d2d440da2005d74040ef6e8/
 
 ### **ROC &AUC**
 
-reference：http://alexkong.net/2013/06/introduction-to-auc-and-roc/
+reference：[ROC & AUC](http://alexkong.net/2013/06/introduction-to-auc-and-roc/)
 
 要谈到ROC图和AUC的值，首先要提到混淆矩阵
 
@@ -178,7 +178,7 @@ ROC曲线和AUC的值有一个很好的特性就是当测试集中的正负样�
 
 ### **常见激活函数的比较**
 
-reference：https://zhuanlan.zhihu.com/p/32610035
+reference：[常见激活函数的比较](https://zhuanlan.zhihu.com/p/32610035)
 
 激活函数的发展过程：Sigmoid -> Tanh -> ReLU -> Leaky ReLU -> Maxout
 
@@ -222,9 +222,7 @@ ReLU单元比较脆弱并且可能“死掉”，而且是不可逆的，因此�
 
 ### **一个特殊的激活函数SoftMax**
 
-reference:
-
-https://zhuanlan.zhihu.com/p/25723112
+reference: [softmax](https://zhuanlan.zhihu.com/p/25723112)
 
 softmax一般只作为多分类的模型的最后一层的激活函数，一般多分类模型的最后一个层的节点数就是类别数，把最后一层的输出总和归一，其中最大的节点值对应的类别就是预测的类别
 
@@ -237,8 +235,6 @@ softmax一般只作为多分类的模型的最后一层的激活函数，一般�
 ![[公式]](https://www.zhihu.com/equation?tex=Loss+%3D+-%5Csum_%7Bi%7D%5E%7B%7D%7By_%7Bi%7Dlna_%7Bi%7D+%7D+)
 
 在多分类问题中，N长的label向量其中只有1个1其他全都为0，所以交叉熵中的求和可以忽略掉
-
- 
 
 ![WeChat Image_20190819163403](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Image_20190819163403-700x933.jpg)
 
