@@ -22,11 +22,11 @@ description: machine learning
 
 **泛化误差界**：R(w)(真实风险)≤Remp(w)（经验风险）+Ф(n/h)（置信风险）
 
-![WeChat Screenshot_20190811152032](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190811152032.png)
+![error-generaliztion-bound](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/Error-generalization-bound.png)
 
 N代表样本数量，d代表假设空间的数量，VC维越高，模型 越复杂，参数越多，假设空间大小越大
 
-![WeChat Screenshot_20190811143705](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190811143705.png)
+![structure-error](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/structure-risk.png)
 
 在统计学习方法中，结构风险等于经验风险加上惩罚项，当模型是条件概率分布，损失函数是对数损失函数，复杂度由模型先验概率表示时，结构风险最小化就是最大后验概率估计
 
@@ -59,7 +59,7 @@ bias：“用所有可能的训练数据集训练出的所有模型的输出预�
 
 variance：是“不同的训练数据集训练出的模型”的输出值之间的差异，也就说对于随机样本预测误差的波动大小，约束模型复杂度有助于降低variance
 
-![img](https://i.loli.net/2019/08/01/5d42ac5de34da67393.jpg)
+![bias-variance-tradeoff](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/variance-bias-tradeoff.jpg)
 
 bias-variance曲线大概是这样的一个样子，当total 在拐点右边时，模型过拟合，左边时，模型欠拟合。
 
@@ -114,11 +114,11 @@ reference: [常见的距离测度](https://blog.mythsman.com/post/5d2d440da2005d
 
 **余弦距离**
 
-![img](https://uploadfiles.nowcoder.com/images/20190315/311436_1552625030753_6307A76F04AC68503288B0A0C7D083D2)
+![cosine-distance](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/cosine-distance.png)
 
 皮尔森相关系数：两者的协方差/标准差的乘积
 
-![img](https://wizardforcel.gitbooks.io/dm-algo-top10/content/img/20140423201208000.jpg)
+![pearson-correlation](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/pearson-correlation.png)
 
 **对于标量特征**：
 
@@ -130,9 +130,7 @@ reference: [常见的距离测度](https://blog.mythsman.com/post/5d2d440da2005d
 
 **对于类别特征**：
 
-可以先one-hot再采用二元特征方式衡量，也可以用”**取值不同的同**
-
-**位属性数/单个元素的全部属性数**”衡量。
+可以先one-hot再采用二元特征方式衡量，也可以用”**取值不同的同位属性数/单个元素的全部属性数**”衡量。
 
 **对于序数变量：**
 
@@ -148,7 +146,7 @@ reference：[ROC & AUC](http://alexkong.net/2013/06/introduction-to-auc-and-roc/
 
 要谈到ROC图和AUC的值，首先要提到混淆矩阵
 
-![img](http://www.jiangwq.com/wp-content/uploads/2019/07/20170422190557868-300x71.png)
+![confusion-matrix](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/confusion-matrix.png)
 
 ROC曲线**横坐标FPR**，**纵坐标TPR，**样本中的真实正例类别总数即TP+FN。`TPR`即True Positive Rate，TPR = TP/(TP+FN)。
 同理，样本中的真实反例类别总数为FP+TN。`FPR`即False Positive Rate，FPR=FP/(TN+FP)
@@ -184,11 +182,11 @@ reference：[常见激活函数的比较](https://zhuanlan.zhihu.com/p/32610035)
 
 sigmoid 函数图和导数图
 
-![img](https://liam.page/uploads/images/MachineLearning/sigma-sigma-prime.jpg)
+![sigmoid](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/sigma-sigma-prime.jpg)
 
 tanh函数图和导数图 tanh‘ = 1-tanh^2
 
-![img](https://liam.page/uploads/images/MachineLearning/tanh-tanh-prime.jpg)
+![tanh](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/tanh-tanh-prime.jpg)
 
 Sigmoid 和 tanh 两个函数非常相似，具有不少相同的性质。简单罗列如下
 

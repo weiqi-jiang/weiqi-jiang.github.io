@@ -79,5 +79,5 @@ img.save('myqrcode.png')
 
 ### 效果：
 
-![myqrcode](https://github.com/weiqi-jiang/weiqi-jiang.github.io/blob/master/pic/myqrcode.png?raw=true)
+![myqrcode](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/myqrcode.png)
 
