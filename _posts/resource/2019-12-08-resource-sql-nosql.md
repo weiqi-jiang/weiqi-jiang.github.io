@@ -172,6 +172,37 @@ DROP VIEW（viewName）
 
 
 
+## 4种join详解
+
+![6join]()
+
+如图：
+
+join：两张表中都出现的key，
+
+left outer join: 出现在左边表中，但是不在右边表中的key
+
+right outer join:  出现在右表，但是没有出现在左表的key
+
+left join: 只出现在左表中的，可能出现在右表中，也可能没有的key
+
+right join: 只出现在右表中，可能在左表也可能不在左表的key
+
+full join: 只要出现过的key都算
+
+hive中没有left outer join，right outer join 语句实现left outer join, right outer join
+
+```mysql
+SELECT a.col , b.col FROM a LEFT JOIN b WHERE b.key IS NULL
+SELECT a.col , b.col FROM a RIGHT JOIN b WHERE a.key IS NULL
+```
+
+
+
+
+
+
+
 ## Syntax 
 **SELECT 语句**
 
