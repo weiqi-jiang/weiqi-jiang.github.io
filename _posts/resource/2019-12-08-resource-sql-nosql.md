@@ -174,10 +174,6 @@ DROP VIEW（viewName）
 
 ## 4种join详解
 
-![6join]()
-
-如图：
-
 join：两张表中都出现的key，
 
 left outer join: 出现在左边表中，但是不在右边表中的key
