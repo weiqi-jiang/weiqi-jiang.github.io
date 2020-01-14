@@ -22,11 +22,11 @@ description: machine learning
 
 **泛化误差界**：R(w)(真实风险)≤Remp(w)（经验风险）+Ф(n/h)（置信风险）
 
-![error-generaliztion-bound](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/Error-generalization-bound.png)
+![error-generaliztion-bound](/assets/img/ML/one-stop-machine-learning/Error-generalization-bound.png)
 
 N代表样本数量，d代表假设空间的数量，VC维越高，模型 越复杂，参数越多，假设空间大小越大
 
-![structure-error](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/structure-risk.png)
+![structure-error](/assets/img/ML/one-stop-machine-learning/structure-risk.png)
 
 在统计学习方法中，结构风险等于经验风险加上惩罚项，当模型是条件概率分布，损失函数是对数损失函数，复杂度由模型先验概率表示时，结构风险最小化就是最大后验概率估计
 
@@ -59,7 +59,7 @@ bias：“用所有可能的训练数据集训练出的所有模型的输出预�
 
 variance：是“不同的训练数据集训练出的模型”的输出值之间的差异，也就说对于随机样本预测误差的波动大小，约束模型复杂度有助于降低variance
 
-![bias-variance-tradeoff](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/variance-bias-tradeoff.jpg)
+![bias-variance-tradeoff](/assets/img/ML/one-stop-machine-learning/variance-bias-tradeoff.jpg)
 
 bias-variance曲线大概是这样的一个样子，当total 在拐点右边时，模型过拟合，左边时，模型欠拟合。
 
@@ -114,11 +114,11 @@ reference: [常见的距离测度](https://blog.mythsman.com/post/5d2d440da2005d
 
 **余弦距离**
 
-![cosine-distance](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/cosine-distance.png)
+![cosine-distance](/assets/img/ML/one-stop-machine-learning/cosine-distance.png)
 
 皮尔森相关系数：两者的协方差/标准差的乘积
 
-![pearson-correlation](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/pearson-correlation.png)
+![pearson-correlation](/assets/img/ML/one-stop-machine-learning/pearson-correlation.png)
 
 **对于标量特征**：
 
@@ -146,7 +146,7 @@ reference：[ROC & AUC](http://alexkong.net/2013/06/introduction-to-auc-and-roc/
 
 要谈到ROC图和AUC的值，首先要提到混淆矩阵
 
-![confusion-matrix](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/confusion-matrix.png)
+![confusion-matrix](/assets/img/ML/one-stop-machine-learning/confusion-matrix.png)
 
 ROC曲线**横坐标FPR**，**纵坐标TPR，**样本中的真实正例类别总数即TP+FN。`TPR`即True Positive Rate，TPR = TP/(TP+FN)。
 同理，样本中的真实反例类别总数为FP+TN。`FPR`即False Positive Rate，FPR=FP/(TN+FP)
@@ -182,11 +182,11 @@ reference：[常见激活函数的比较](https://zhuanlan.zhihu.com/p/32610035)
 
 sigmoid 函数图和导数图
 
-![sigmoid](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/sigma-sigma-prime.jpg)
+![sigmoid](/assets/img/ML/one-stop-machine-learning/sigma-sigma-prime.jpg)
 
 tanh函数图和导数图 tanh‘ = 1-tanh^2
 
-![tanh](https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/ML/one-stop-machine-learning/tanh-tanh-prime.jpg)
+![tanh](/assets/img/ML/one-stop-machine-learning/tanh-tanh-prime.jpg)
 
 Sigmoid 和 tanh 两个函数非常相似，具有不少相同的性质。简单罗列如下
 
@@ -224,7 +224,7 @@ reference: [softmax](https://zhuanlan.zhihu.com/p/25723112)
 
 softmax一般只作为多分类的模型的最后一层的激活函数，一般多分类模型的最后一个层的节点数就是类别数，把最后一层的输出总和归一，其中最大的节点值对应的类别就是预测的类别
 
-![img](http://www.jiangwq.com/wp-content/uploads/2019/07/v2-65035de6fdfd8b2f13b930191e9a548b_hd.jpg)
+![softmax](/assets/img/ML/one-stop-machine-learning/softmax.jpg)
 
 原理很简单，重点在于softmax如何进行梯度更新
 
@@ -234,9 +234,9 @@ softmax一般只作为多分类的模型的最后一层的激活函数，一般�
 
 在多分类问题中，N长的label向量其中只有1个1其他全都为0，所以交叉熵中的求和可以忽略掉
 
-![WeChat Image_20190819163403](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Image_20190819163403-700x933.jpg)
+![softmax-hand1](/assets/img/ML/one-stop-machine-learning/softmax-hand1.jpg)
 
-![WeChat Image_20190819163357](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Image_20190819163357-700x933.jpg)
+![WeChat Image_20190819163357](/assets/img/ML/one-stop-machine-learning/softmax-hand2.jpg)
 
 上面两个图片中有一个问题，为什么节点4要对w5i w6i 求偏导，他们又没有直接连接，因为softmax把节点456连接了起来，所以需要考虑节点4对56的影响；不然网络一次只更新一部分权重
 
@@ -254,7 +254,7 @@ sigmoid函数的梯度随着x的增大或减小和消失，而ReLU不会。
 
 ### **常见损失函数：**
 
-![WeChat Screenshot_20190811113958](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190811113958.png)
+![loss-func](/assets/img/ML/one-stop-machine-learning/loss-func.png)
 
 **条件熵公式**
 
@@ -300,9 +300,9 @@ https://blog.csdn.net/tsyccnh/article/details/79163834
 
 相对熵又称KL散度,如果我们对于同一个随机变量 x 有两个单独的概率分布 P(x) 和 Q(x)，我们可以使用 KL 散度（Kullback-Leibler (KL) divergence）来衡量这两个分布的差异，然后就自然的发现交叉熵其实就是KL散度的第二部分，以为KL散度表征是两个概率分布的差异，所以越小越好，自然的KL散度第一部分固定，那么最小化交叉熵就好
 
-![WeChat Screenshot_20190812224447](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190812224447.png)
+![kl1](/assets/img/ML/one-stop-machine-learning/KL.png)
 
-![WeChat Screenshot_20190812224516](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190812224516.png)
+![WeChat Screenshot_20190812224516](/assets/img/ML/one-stop-machine-learning/KL2.png)
 
 ### **为什么神经网络中会使用交叉熵作为损失函数？**
 
@@ -352,7 +352,7 @@ reference：https://www.zhihu.com/question/26485586
 
 Lp-norm的定义
 
-![img](http://www.jiangwq.com/wp-content/uploads/2019/07/v2-21c3e9c1972631e78330f27f1ac1ac8b_hd-300x89.jpg)
+![img](/assets/img/ML/one-stop-machine-learning/LP-norm.jpg)
 
 L1,L2的各自特点：
 
@@ -364,7 +364,9 @@ L1,L2的各自特点：
 
 L1,L2的函数图像和对应导数图像
 
-![img](http://www.jiangwq.com/wp-content/uploads/2019/07/v2-d88e01e730c8e8d91facbd2b1248bfec_r-300x133.jpg)![img](http://www.jiangwq.com/wp-content/uploads/2019/07/v2-ea5454fc80e6c601fdb347caeeba28cc_r-300x133.jpg)
+![img](/assets/img/ML/one-stop-machine-learning/l1l2.jpg)
+
+![img](/assets/img/ML/one-stop-machine-learning/l1l2.jpg)![img](/assets/img/ML/one-stop-machine-learning/l1l2-d.jpg)
 
 # **Batch Normalization**
 
@@ -413,7 +415,7 @@ BN层就是从第二个角度出发的。
 
 # **分类问题Metric**
 
-![WeChat Screenshot_20190811155725](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190811155725.png)
+![WeChat Screenshot_20190811155725](/assets/img/ML/one-stop-machine-learning/classification-metric.png)
 
 Accuracy： A = （TP+TN）/（P+N）
 
@@ -620,7 +622,7 @@ SVM推导：
 
 2 日向前链 forward-chain
 
-![img](https://lonepatient-1257945978.cos.ap-chengdu.myqcloud.com/18-7-25/79795427.jpg)
+![img](/assets/img/ML/one-stop-machine-learning/forward-chain.jpg)
 
 用一天数据做验证和测试，其他时间作为训练，用一个外部循环来控制多次分割，最后平均一下测试误差
 
@@ -647,13 +649,13 @@ SVM推导：
 
 ### **特征选择方法**
 
-1.Filter：使用方差、Pearson相关系数、互信息等方法过滤特征，评估单个特征和结果值之间的相关程度，留下Top相关的特征部分。去掉方差小的特征，因为需要特征有分离度；
+1. Filter：使用方差、Pearson相关系数、互信息等方法过滤特征，评估单个特征和结果值之间的相关程度，留下Top相关的特征部分。去掉方差小的特征，因为需要特征有分离度；
 
-2.Wrapper：可利用“递归特征删除算法”，把特征选择看做一个特征子集搜索问题，筛选各种特征子集，用模型评估效果。
+2. Wrapper：可利用“递归特征删除算法”，把特征选择看做一个特征子集搜索问题，筛选各种特征子集，用模型评估效果。
 
-3.Embedded：可利用正则化方式选择特征，使用带惩罚项的基模型，除了选择出特征外，同时也进行了降纬。
+3. Embedded：可利用正则化方式选择特征，使用带惩罚项的基模型，除了选择出特征外，同时也进行了降纬。
 
-\4. 稳定性选择：采用不同的特征子集和数据子集，用模型去衡量特征的重要性，然后统计特征被认为是重要的频率。取前k个
+4. 稳定性选择：采用不同的特征子集和数据子集，用模型去衡量特征的重要性，然后统计特征被认为是重要的频率。取前k个
 
 ### **特征降维方法**
 
@@ -697,7 +699,7 @@ Boosting： 提升算法，模型之间是串行关系，后续模型拟合的�
 
 stacking 用这个图就可以解释；对于每一个第一层的模型来说，假设总体1000训练集，采用5-fold，每次800训练，200预测，重复5次，得到1000 训练集完整的预测，组合N个第一层模型的1000训练集的预测，1000*N的矩阵作为第二层的训练集 ；相当于每一个第一层模型就是第二层训练集的一个“feature”，label还是原来的label
 
-![img](https://img-blog.csdnimg.cn/2019032215243260.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI5Njk0MTI=,size_16,color_FFFFFF,t_70)
+![img](/assets/img/ML/one-stop-machine-learning/stacking.png)
 
 blending和stacking的不同就是不采用k-fold, 而是holdout，比如1000训练集，分为800训练，200验证，每个model预测这200个验证集，组成200*N的矩阵，作为下一层的训练集，也就是说stacking下一层有1000样本，而blending只有200样本
 
@@ -705,7 +707,7 @@ blending和stacking的不同就是不采用k-fold, 而是holdout，比如1000训
 
 reference： [集成学习三大法宝-bagging、boosting、stacking](https://zhuanlan.zhihu.com/p/36161812)
 
- 
+
 
 bagging： 引入随机性，用于减少方差
 
@@ -735,7 +737,7 @@ Embedding 的本质是降维，化稀疏为稠密（Turns positive integers(inde
 
 下图是一个embedding 过程图
 
-![062019_2051_1.png](http://www.jiangwq.com/wp-content/uploads/2019/06/062019_2051_1.png)
+![062019_2051_1.png](/assets/img/ML/one-stop-machine-learning/feature-embedding.png)
 
 其中
 
@@ -801,12 +803,12 @@ reference: [Adaboost算法详述 ](https://zhuanlan.zhihu.com/p/42915999)，[Ada
 
 ***一个基分类器的误差率\*e\*m就是被该分类器分错样本的权重总和\*，**值得注意的是**，误差率是针对单个分类器的，不是之前已经训练过的级联分类器的。**在每次训练基分类器的时候都以最小化误差率选择参数及阈值。**即误差率为模型训练的损失函数，**根据基分类器的误差率计算该基分类器在最后的复合模型中的重要程度**。**
 
-![20141102235307399](http://www.jiangwq.com/wp-content/uploads/2019/06/20141102235307399.jpg)
+![20141102235307399](/assets/img/ML/one-stop-machine-learning/adaboost-a.jpg)
 
 完成一次基分类器的训练之后需要更新样本权重，更新公式如下：
 
-![20141103000618960](http://www.jiangwq.com/wp-content/uploads/2019/06/20141103000618960.jpg)
-![WeChat Screenshot_20190626151317](http://www.jiangwq.com/wp-content/uploads/2019/06/WeChat-Screenshot_20190626151317-300x69.png)
+![20141103000618960](/assets/img/ML/one-stop-machine-learning/adaboost-weight-update.jpg)
+![WeChat Screenshot_20190626151317](/assets/img/ML/one-stop-machine-learning/adaboost-weight-update2.png)
 
 其中：
 

@@ -21,8 +21,8 @@ instagram:
 linkedin: 
 
 # avatar and Favicon
-avatar: /assets/img/site-avatar2
-favicon: https://raw.githubusercontent.com/weiqi-jiang/weiqi-jiang.github.io/master/pic/site-avatar2.jpg
+avatar: https://github.com/weiqi-jiang/weiqi-jiang.github.io/blob/master/assets/img/site-avatar2.jpg?raw=true
+favicon: https://github.com/weiqi-jiang/weiqi-jiang.github.io/blob/master/assets/img/site-avatar2.jpg?raw=true
 
 # disqus config
 disqus:
