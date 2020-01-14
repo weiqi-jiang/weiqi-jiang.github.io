@@ -64,7 +64,7 @@ key-value 都是列表形式
 
 下图是Example 的一个示例，把一张图片分为“image”“label”两个维度来存储
 
-![img](assets\img\deeplearning\tensorflow\tfrecord-example.png)
+![img](/assets/img/deeplearning/tensorflow/tfrecord-example.png)
 
 生成TFRecord之后使用tf.parse_single_example() 或者parse_example() API 去读取TFRecord
 
