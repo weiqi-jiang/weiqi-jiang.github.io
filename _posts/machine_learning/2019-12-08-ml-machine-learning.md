@@ -30,7 +30,9 @@ N代表样本数量，d代表假设空间的数量，VC维越高，模型 越复
 
 在统计学习方法中，结构风险等于经验风险加上惩罚项，当模型是条件概率分布，损失函数是对数损失函数，复杂度由模型先验概率表示时，结构风险最小化就是最大后验概率估计
 
-### **One-Hot 编码**
+
+
+### One-Hot 编码
 
 为什么使用one-hot编码？
 
@@ -49,7 +51,9 @@ skilearn OneHotEncoder()
 - 只适用于数值型数据
 - 如果训练集足够大，出现了所有可能取值，那么transform 函数可以对未知测试集适用
 
-### **Bias-Variance Trade-Off**
+
+
+### Bias-Variance Trade-Off
 
 reference：[方差偏差均衡](https://plushunter.github.io/2017/04/19/机器学习算法系列（18）：方差偏差权衡（Bias-Variance Tradeoff）/)
 
@@ -75,7 +79,7 @@ bias-variance曲线大概是这样的一个样子，当total 在拐点右边时�
 
  
 
-### **增长函数，对分，打散，VC维**
+### 增长函数，对分，打散，VC维
 
 **增长函数**
 
@@ -95,7 +99,9 @@ bias-variance曲线大概是这样的一个样子，当total 在拐点右边时�
 
 既然增长函数不一定能取到上限，VC维指得是假设空间H，在数据集D上能实现全打散，即增长函数可以取到上限时，数据集空间的大小，例如二维空间下，模型是线性模型，对于异或的情况不线性可分，则VC维是3，但是如果模型不是线性模型，VC维就增加，说明VC维一定程度上反映了模型的复杂度
 
-### **距离的衡量**
+
+
+### 距离的衡量
 
 reference: [常见的距离测度](https://blog.mythsman.com/post/5d2d440da2005d74040ef6e8/)
 
@@ -140,7 +146,9 @@ reference: [常见的距离测度](https://blog.mythsman.com/post/5d2d440da2005d
 
 由于向量有方向，一般采用cosine距离衡量，**cosine衡量的是相似性而不是相异性**
 
-### **ROC &AUC**
+
+
+### ROC &AUC
 
 reference：[ROC & AUC](http://alexkong.net/2013/06/introduction-to-auc-and-roc/)
 
@@ -165,7 +173,9 @@ ROC曲线**横坐标FPR**，**纵坐标TPR，**样本中的真实正例类别总
 
 ROC曲线和AUC的值有一个很好的特性就是当测试集中的正负样本的分布变化的时候，ROC曲线能够保持不变；这个在验证模型效果的时候很好用，做k-fold cv的时候验证集正负样本分布式变化的，如果衡量指标有较大的变化，不好衡量模型的具体效果
 
-### **AUC计算方法**
+
+
+### AUC计算方法
 
 既然auc描述的事正样本概率值大于负样本的概率，那么假设正样本M，负样本N，一共有M*N个正负样本对
 
@@ -174,7 +184,9 @@ ROC曲线和AUC的值有一个很好的特性就是当测试集中的正负样�
 3. 正样本预测概率小于负样本 记为0
 4. auc = sum/ M*N
 
-### **常见激活函数的比较**
+
+
+### 常见激活函数的比较
 
 reference：[常见激活函数的比较](https://zhuanlan.zhihu.com/p/32610035)
 
@@ -218,11 +230,13 @@ Sigmoid 和 tanh 两个函数非常相似，具有不少相同的性质。简单
 
 ReLU单元比较脆弱并且可能“死掉”，而且是不可逆的，因此导致了数据多样化的丢失。通过合理设置学习率，会降低神经元“死掉”的概率。
 
-### **一个特殊的激活函数SoftMax**
+
+
+### 一个特殊的激活函数SoftMax
 
 reference: [softmax](https://zhuanlan.zhihu.com/p/25723112)
 
-softmax一般只作为多分类的模型的最后一层的激活函数，一般多分类模型的最后一个层的节点数就是类别数，把最后一层的输出总和归一，其中最大的节点值对应的类别就是预测的类别
+_softmax一般只作为多分类的模型的最后一层的激活函数_，一般多分类模型的最后一个层的节点数就是类别数，把最后一层的输出总和归一，其中最大的节点值对应的类别就是预测的类别
 
 ![softmax](/assets/img/ML/one-stop-machine-learning/softmax.jpg)
 
@@ -242,7 +256,9 @@ softmax一般只作为多分类的模型的最后一层的激活函数，一般�
 
 从上面的推导可以看出，对于label为1节点相连的权重求偏导的时候g = (a-1)*o; 对于其他权重g = a*o
 
-### **梯度爆炸/消失怎么解决**
+
+
+### 梯度爆炸/消失怎么解决
 
 1）、使用 ReLU、LReLU、ELU、maxout 等激活函数
 
@@ -252,7 +268,9 @@ sigmoid函数的梯度随着x的增大或减小和消失，而ReLU不会。
 
 通过规范化操作将输出信号x规范化到均值为0，方差为1保证网络的稳定性。从上述分析分可以看到，反向传播式子中有w的存在，所以w的大小影响了梯度的消失和爆炸，Batch Normalization 就是通过对每一层的输出规范为均值和方差一致的方法，消除了w带来的放大缩小的影响，进而解决梯度消失和爆炸的问题。
 
-### **常见损失函数：**
+
+
+### 常见损失函数：
 
 ![loss-func](/assets/img/ML/one-stop-machine-learning/loss-func.png)
 
@@ -304,7 +322,9 @@ https://blog.csdn.net/tsyccnh/article/details/79163834
 
 ![WeChat Screenshot_20190812224516](/assets/img/ML/one-stop-machine-learning/KL2.png)
 
-### **为什么神经网络中会使用交叉熵作为损失函数？**
+
+
+### 为什么神经网络中会使用交叉熵作为损失函数？
 
 reference: http://heloowird.com/2017/03/08/diff_errors_of_neural_network/
 
@@ -336,7 +356,9 @@ z = w*x + b
 
 **输出层的激活函数是按照任务来定的，二分类就是sigmoid，多分类是softmax，回归是线性激活函数**，但是在hidden layer中，为了抑制梯度消失，一般采用Relu，所以为了让最后一层也可以加速梯度更新，抑制梯度消失，sigmoid，和softmax作为激活函数的时候，导数都是(a)(1-a)都可以和交叉熵的导数的分母相乘归一，才使用的交叉熵损失函数
 
-### **输出层的损失函数和激活函数选择**
+
+
+### 输出层的损失函数和激活函数选择
 
 二分类： sigmoid+交叉熵
 
@@ -344,7 +366,9 @@ z = w*x + b
 
 回归：线性激活函数+均方误差
 
-### **L1,L2正则化**
+
+
+### L1,L2正则化
 
 reference：https://www.zhihu.com/question/26485586
 
@@ -368,7 +392,7 @@ L1,L2的函数图像和对应导数图像
 
 ![img](/assets/img/ML/one-stop-machine-learning/l1l2.jpg)![img](/assets/img/ML/one-stop-machine-learning/l1l2-d.jpg)
 
-# **Batch Normalization**
+### Batch Normalization
 
 reference:
 
@@ -413,7 +437,9 @@ BN层就是从第二个角度出发的。
 3. **BN层允许模型使用饱和激活函数，缓解梯度消失问题**
 4. **BN层有一定的正则化效果，抑制过拟合**；对于任意一个样本，和不同的其他样本组合成mini-batch，它自己变化后的值都是不同的，相当于给模型添加了噪声，抑制过拟合
 
-# **分类问题Metric**
+
+
+### 分类问题Metric
 
 ![WeChat Screenshot_20190811155725](/assets/img/ML/one-stop-machine-learning/classification-metric.png)
 
@@ -421,7 +447,9 @@ Accuracy： A = （TP+TN）/（P+N）
 
 **当样本分布极为不均的时候，accuracy最不准确，只需要无脑预测多数类，就能有一个很好的准确率**
 
-# **数据的归一化**
+
+
+### 数据的归一化
 
 有一个统一的准则，关心变量的值的模型就要归一化；只关心变量分布和变量条件概率就不需要归一化。
 
@@ -456,13 +484,149 @@ Accuracy： A = （TP+TN）/（P+N）
 - 随机森林：不需要归一化，mtry为变量个数的均方根。
 - 朴素贝叶斯
 
-### **面试常见问题**
 
-### **开放性问题： 如果给定一个数据集，采用什么模型进行分类？**
+
+### Bagging 和 Boosting
+
+Bagging：从原始样本集中有放回的随机抽取若干个样本子集，用这多个样子子集分别训练多个独立的模型，最后的预测结果由多个模型表决产生。
+
+常见Bagging模型： Random Forest
+
+优点：
+
+1. bagging集成和直接训练基学习器的复杂度同阶
+2. bagging能不经修改的适用于多分类和回归任务
+3. 使用剩下的样本可以作为验证机进行包外验证（out-of-bag estimate）
+
+**主要关注于减少variance**
+
+Boosting： 提升算法，模型之间是串行关系，后续模型拟合的前序模型的残差，或是拟合目标不变，但是训练样本经过加权，最后由某种方法进行线性组合生成最终的预测结果。
+
+常见Boosting模型：AdaBoost，GBDT, XGBoost
+
+**主要关注于减小bias**
+
+**Bagging和Boosting的区别**：
+
+1）样本选择上：Bagging：训练集是在原始集中有放回选取的，从原始集中选出的各轮训练集之间是独立的。Boosting：每一轮的训练集不变，只是训练集中每个样例在分类器中的权重发生变化。而权值是根据上一轮的分类结果进行调整。
+
+2）样例权重：Bagging：使用均匀取样，每个样例的权重相等。Boosting：根据错误率不断调整样例的权值，错误率越大则权重越大。
+
+3）预测函数：Bagging：所有预测函数的权重相等。Boosting：每个弱分类器都有相应的权重，对于分类误差小的分类器会有更大的权重。
+
+4）并行计算：Bagging：各个预测函数可以并行生成。Boosting：各个预测函数只能顺序生成，因为后一个模型参数需要前一轮模型的结果。
+
+
+
+### Stacking & Blending
+
+stacking 用这个图就可以解释；对于每一个第一层的模型来说，假设总体1000训练集，采用5-fold，每次800训练，200预测，重复5次，得到1000 训练集完整的预测，组合N个第一层模型的1000训练集的预测，1000*N的矩阵作为第二层的训练集 ；相当于每一个第一层模型就是第二层训练集的一个“feature”，label还是原来的label
+
+![img](/assets/img/ML/one-stop-machine-learning/stacking.png)
+
+blending和stacking的不同就是不采用k-fold, 而是holdout，比如1000训练集，分为800训练，200验证，每个model预测这200个验证集，组成200*N的矩阵，作为下一层的训练集，也就是说stacking下一层有1000样本，而blending只有200样本
+
+
+
+### 模型融合/集成学习方法
+
+reference： [集成学习三大法宝-bagging、boosting、stacking](https://zhuanlan.zhihu.com/p/36161812)
+
+
+
+bagging： 引入随机性，用于减少方差
+
+boosting： 用于减少偏差，优化目标就是最小化残差
+
+stacking： 提升预测效果
+
+ 
+
+串行集成： boosting
+
+并行集成： bagging
+
+ 
+
+bagging 使用装袋采样来获取数据子集训练基础学习器，分类任务使用投票来融合，回归任务使用平均来融合
+
+boosting 通过算法集合把弱分类器集成为强分类器
+
+stacking 通过模型的堆叠提高准确度，整个元模型大致分为两层，第一层为若干个其他模型，xgboost，rf，等等，第二层的输入为第一层的输出，一般采用LR模型把各个模型的输出进行加权融合
+
+ 
+
+### Feature embedding
+
+Embedding 的本质是降维，化稀疏为稠密（Turns positive integers(indexes) into dense vectors of fixed size）
+
+下图是一个embedding 过程图
+
+![062019_2051_1.png](/assets/img/ML/one-stop-machine-learning/feature-embedding.png)
+
+其中
+
+m: 表示样本数
+
+feature_num ： 表示特征数
+
+特征为稀疏的特征，不一定是one-hot形式，例如样本是文章，feature是文章相关的一些信息，比如category， tags。 tags的总个数可能有10000个，一篇文章可能有10个tag，那么tag对应的列上，该样本就有10个位为1,其他为0。 在计算的时候，不需要计算0 位乘以embedding matrix的结果，只需要计算1 位的计算值。在tensorflow中，先找到1 位的indices，计算结果相加得到    embedding之后的结果。其中embedding matrix 是需要训练的，和full-connected layer 的权重偏置一起进行训练。
+
+
+
+### 特征离散化
+
+方法：
+等值分桶，等频分桶
+
+等值分桶是指每个区间具有相同大小，但是桶中的样本量不确定；
+
+等频分桶是指桶中样本量基本相同，但是桶的大小是变化的，需要提前做一定得数据分析，分析出数据的分布，来确定桶的上下限。
+
+pros:
+
+一是使的风险均摊，假设有个特征中产生一个outlier，且这个特征和label是正相关，那么如果这个outlier比average差距很大，这个特征在决定label的时候权重就会特别大，极度倾向于判别为1，相同于预测结果dominated by outlier，这是我们不愿意看到的。
+
+二是引入非线性，提高模型的表达能力，离散化引入一定的非线性（如果模型是LR，离散化之后，one-hot之后每个特征有单独的权重，相当于引入非线性），后续one-hot特征进行交叉进一步引入非线性，离散化使得后续特征交叉更精细也更方便
+
+三是减少计算量： 系数矩阵或者向量的点乘或内积运算速度很快
+
+Cons：
+
+Todo
+
+相关思考：
+是否可以把one-hot形式扩展成fuzzy logic形式？
+
+想法： 如果换为fuzzy logic 形式计算量变大，涉及到很多浮点数的计算，大大降低计算效率，fuzzy logic 的想法在于优化离散区间；例如如果把年龄分桶，分为未成年（0-17），青年（18-25）, 壮年（26-39），中年（40-50），老年（51-） 那么如果一个人A，25岁，B，26岁他们只差一岁，实际生活中他们的兴趣爱好，经历过的事情有大致相同的趋势，代差不明显，可是在离散化之后，他们却属于不同的分组，在后续训练过程中有不同的表达。那么fuzzy logic的优势体现在它可以很好的区分年龄在不同分组的"属于"程度，体现出差异的同时，对于分桶的边界年龄两边的年龄能很大程度上体现它们的一致性。可是这种优势又不及把年龄全部展开，展开成0-100及100以上共102个区间。加上fuzzy logic 的"恐怖"的计算量，one-hot更好用
+
+
+
+### 特征组合
+
+pros:
+
+在不改变输入的情况下引入非线性，解决非线性问题例如异或问题，其他的例如年龄和性别，可以组合成未成年的小男孩新特征, 这个新特征可能就和玩具枪的购买欲望成正相关。但是在没有新特征之前，购买玩具枪的欲望和年龄，性别是非线性相关的。
+
+cons：
+
+具体哪两个特征之间进行组合需要大量人工的测试，或者大量的先验知识。
+
+改进：
+
+GBDT+LR
+
+GBDT的输入就是整个特征集，输入一个样本，GBDT 生成的M颗树，假设每棵树平均有N 个叶子节点，这N个叶子节点中只有一个输出为1（代表样本被分类到了这个叶子节点）那么最终输入到LR的特征维度有M*N个维度，这其中只有M个特征值为1，其他为0. 这些叶子节点本身就具有了特征选择功能，如果样本被分到某个叶子节点，从root到该leaf node的path就代表一个组合特征。经过GBDT处理过的稀疏特征输入到LR中作为输入训练LR模型。LR的特征空间大小为M*N，可以在GBDT训练时控制M,N的大小从而控制LR端的特征空间值。
+
+
+
+## 面试常见问题
+
+### 开放性问题： 如果给定一个数据集，采用什么模型进行分类？
 
 根据数据类型选择不同的模型，如Lr或者SVM，决策树。假如特征维数较多，可以选择SVM模型，如果样本数量较大可以选择LR模型，但是LR模型需要进行数据预处理；假如缺失值较多可以选择决策树。选定完模型后，相应的目标函数就确定了。还可以在考虑正负样例比比，通过上下集采样平衡正负样例比。
 
-### **开放性问题：数据集有问题，怎么处理？**
+### 开放性问题：数据集有问题，怎么处理？
 
 1 数据完整性：缺失值- 用众数代替，如果缺的太多丢弃，用最近的有效值代替，前后均值补，其他信息推测
 
@@ -480,19 +644,19 @@ Accuracy： A = （TP+TN）/（P+N）
 
 8 低纬度问题： 属性拆分，特征组合
 
-### **LR和线性回归的区别**
+### LR和线性回归的区别
 
 线性回归用来做预测,LR用来做分类。线性回归是来拟合函数,LR是来预测函数。线性回归用最小二乘法来计算参数,LR用最大似然估计来计算参数。线性回归更容易受到异常值的影响,而LR对异常值有较好的稳定性。
 
-### **LR和SVM的区别**
+### LR和SVM的区别
 
 1）LR是参数模型，SVM是非参数模型。2）从目标函数来看，区别在于逻辑回归采用的是logistical loss，SVM采用的是hinge loss.这两个损失函数的目的都是增加对分类影响较大的数据点的权重，减少与分类关系较小的数据点的权重。3）SVM的处理方法是只考虑support vectors，也就是和分类最相关的少数点，去学习分类器。而逻辑回归通过非线性映射，大大减小了离分类平面较远的点的权重，相对提升了与分类最相关的数据点的权重。4）逻辑回归相对来说模型更简单，好理解，特别是大规模线性分类时比较方便。而SVM的理解和优化相对来说复杂一些，SVM转化为对偶问题后,分类只需要计算与少数几个支持向量的距离,这个在进行复杂核函数计算时优势很明显,能够大大简化模型和计算。5）logic 能做的 svm能做，但可能在准确率上有问题，svm能做的logic有的做不了。
 
-### **GBDT和随机森林的相同点：**
+### GBDT和随机森林的相同点：
 
 1）都是由多棵树组成；2）最终的结果都是由多棵树一起决定
 
-### **GBDT和随机森林的不同点：**
+### GBDT和随机森林的不同点：
 
 1）组成随机森林的树可以是分类树，也可以是回归树；而GBDT只由回归树组成；
 
@@ -506,13 +670,13 @@ Accuracy： A = （TP+TN）/（P+N）
 
 6）随机森林是通过减少模型方差提高性能，GBDT是通过减少模型偏差提高性能。
 
-### **GBDT+LR 为什么效果不明显？**
+### GBDT+LR 为什么效果不明显？
 
 首先Facebook2014paper中提到选用GBDT+LR而不是直接GBDT的原因是GBDT不好线上服务，于是offline 训练GBDT，用来生成LR的训练集，LR用于线上服务
 
 GBDT+LR 主要是想利用GBDT自动完成特征的选择，并且GBDT的一条路径就是一条特征组合，2维，3维甚至更高维。使得LR 的输入变得线性可分，如果GBDT的复杂度不够，映射之后的空间依然不能线性可分，LR 的效果受影响，不一定就比单LR或者单GBDT要好
 
-### **XGBOOST,LR，RF的优缺，适用场景**
+### XGBOOST,LR，RF的优缺，适用场景
 
 Xgboost：
 
@@ -538,7 +702,7 @@ Lr：
 
 适用场景：LR同样是很多分类算法的基础组件，它的好处是输出值自然地落在0到1之间，并且有概率意义。因为它本质上是一个线性的分类器，所以处理不好特征之间相关的情况。虽然效果一般，却胜在模型清晰，背后的概率学经得住推敲。它拟合出来的参数就代表了每一个特征(feature)对结果的影响。也是一个理解数据的好工具。
 
-### **生成式模型和判别式模型的区别**
+### 生成式模型和判别式模型的区别
 
 简单来说，判别式模型就是一个模型，输入进去，label就输出；生成式模型是很多个模型组合，一般类别有多少就有多少模型，例如朴素贝叶斯，需要算每一个类的概率值，然后取最大概率值的类作为label
 
@@ -551,7 +715,7 @@ Lr：
 3. 生成式模型更容易拟合，判别式模型需要解决凸优化的问题
 4. 新增类别的时候，判别式模型需要重新训练，生成式模型不需要
 
-### **推导SVM**
+### 推导SVM
 
 SVM推导：
 
@@ -606,15 +770,15 @@ SVM推导：
 
 这样我们就可以不用麻烦的计算内积了
 
-### **参数模型和非参数模型**
+### 参数模型和非参数模型
 
 在统计学中，参数模型通常假设总体（随机变量）服从某一个分布，该分布由一些参数确定（比如正太分布由均值和方差确定），在此基础上构建的模型称为参数模型；非参数模型对于总体的分布不做任何假设，只是知道总体是一个随机变量，其分布是存在的（分布中也可能存在参数），但是无法知道其分布的形式，更不知道分布的相关参数，只有在给定一些样本的条件下，能够依据非参数统计的方法进行推断。
 
-### **常用的推荐算法**
+### 常用的推荐算法
 
 基于人口学的推荐、基于内容的推荐、基于用户的协同过滤推荐、基于项目的协同过滤推荐、基于模型的协同过滤推荐、基于关联规则的推荐
 
-### **时间序列的交叉验证**
+### 时间序列的交叉验证
 
 1 predict second half
 
@@ -626,7 +790,7 @@ SVM推导：
 
 用一天数据做验证和测试，其他时间作为训练，用一个外部循环来控制多次分割，最后平均一下测试误差
 
-### **样本集不平衡的时候怎么办？**
+### 样本集不平衡的时候怎么办？
 
 使用正确的评估标准,当数据不平衡时可以采用percesion,recall,F1得分,MCC,AUC等评估指标。
 
@@ -634,7 +798,7 @@ SVM推导：
 
 以正确的方式使用K-fold交叉验证,组合不同的重采样数据集,对多数类进行聚类。
 
-### **怎么防止过拟合，过拟合的解决方法**
+### 怎么防止过拟合，过拟合的解决方法
 
 解决方法：
 
@@ -647,7 +811,7 @@ SVM推导：
 7. 集成学习方法 bagging
 8. BN层
 
-### **特征选择方法**
+### 特征选择方法
 
 1. Filter：使用方差、Pearson相关系数、互信息等方法过滤特征，评估单个特征和结果值之间的相关程度，留下Top相关的特征部分。去掉方差小的特征，因为需要特征有分离度；
 
@@ -657,7 +821,7 @@ SVM推导：
 
 4. 稳定性选择：采用不同的特征子集和数据子集，用模型去衡量特征的重要性，然后统计特征被认为是重要的频率。取前k个
 
-### **特征降维方法**
+### 特征降维方法
 
 **PCA #todo
 **
@@ -665,131 +829,9 @@ SVM推导：
 **LDA #todo
 **
 
-# Bagging 和 Boosting
+## 分类模型/算法
 
-Bagging：从原始样本集中有放回的随机抽取若干个样本子集，用这多个样子子集分别训练多个独立的模型，最后的预测结果由多个模型表决产生。
-
-常见Bagging模型： Random Forest
-
-优点：
-
-1. bagging集成和直接训练基学习器的复杂度同阶
-2. bagging能不经修改的适用于多分类和回归任务
-3. 使用剩下的样本可以作为验证机进行包外验证（out-of-bag estimate）
-
-**主要关注于减少variance**
-
-Boosting： 提升算法，模型之间是串行关系，后续模型拟合的前序模型的残差，或是拟合目标不变，但是训练样本经过加权，最后由某种方法进行线性组合生成最终的预测结果。
-
-常见Boosting模型：AdaBoost，GBDT, XGBoost
-
-**主要关注于减小bias**
-
-### **Bagging和Boosting的区别：**
-
-1）样本选择上：Bagging：训练集是在原始集中有放回选取的，从原始集中选出的各轮训练集之间是独立的。Boosting：每一轮的训练集不变，只是训练集中每个样例在分类器中的权重发生变化。而权值是根据上一轮的分类结果进行调整。
-
-2）样例权重：Bagging：使用均匀取样，每个样例的权重相等。Boosting：根据错误率不断调整样例的权值，错误率越大则权重越大。
-
-3）预测函数：Bagging：所有预测函数的权重相等。Boosting：每个弱分类器都有相应的权重，对于分类误差小的分类器会有更大的权重。
-
-4）并行计算：Bagging：各个预测函数可以并行生成。Boosting：各个预测函数只能顺序生成，因为后一个模型参数需要前一轮模型的结果。
-
-# Stacking & Blending
-
-stacking 用这个图就可以解释；对于每一个第一层的模型来说，假设总体1000训练集，采用5-fold，每次800训练，200预测，重复5次，得到1000 训练集完整的预测，组合N个第一层模型的1000训练集的预测，1000*N的矩阵作为第二层的训练集 ；相当于每一个第一层模型就是第二层训练集的一个“feature”，label还是原来的label
-
-![img](/assets/img/ML/one-stop-machine-learning/stacking.png)
-
-blending和stacking的不同就是不采用k-fold, 而是holdout，比如1000训练集，分为800训练，200验证，每个model预测这200个验证集，组成200*N的矩阵，作为下一层的训练集，也就是说stacking下一层有1000样本，而blending只有200样本
-
-# 模型融合/集成学习方法
-
-reference： [集成学习三大法宝-bagging、boosting、stacking](https://zhuanlan.zhihu.com/p/36161812)
-
-
-
-bagging： 引入随机性，用于减少方差
-
-boosting： 用于减少偏差，优化目标就是最小化残差
-
-stacking： 提升预测效果
-
- 
-
-串行集成： boosting
-
-并行集成： bagging
-
- 
-
-bagging 使用装袋采样来获取数据子集训练基础学习器，分类任务使用投票来融合，回归任务使用平均来融合
-
-boosting 通过算法集合把弱分类器集成为强分类器
-
-stacking 通过模型的堆叠提高准确度，整个元模型大致分为两层，第一层为若干个其他模型，xgboost，rf，等等，第二层的输入为第一层的输出，一般采用LR模型把各个模型的输出进行加权融合
-
- 
-
-# Feature embedding
-
-Embedding 的本质是降维，化稀疏为稠密（Turns positive integers(indexes) into dense vectors of fixed size）
-
-下图是一个embedding 过程图
-
-![062019_2051_1.png](/assets/img/ML/one-stop-machine-learning/feature-embedding.png)
-
-其中
-
-m: 表示样本数
-
-feature_num ： 表示特征数
-
-特征为稀疏的特征，不一定是one-hot形式，例如样本是文章，feature是文章相关的一些信息，比如category， tags。 tags的总个数可能有10000个，一篇文章可能有10个tag，那么tag对应的列上，该样本就有10个位为1,其他为0。 在计算的时候，不需要计算0 位乘以embedding matrix的结果，只需要计算1 位的计算值。在tensorflow中，先找到1 位的indices，计算结果相加得到    embedding之后的结果。其中embedding matrix 是需要训练的，和full-connected layer 的权重偏置一起进行训练。
-
-# 特征离散化
-
-方法：
-等值分桶，等频分桶
-
-等值分桶是指每个区间具有相同大小，但是桶中的样本量不确定；
-
-等频分桶是指桶中样本量基本相同，但是桶的大小是变化的，需要提前做一定得数据分析，分析出数据的分布，来确定桶的上下限。
-
-pros:
-
-一是使的风险均摊，假设有个特征中产生一个outlier，且这个特征和label是正相关，那么如果这个outlier比average差距很大，这个特征在决定label的时候权重就会特别大，极度倾向于判别为1，相同于预测结果dominated by outlier，这是我们不愿意看到的。
-
-二是引入非线性，提高模型的表达能力，离散化引入一定的非线性（如果模型是LR，离散化之后，one-hot之后每个特征有单独的权重，相当于引入非线性），后续one-hot特征进行交叉进一步引入非线性，离散化使得后续特征交叉更精细也更方便
-
-三是减少计算量： 系数矩阵或者向量的点乘或内积运算速度很快
-
-Cons：
-
-Todo
-
-相关思考：
-是否可以把one-hot形式扩展成fuzzy logic形式？
-
-想法： 如果换为fuzzy logic 形式计算量变大，涉及到很多浮点数的计算，大大降低计算效率，fuzzy logic 的想法在于优化离散区间；例如如果把年龄分桶，分为未成年（0-17），青年（18-25）, 壮年（26-39），中年（40-50），老年（51-） 那么如果一个人A，25岁，B，26岁他们只差一岁，实际生活中他们的兴趣爱好，经历过的事情有大致相同的趋势，代差不明显，可是在离散化之后，他们却属于不同的分组，在后续训练过程中有不同的表达。那么fuzzy logic的优势体现在它可以很好的区分年龄在不同分组的"属于"程度，体现出差异的同时，对于分桶的边界年龄两边的年龄能很大程度上体现它们的一致性。可是这种优势又不及把年龄全部展开，展开成0-100及100以上共102个区间。加上fuzzy logic 的"恐怖"的计算量，one-hot更好用
-
-# 特征组合
-
-pros:
-
-在不改变输入的情况下引入非线性，解决非线性问题例如异或问题，其他的例如年龄和性别，可以组合成未成年的小男孩新特征, 这个新特征可能就和玩具枪的购买欲望成正相关。但是在没有新特征之前，购买玩具枪的欲望和年龄，性别是非线性相关的。
-
-cons：
-
-具体哪两个特征之间进行组合需要大量人工的测试，或者大量的先验知识。
-
-改进：
-
-GBDT+LR
-
-GBDT的输入就是整个特征集，输入一个样本，GBDT 生成的M颗树，假设每棵树平均有N 个叶子节点，这N个叶子节点中只有一个输出为1（代表样本被分类到了这个叶子节点）那么最终输入到LR的特征维度有M*N个维度，这其中只有M个特征值为1，其他为0. 这些叶子节点本身就具有了特征选择功能，如果样本被分到某个叶子节点，从root到该leaf node的path就代表一个组合特征。经过GBDT处理过的稀疏特征输入到LR中作为输入训练LR模型。LR的特征空间大小为M*N，可以在GBDT训练时控制M,N的大小从而控制LR端的特征空间值。
-
-# Adaboost
+### Adaboost
 
 reference: [Adaboost算法详述 ](https://zhuanlan.zhihu.com/p/42915999)，[Adaboost 算法的原理与推导](https://blog.csdn.net/v_JULY_v/article/details/40718799)
 
@@ -822,13 +864,13 @@ Gm（x*i*）是第m个基分类器关于样本的分类结果
 
 最后的级联分类器由各个基分类器的线性组合完成
 
-![20141103001155359](http://www.jiangwq.com/wp-content/uploads/2019/06/20141103001155359.jpg)
+![20141103001155359](/assets/img/ML/one-stop-machine-learning/classifier.jpg)
 
 **前向分布算法：**
 
 线性模型一般如下：
 
-![20141229215747307](http://www.jiangwq.com/wp-content/uploads/2019/06/20141229215747307.png)
+![20141229215747307](/assets/img/ML/one-stop-machine-learning/forward-step.png)
 
 其中：
 
@@ -836,15 +878,15 @@ b 代表基分类器
 
 β 表示基分类器的权重
 
-![20141229220326124](http://www.jiangwq.com/wp-content/uploads/2019/06/20141229220326124.png)
+![20141229220326124](/assets/img/ML/one-stop-machine-learning/forward-step-loss.png)
 
 L代表损失函数，线性模型的整体训练目标是最小化整体的损失函数，即达到全局最优解；悬系加法模型成为经验风险最小化的问题，即损失函数最小化的问题；简化问题的求解过程为用局部最优解逼近全局最优解，即每次只优化当前基分类器的损失函数，选择最优的参数组合使得当前单个基分类器的损失函数最小。
 
-![20141231103543937](http://www.jiangwq.com/wp-content/uploads/2019/06/20141231103543937.png)
+![20141231103543937](/assets/img/ML/one-stop-machine-learning/single-forward-loss.png)
 
 在每次训练单个基分类器的时候，整体的优化目标如下， 由于上一级级联分类器的输出是固定的，所以只优化当前单个基分类器的参数即可，无数个局部最小化损失函数，构成了全局最小损失函数
 
-![20141229221858912](http://www.jiangwq.com/wp-content/uploads/2019/06/20141229221858912.png)
+![20141229221858912](/assets/img/ML/one-stop-machine-learning/forward-step-optimize.png)
 
 但是为什么前向分布算法就可以无限逼近全局最优解呢？为什么样本的权重更新函数是exp函数？ 证明如下：
 
@@ -854,7 +896,9 @@ TODO PROOF
 
 [adaboost 的代码实现](https://github.com/JIANGWQ2017/ML/blob/master/adaboost/adaboost.py)
 
-# 决策树
+
+
+### 决策树
 
 二叉树的一些基本知识：
 
@@ -869,7 +913,7 @@ TODO PROOF
 - 当前节点sample数为零
 - 当前可供划分的feature数为零
 
-## 决策树的特征：
+**决策树的特征**：
 
 1. 过程容易理解，可视化能力强，直观
 2. 应用范围广，分类回归都可以适用
@@ -878,7 +922,7 @@ TODO PROOF
 5. **学习一个最优的决策树是一个NPC问题，目前采用的是贪心算法，用多个局部最优去近似达到全局最优**。每次特征划分时，都是按照当前局部最优的划分特征进行划分，但是局部最优的叠加效果不一定是全局最优结果。
 6. 决策树的输入不需规范化
 
-## overfitting（剪枝）：
+**overfitting（剪枝）**：
 
 针对过拟合问题可以通过剪枝来控制，在不剪枝之前，完全展开的决策树每个叶子节点都代表0/1 ，剪枝之后，叶子节点上划分的可能同时具有0和1样本，此时做reference的时候，如果样本被分为该节点上，则那类样本多，就认为新输入被分为哪一类。
 
@@ -890,23 +934,25 @@ TODO PROOF
 
 先生成一颗完整的树，自下而上的评估非叶子节点，若剪枝能带来泛化性的提升，则进行剪枝操作
 
-![081120312282_0WeChat Screenshot_20190811203030](http://www.jiangwq.com/wp-content/uploads/2019/07/081120312282_0WeChat-Screenshot_20190811203030.png)
+![081120312282_0WeChat Screenshot_20190811203030](/assets/img/ML/one-stop-machine-learning/tree-cutting.png)
 
 剪枝过程就是最小化决策树整体的损失函数，损失函数如下，等于每一个叶子节点上样本的经验熵*样本个数求和+叶子节点个数，叶子越多，叶子节点上的经验熵越小，整体损失函数是变大还是变少，受两个方面的影响，就限制了决策树无限增殖的趋势
 
-![WeChat Screenshot_20190811204303](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190811204303.png)
+![WeChat Screenshot_20190811204303](/assets/img/ML/one-stop-machine-learning/tree-cutting-loss.png)
 
-## ID3-C4.5-CART 算法 Reference:
+
+
+**ID3-C4.5-CART 算法 Reference**:
 
 [决策树模型 ID3/C4.5/CART算法比较](https://www.cnblogs.com/wxquare/p/5379970.html)
 
 [决策树方法小结](https://blog.csdn.net/yujianmin1990/article/details/47406037)
 
-### ID3:
+**ID3**:
 
 **支持多叉树，但是不能处理连续性变量**。采用"最大信息熵增益"作为优化目标，即当前特征的特定取值划分能达到最大信息熵增益，即以当前特征的取值划分数据，在之后的划分中，该特征不再起作用。确定划分特征之后，如果该特征有5个取值，那么该节点在划分之后产生5个child nodes，这也就是为什么ID3算法只能适用于离散型特征的原因；如果处理连续性特征，训练时，按照训练集中出现的所有可能取值划分，也可以完成训练，但是当做testing的时候，如果某一个特征中出现了训练时没有出现过得取值，那该样本应该被划分为哪一个分支就是一个问题了。“最大信息熵增益”公式如下：
 
-![WeChat Screenshot_20190621153921](http://www.jiangwq.com/wp-content/uploads/2019/06/WeChat-Screenshot_20190621153921.png)
+![WeChat Screenshot_20190621153921](/assets/img/ML/one-stop-machine-learning/id3.png)
 
 公式含义解析： 数据集D的经验熵即是将K类样本的信息熵相加，此时是按照类别求累计信息熵； 公式（2）特征A对数据集D的经验条件熵的含义是：按照特征A取值划分之后，每一个取值下的样本计算经验熵的总和
 
@@ -918,11 +964,11 @@ ID3算法的特征（优缺点）：
 
 3：没有考虑过拟合问题
 
-### C4.5
+**C4.5**
 
 在最大信息熵增益的基础上进行改进，抑制选择取值多特征的倾向，提出“最大信息熵增益比”的概念，“信息熵增益比”的公式如下
 
-![WeChat Screenshot_20190621180220](http://www.jiangwq.com/wp-content/uploads/2019/06/WeChat-Screenshot_20190621180220.png)
+![WeChat Screenshot_20190621180220](/assets/img/ML/one-stop-machine-learning/c4.5.png)
 
 公式解析： spilt information 中Di 的含义是特征A某个特定取值的样本集，如果特征A取值多，样本纯度高，split information的值高，那么信息增益比自然降低
 
@@ -938,7 +984,7 @@ ID3算法的特征（优缺点）：
 
 3：按照当前样本集中取值出现的概率的取值。例如A的概率0.6，B的0.4.那么缺失值有60%被分配为A，40%分配为B
 
-### CART（Classification And Regression Tree）
+**CART（Classification And Regression Tree）**
 
 reference： [cart](https://wizardforcel.gitbooks.io/dm-algo-top10/content/cart.html)
 
@@ -948,7 +994,7 @@ CART 做回归问题的时候，采用均方误差最小化原则选择划分特
 
 CART做分类问题的时候，由于ID3 C4.5涉及到大量的log计算，而且C4.5还涉及到排序操作，运算复杂度高。CART算法对应改进采用gini系数，gini系数表征的是样本不纯度，故gini系数越低越好，与ID3,C4.5的metric越高越好不同。Gini系数的公式如下：图的横坐标表示概率p，二分类问题下0.5*熵和gini系数很接近
 
-![WeChat Screenshot_20190621185537](http://www.jiangwq.com/wp-content/uploads/2019/06/WeChat-Screenshot_20190621185537.png)
+![WeChat Screenshot_20190621185537](/assets/img/ML/one-stop-machine-learning/gini.png)
 
 公式解析：公式1 为（1 - 样本集中属于某个类别的概率平方和；）即样本集的gini指数；公式2 如果按照特征A 分割，两边的gini指数和，Di/D表示分配到两边的样本集占总样本集的比例
 
@@ -960,7 +1006,7 @@ gini系数和熵的区别：
 
 3：熵和gini系数都是表征混乱程度，在x=1时gini系数和熵近似相等
 
-![WeChat Screenshot_20190621200417](http://www.jiangwq.com/wp-content/uploads/2019/06/WeChat-Screenshot_20190621200417.png)
+![WeChat Screenshot_20190621200417](/assets/img/ML/one-stop-machine-learning/gini-entropy.png)
 
 对于CART分类树连续值的处理问题，其思想和C4.5是相同的，都是将连续的特征离散化。区别在于在选择划分点时的度量方式不同，C4.5使用的是信息增益比，则CART分类树使用的是基尼系数，而且CART树只进行2分，C4.5是多分。
 
@@ -976,11 +1022,11 @@ gini系数和熵的区别：
 
 [Python实现C4.5(信息增益率)](https://www.cnblogs.com/wsine/p/5180315.html)
 
-# Random Forest
+### Random Forest
 
 随机森林中的每一颗树都是CART树，每一颗树不进行剪枝
 
-## Random Forest的随机性：
+**Random Forest的随机性**：
 
 randomly choose feature candidate reduce the correlation between trees
 
@@ -1009,15 +1055,13 @@ randomly choose feature candidate reduce the correlation between trees
 
 3：不善于处理不平衡数据集（为什么？）
 
-# GBDT
-
- 
+### GBDT
 
 采用的是加法模型和前向分布算法，于adaboost类似
 
 优化函数：
 
-![e3goBaV](http://www.jiangwq.com/wp-content/uploads/2019/06/e3goBaV.png)
+![e3goBaV](/assets/img/ML/one-stop-machine-learning/gbdt-opt.png)
 
 其中L（y, x）代表损失函数，fm-1(x) 为m-1个独立的分类器的输出,T为当前分类器的输出。损失函数可以不同，回归问题一般采用平方误差函数，分类问题一般采用指数损失函数。
 
@@ -1025,12 +1069,12 @@ randomly choose feature candidate reduce the correlation between trees
 
 **每棵树拟合的都是上一个树的损失函数的负梯度方向**，对于回归树，一般采用均方误差作为损失函数，则**负梯度方向就等于残差，这里的残差具体是所有样本集的残差平均值，下一级回归树所有训练样本集的label变为残差值**
 
-![imJx56v](http://www.jiangwq.com/wp-content/uploads/2019/06/imJx56v.png)
+![imJx56v](/assets/img/ML/one-stop-machine-learning/gbdt-algo.png)
 
 树与树之间是拟合上一颗树输出的残差，那么树内到底是用什么损失函数进来进行特征划分的，其实也是**平方误差损失函数，**具体的训练过程举例
 
-![9RWud8o](http://www.jiangwq.com/wp-content/uploads/2019/06/9RWud8o.png)
-![NqRfj0q](http://www.jiangwq.com/wp-content/uploads/2019/06/NqRfj0q.png)
+![9RWud8o](/assets/img/ML/one-stop-machine-learning/gbdt-sample.png)
+![NqRfj0q](/assets/img/ML/one-stop-machine-learning/gbdt-sample2.png)
 
 **GBDT的特点：**
 
@@ -1043,23 +1087,23 @@ randomly choose feature candidate reduce the correlation between trees
 
 GBDT在平方误差小于某个数的时候结束，为了防止过拟合，进行剪枝操作
 
-# XGBoost
+### XGBoost
 
 Reference: [十分钟入门XGBoost(原理解析、优点介绍、参数详解）](http://www.dehong.space/XGBoost)
 
 XGBoost 和 GBDT 在结构上几乎一样，而且都采用additive training 方法, 加法模型损失函数有一个统一的形式：
 
-![11](http://www.jiangwq.com/wp-content/uploads/2019/07/11.png)
+![11](/assets/img/ML/one-stop-machine-learning/xgboost-obj.png)
 
 其中L(x,y)为任意损失函数, Ω（x）为惩罚项，f(x)为当前回归器的输出，如果损失函数为常用的平方误差函数，则目标函数如下：
 
-![12](http://www.jiangwq.com/wp-content/uploads/2019/07/12.png)
+![12](/assets/img/ML/one-stop-machine-learning/xgboost-obj2.png)
 
 对该目标函数惩罚项之前的部分求梯度, 且让梯度取0， f(x) = (yi - yi-1), 当新加入的基分类器的输出正好是残差的时候，总损失函数最小，这个很好理解，我们要做的就是让基分类器的输出更可能的接近残差。
 
 那**如果损失函数不是平方误差函数呢**？因为平方误差函数在回归问题中经常被使用，基于它的理论推导十分的成熟，有没有可能使用不同的损失函数，但是共用一套理论推导，当然有可能！
 
-![13](http://www.jiangwq.com/wp-content/uploads/2019/07/13.png)
+![13](/assets/img/ML/one-stop-machine-learning/xgboost-obj3.png)
 
 对任意损失函数进行泰勒二阶展开，**为什么要二阶展开？**1是因为二阶展开往往已经对原有函数有足够高的近似程度，2是因为二阶展开具有最高二阶项，和平方误差函数类似。
 
@@ -1068,25 +1112,25 @@ XGBoost 和 GBDT 在结构上几乎一样，而且都采用additive training 方
 
 其中要注意的事L(yi, yi-1) 是上一级分类器的损失函数，是一个固定值，省略掉常数项，损失函数有一个统一的形式
 
-![14](http://www.jiangwq.com/wp-content/uploads/2019/07/14.png)
+![14](/assets/img/ML/one-stop-machine-learning/xgboost-obj4.png)
 
-后续的理论推导都是基于上式，到了只一步就可以看出XGBoost的厉害之处，上式中**包含了损失函数的一阶导和二阶导形式，但是并没有指出是哪一个具体的损失函数，也就是说任意一阶二阶可导的损失都可以适用于下述的所有推导, 使用不同的损失函数，就可以使XGBoost模型适用于不同的任务，回归，分类，排序。**
+后续的理论推导都是基于上式，到了只一步就可以看出XGBoost的厉害之处，上式中***包含了损失函数的一阶导和二阶导形式，但是并没有指出是哪一个具体的损失函数，也就是说任意一阶二阶可导的损失都可以适用于下述的所有推导, 使用不同的损失函数，就可以使XGBoost模型适用于不同的任务，回归，分类，排序。***
 
-### **树的复杂度(复杂度惩罚项)**
+**树的复杂度(复杂度惩罚项)**
 
 在进行后续推导之前，先要定义XGBoost的惩罚项，才方便合并表达式，方便后续推导。
 
 **一般一棵树的复杂度由这一颗树的叶子节点个数，以及叶子节点输出值的L2范数组成**
 
-![16](http://www.jiangwq.com/wp-content/uploads/2019/07/16.png)
+![16](/assets/img/ML/one-stop-machine-learning/xgboost-tree-complexity.png)
 
-### **求解目标函数**
+**求解目标函数**
 
-![17](http://www.jiangwq.com/wp-content/uploads/2019/07/17.png)
+![17](/assets/img/ML/one-stop-machine-learning/xgboost-tree-complexity-loss.png)
 
-![18](http://www.jiangwq.com/wp-content/uploads/2019/07/18.png)
+![18](/assets/img/ML/one-stop-machine-learning/xgboost-tree-complexity-loss2.png)
 
-![19](http://www.jiangwq.com/wp-content/uploads/2019/07/19.png)
+![19](/assets/img/ML/one-stop-machine-learning/xgboost-tree-complexity-loss3.png)
 
 公式解析：
 
@@ -1097,13 +1141,13 @@ XGBoost 和 GBDT 在结构上几乎一样，而且都采用additive training 方
 
 对w求导等于0，然后将w导数等于0时的值带入目标函数得：
 
-![20](http://www.jiangwq.com/wp-content/uploads/2019/07/20.png)
+![20](/assets/img/ML/one-stop-machine-learning/xgboost-tree-complexity-loss4.png)
 
 此时的obj 是当前树的结构不变的情况下，仅仅改变叶子节点的权重，最极限的情况下的目标函数最小值。称为structure score
 
-![21](http://www.jiangwq.com/wp-content/uploads/2019/07/21.png)
+![21](/assets/img/ML/one-stop-machine-learning/xgboost-tree-complexity-loss5.png)
 
-### **训练算法**
+**训练算法**
 
 - 枚举不同树的结构，使用上述obj作为衡量标准寻找一个最优结构的树
 - 迭代进行上一步直到满足终止条件
@@ -1112,13 +1156,13 @@ XGBoost 和 GBDT 在结构上几乎一样，而且都采用additive training 方
 
 决策树都采用贪心算法进行训练，每一次尝试对一个已有的叶子节点进行分割，分割的衡量增益是：
 
-![22](http://www.jiangwq.com/wp-content/uploads/2019/07/22.png)
+![22](/assets/img/ML/one-stop-machine-learning/xgboost-tree-gain.png)
 
 有一个点值得注意，这个Gain表示增益当然是越大越好，可是obj应该是左子树+右子树应该小于不分割的情况啊。这是因为obj前面有负号，没有负号的Gain当然方向是反的，越大越好。
 
 计算中不需要每次分割重新计算一遍G 和H，因为这个变量只和上一级的模型损失函数有关，不管怎么分割数值不变，所有只需要扫描一遍计算即可重复使用。但是和一般的决策树不同的是，XGBoost的训练停止条件不是无分割样本，所有样本属于同一种类，无可分割特征，**因为XGBoost加入了叶子节点复杂度惩罚项，如果分割带来的增益减去惩罚项之后增益不够大，甚至负增益那么也就不进行分割**
 
-### **xgboost 的特征重要性**
+**xgboost 的特征重要性**
 
 1.*importance_type=*weight（默认值），特征重要性使用特征在所有树中作为划分属性的次数。
 
@@ -1126,7 +1170,7 @@ XGBoost 和 GBDT 在结构上几乎一样，而且都采用additive training 方
 
 3.*importance_type=*cover，特征重要性使用特征在作为划分属性时对样本的覆盖度（就是有多少样本是通过这个特征划分开的）
 
-### **XGBoost 特点：**
+**XGBoost 特点：**
 
 - “模块化”灵活性，GBDT以CART作为基分类器，XGBoost除此之外还支持线性分类器，此时XGBoost相当于带L1,L2的线性分类器。
 - 传统GBDT只利用了一阶导数信息，使用常用的平方误差损失函数，一阶导就是残差，XGBoost利用泰勒展开，使用了二阶导，实现虽然形式上和平方误差函数一致，但是更加模块化，只要函数可一阶二阶导，都可以feeds进一个理论推导框架
@@ -1136,19 +1180,19 @@ XGBoost 和 GBDT 在结构上几乎一样，而且都采用additive training 方
 - 可以处理缺失值
 - xgboost的并行化是特征粒度上的并行，把数据提前排序保存为block结构，在确实划分特征和划分值的时候，重复使用结构，可以并行计算
 
-# 感知机（Perceptron）
+### 感知机（Perceptron）
 
 reference: [感知机](https://www.zybuluo.com/Duanxx/note/425280)
 
 感知机模型对应于特征空间中将实例划分为正负两类的分离超平面，故而是判别式模型
 
-![image_1b138gd30nsodgo6v1uov1gj59](http://www.jiangwq.com/wp-content/uploads/2019/06/image_1b138gd30nsodgo6v1uov1gj59.png)
+![perceptron](/assets/img/ML/one-stop-machine-learning/perceptron.png)
 
 原始perceptron采用的激活函数是单位阶跃函数，value set {+1，-1}
 
 由于感知机模型的输出是0和1两个离散的值，如果使用基于分类错误的平方误差，会使得损失函数不连续，更别说是否可导了。所以这里使用下面这个损失函数； 该函数在SVM模型中被称为函数间隔 margin
 
-![WeChat Screenshot_20190625165215](http://www.jiangwq.com/wp-content/uploads/2019/06/WeChat-Screenshot_20190625165215.png)
+![perceptron-loss](/assets/img/ML/one-stop-machine-learning/perceptron-loss.png)
 
 其中
 
@@ -1160,12 +1204,12 @@ t 表示样本的原始类别
 
 所以损失函数就是 |w*∅(x)| 求和，是一个连续值， 且是凸函数，凸函数可以利用梯度下降法求解，需要求解什么，就对什么求梯度。
 
-![WeChat Screenshot_20190625170832](http://www.jiangwq.com/wp-content/uploads/2019/06/WeChat-Screenshot_20190625170832-700x255.png)
-![WeChat Screenshot_20190625170847](http://www.jiangwq.com/wp-content/uploads/2019/06/WeChat-Screenshot_20190625170847-700x108.png)
+![perceptron-gradient](/assets/img/ML/one-stop-machine-learning/perceptron-gradient.png)
+![perceptron-gradient1](/assets/img/ML/one-stop-machine-learning/perceptron-gradient1.png)
 
 由上式可以看出，下一次迭代时的权重，由上一次的权重加上学习率加权过的全部输入结果的总和（input set 是分类错的样本集），是明显的batch training，由于巨大的计算量，可以改进为随机梯度下降方法，随机取M中的一个进行梯度下降，此时的梯度下降方法跳跃很大，但是总体上是往最优值跳跃的
 
-![WeChat Screenshot_20190625172009](http://www.jiangwq.com/wp-content/uploads/2019/06/WeChat-Screenshot_20190625172009-700x98.png)
+![perceptron-sgd](/assets/img/ML/one-stop-machine-learning/perceptron-sgd.png)
 
 每当有分类错误点，权重更新使得分类面朝分类错误点移动
 
@@ -1175,7 +1219,7 @@ t 表示样本的原始类别
 
 [感知机代码实现](https://github.com/JIANGWQ2017/ML/blob/master/perceptron.py)
 
-# SVM
+### SVM
 
 reference：
 
@@ -1198,7 +1242,7 @@ reference：
 
 实际中，满足条件的分类面可以不止一个，讲满足条件的一个分类面稍微“倾斜”一点，往往也可以满足要求，那么这两个同时都满足要求的分类面哪一个更好呢？这便是SVM和普通线性分类器的区别所在
 
-#### **Margin**
+**Margin**
 
 为了区别多个可行解，确定一个解为最优解，SVM采用最大化Functional Margin
 
@@ -1208,38 +1252,38 @@ reference：
 
 函数间隔(Functional Margin)
 
-![20131107201248921](http://www.jiangwq.com/wp-content/uploads/2019/06/20131107201248921.jpg)
+![func-margin](/assets/img/ML/one-stop-machine-learning/svm-func-margin.jpg)
 
 所有样本中函数间隔的最小值便是**数据集T关于分类面的函数间隔，**此种定义的弊端在于如果同时扩大W 和 b，在不改变超平面的情况下函数间隔扩大两倍
 
 于是引入几何间隔的概念 geometrical margin
 
-![geometric_margin](http://www.jiangwq.com/wp-content/uploads/2019/06/geometric_margin.png)
+![geometric_margin](/assets/img/ML/one-stop-machine-learning/geometric_margin.png)
 
 假设一个超平面经过x点且和g(x) =0 平行， x在g(x)=0上的投影为x0，几何知识可以得到 x = x0 + γ*(w/|w|)（g(x)的法向量方向），加上已知g(x0) = 0，wT * w = ||w||^2, 把前式带入后式可以得到几何间隔的表达式
 
 几何间隔（geometrical margin）
 
-![20131107201759093](http://www.jiangwq.com/wp-content/uploads/2019/06/20131107201759093.jpg)
-![20131107201919484](http://www.jiangwq.com/wp-content/uploads/2019/06/20131107201919484.jpg)
+![geometrical-margin1](/assets/img/ML/one-stop-machine-learning/geometrical-margin1.jpg)
+![geometrical-margin2](/assets/img/ML/one-stop-machine-learning/geometrical-margin2.jpg)
 
 由上两种距离的可以看出，函数间隔，用函数的值表示间隔，这是一个人工定义的量，几何间隔是空间中的真实距离,即为图中gap的一半
 
 当分类面离数据点的“间隔”越大，分类的置信度越大，这个很好理解。分类面是两个类别的分割面，越远离这个分割面，越有confidence相信这个结果的正确
 
-![20140829135959290](http://www.jiangwq.com/wp-content/uploads/2019/06/20140829135959290.jpg)
+![svm-gap](/assets/img/ML/one-stop-machine-learning/svm-gap.jpg)
 
-#### **求解**
+**求解**
 
 设![img](https://img-blog.csdn.net/20131111154113734)γ 固定为1 ,即设样本集中离g(x)=0的分离面的距离为1，该假设不影响优化结果（为什么不影响）
 
 优化目标 最大化：
 
-![WeChat Screenshot_20190629201139](http://www.jiangwq.com/wp-content/uploads/2019/06/WeChat-Screenshot_20190629201139.png)
+![svm-obj-func](/assets/img/ML/one-stop-machine-learning/svm-obj-func.png)
 
 上述优化问题等价于下式
 
-![1351141994_1802](http://www.jiangwq.com/wp-content/uploads/2019/06/1351141994_1802.jpg)
+![svm-obj-func1](/assets/img/ML/one-stop-machine-learning/svm-obj-func.jpg)
 
 优化函数为二次函数，约束条件为线性条件，所以是一个凸二次规划问题。
 
@@ -1254,18 +1298,18 @@ reference：
 
 带约束条件的凸二次优化问题，利用拉格朗日乘子法转换如下
 
-![1351142114_6643](http://www.jiangwq.com/wp-content/uploads/2019/06/1351142114_6643.jpg)
+![lag-mul](/assets/img/ML/one-stop-machine-learning/lag-mul.jpg)
 
 如果有任意一个样本点满足y(wx+b)<1， 在a无限大的情况下 ， 目标函数就会趋近于无限小。所以硬性要求所有的样本点的最小距离大于等于1.当且仅当所有样本的约束条件得到满足，即所有样本的距离都为1时，θ 等于原优化问题 1/2*（||w||）^2, 最小化该值；为了使所有约束条件满足：
 
 1. **所有support vector 的拉格朗日乘子可以不为零，因为y(wx+b)-1对于支撑向量来说等于0**
 2. **所有非支持向量的拉格朗日乘子a为0**
 
-![1351142171_6289](http://www.jiangwq.com/wp-content/uploads/2019/06/1351142171_6289.jpg)
+![lag-alpha](/assets/img/ML/one-stop-machine-learning/lag-alpha.jpg)
 
 所以最终的优化目标函数为，且该问题和原问题等价：
 
-![1351142295_1902](http://www.jiangwq.com/wp-content/uploads/2019/06/1351142295_1902.jpg)
+![svm-equ](/assets/img/ML/one-stop-machine-learning/svm-equ.jpg)
 
 等价问题的对偶问题为：
 
@@ -1275,26 +1319,26 @@ reference：
 2. 然后对a 求极大
 3. 求解拉格朗日乘子
 
-![1351142316_5141](http://www.jiangwq.com/wp-content/uploads/2019/06/1351142316_5141.jpg)
+![1351142316_5141](/assets/img/ML/one-stop-machine-learning/lag-mul-solution.jpg)
 
-#### **求解对偶问题**
+**求解对偶问题**
 
 第一步：
 
 固定a，L对W和b最小化，，对w和b求偏导，并将两个偏导打入之前的L
 
-![20131107202220500](http://www.jiangwq.com/wp-content/uploads/2019/06/20131107202220500.jpg)
+![lag-dual1](/assets/img/ML/one-stop-machine-learning/lag-dual1.jpg)
 
 将偏导带入到原来的L中得到：
 
-![1351142114_6643](http://www.jiangwq.com/wp-content/uploads/2019/06/1351142114_6643-1.jpg)
-![1351142449_6864](http://www.jiangwq.com/wp-content/uploads/2019/06/1351142449_6864.jpg)
+![lag-dual2](/assets/img/ML/one-stop-machine-learning/lag-dual2.jpg)
+![lag-dual43](/assets/img/ML/one-stop-machine-learning/lag-dual43.jpg)
 
 第二步，对a求极大；公式中只有a一个变量，只要解出a，带入右边的公式就可以解除w和b
 
-![20190127114132410](http://www.jiangwq.com/wp-content/uploads/2019/06/20190127114132410.jpg)
-![1357838666_9138](http://www.jiangwq.com/wp-content/uploads/2019/06/1357838666_9138.jpg)
-![1357838696_3314](http://www.jiangwq.com/wp-content/uploads/2019/06/1357838696_3314.png)
+![lag-dual5](/assets/img/ML/one-stop-machine-learning/lag-dual5.jpg)
+![lag-dual6](/assets/img/ML/one-stop-machine-learning/lag-dual6.jpg)
+![lag-dual62](/assets/img/ML/one-stop-machine-learning/lag-dual6.png)
 
 第三步：
 
@@ -1302,7 +1346,7 @@ SMO算法求解拉格朗日乘子，带入上面的公式得到w和b
 
 把w带入分类面函数得到右边的形式，可以看出新样本点的输出值和训练样本的内积有关，其实只有支持向量x对应的拉格朗日乘子a有值，其他a都为0，所以计算量也不算太大
 
-![1351142572_5782](http://www.jiangwq.com/wp-content/uploads/2019/06/1351142572_5782.jpg)
+![lag-dual7](/assets/img/ML/one-stop-machine-learning/lag-dual7.jpg)
 
 **核函数（kernal）**
 
@@ -1312,38 +1356,36 @@ SMO算法求解拉格朗日乘子，带入上面的公式得到w和b
 
 原分类函数：
 
-![20190127114318959](http://www.jiangwq.com/wp-content/uploads/2019/06/20190127114318959.jpg)
+![kernal1](/assets/img/ML/one-stop-machine-learning/kernel1.jpg)
 
 原函数对偶形式
 
-![20190127114343476](http://www.jiangwq.com/wp-content/uploads/2019/06/20190127114343476.jpg)
+![kernal2](/assets/img/ML/one-stop-machine-learning/kernal2.jpg)
 
 此时如果有一个新的映射K(x1,x2) 把<Φ(xi), Φ(x)> 映射到内积特征空间，这个函数K 就是核函数
 
-![20190127114355685](http://www.jiangwq.com/wp-content/uploads/2019/06/20190127114355685.jpg)
+![kernal3](/assets/img/ML/one-stop-machine-learning/kernal3.jpg)
 
 **核函数举例**
 
-![2019012711441777](http://www.jiangwq.com/wp-content/uploads/2019/06/2019012711441777.png)
+![kernal4](/assets/img/ML/one-stop-machine-learning/kernal4.png)
 
 假设两类样本集如左图，简单看出分类面需要是一个圆形才能将两类样本分开，样本是线性不可分的。由圆的标准方程可以得知分类面的所在方程如下
 
-![20130820145508875](http://www.jiangwq.com/wp-content/uploads/2019/06/20130820145508875.jpg)
+![kernal5](/assets/img/ML/one-stop-machine-learning/kernal5.jpg)
 
 如果把二维空间上升为5维空间，五个维度分别为[X1,  X1^2,  X2,  X2^2,  X1X2], 对应的权重w 分别为[a1, a2, a3, a4, a5], 偏置b为 a6。现在原来的非线性可分的样本，在五维空间下就变成线性可分的了， g(x) = w*x + b
 
 此时观察原函数的对偶形式(如上)，假设两个向量 x1 = (n1,n2)T, x2 = (m1,m2)T, 经过Φ(x)映射之后x1,x2变为[n1, n1^2, n2,  n2^2, n1n2], [m1, m1^2, m2,  m2^2, m1m2].
 
- 
-
 经过映射后的特征空间，内积的结果：
 
-![1364953615_2896](http://www.jiangwq.com/wp-content/uploads/2019/06/1364953615_2896.jpg)
+![kernal6](/assets/img/ML/one-stop-machine-learning/kernal6.jpg)
 
 假设我们不进行高维映射，仅仅在原来的特征空间x1 , x2 进行变换； 观察可以得到结果和高维映射的结果很相似，但是有些许不同，这些不同可以通过缩放维度达到完全相同，如右图，缩放结果是不影响可分性的。
 
-![1364953683_4519](http://www.jiangwq.com/wp-content/uploads/2019/06/1364953683_4519.jpg)
-![1364953714_4455](http://www.jiangwq.com/wp-content/uploads/2019/06/1364953714_4455.jpg)
+![kernal7](/assets/img/ML/one-stop-machine-learning/kernal7.jpg)
+![kernal8](/assets/img/ML/one-stop-machine-learning/kernal8.jpg)
 
 这两个结果看着相同，但是思想完全不同：
 
@@ -1352,7 +1394,7 @@ SMO算法求解拉格朗日乘子，带入上面的公式得到w和b
 
 此时 核函数就是:
 
-![1364956440_7770](http://www.jiangwq.com/wp-content/uploads/2019/06/1364956440_7770.jpg)
+![kernal9](/assets/img/ML/one-stop-machine-learning/kernal9.jpg)
 
 核函数的作用就是简化了映射空间中内积计算，这个效果是很明显的，上述例子仅仅对二维空间的一阶二阶的所有组合做映射，如果原始空间为3维，所有一阶二阶三阶的所有组合有19种，那么如果原始空间的维度再往上，高维空间的维度会呈指数级爆炸，**使用核函数避开了高维空间中的计算**，并且结果等价
 
@@ -1360,8 +1402,8 @@ SMO算法求解拉格朗日乘子，带入上面的公式得到w和b
 
 以及使用核函数后的对偶问题
 
-![1351142572_5782](http://www.jiangwq.com/wp-content/uploads/2019/06/1351142572_5782.jpg)
-![1364956916_5948](http://www.jiangwq.com/wp-content/uploads/2019/06/1364956916_5948.jpg)
+![kernal10](/assets/img/ML/one-stop-machine-learning/kernal10.jpg)
+![kernal11](/assets/img/ML/one-stop-machine-learning/kernal11.jpg)
 
 σ例子中核函数很好想出来，但是实际情况下，核函数的具体形式是很难构造出来的。所以实际使用中，常常是从常用的核函数类型中选择：
 
@@ -1370,33 +1412,33 @@ SMO算法求解拉格朗日乘子，带入上面的公式得到w和b
 
 核函数的选取规则：
 
-\1. 如果Feature的数量很大，跟样本数量差不多，且线性可分的时候这时候选用LR或者是Linear Kernel的SVM
-\2. 如果Feature的数量比较小，样本数量一般，不算大也不算小，且线性不可分的时候选用SVM+Gaussian Kernel
-\3. 样本数量非常多选择线性核（避免造成庞大的计算量）
+1. 如果Feature的数量很大，跟样本数量差不多，且线性可分的时候这时候选用LR或者是Linear Kernel的SVM
+2. 如果Feature的数量比较小，样本数量一般，不算大也不算小，且线性不可分的时候选用SVM+Gaussian Kernel
+3. 样本数量非常多选择线性核（避免造成庞大的计算量）
 
-\4. 当样本的数量较多,特征较少时,一般手动进行特征的组合再使用SVM的线性核函数
+4. 当样本的数量较多,特征较少时,一般手动进行特征的组合再使用SVM的线性核函数
 
-\5. 当样本维度不高且数量较少时,且不知道该用什么核函数时一般优先使用高斯核函数,因为高斯核函数为一种局部性较强的核函数,无论对于大样本还是小样本均有较好的性能且相对于多项式核函数有较少的参数
+5. 当样本维度不高且数量较少时,且不知道该用什么核函数时一般优先使用高斯核函数,因为高斯核函数为一种局部性较强的核函数,无论对于大样本还是小样本均有较好的性能且相对于多项式核函数有较少的参数
 
 **松弛变量**
 
 有的时候样本集对外显示线性不可分，但是如果允许若干个样本分类错误的话，往往这些分类错误的样本本身就是outlier，没有实际训练意义，样本可以转换为线性可分，或者说是近似线性可分。
 
-![Optimal-Hyper-Plane-2](http://www.jiangwq.com/wp-content/uploads/2019/06/Optimal-Hyper-Plane-2.png)
+![Optimal-Hyper-Plane-2](/assets/img/ML/one-stop-machine-learning/Optimal-Hyper-Plane-2.png)
 
 图中蓝色的点就是分类错误的点，黑色线段就是分类错误带来的惩罚。
 
 “硬间隔”分类下我们对于样本点集合距离的要求
 
-![clip_image002_2](http://www.jiangwq.com/wp-content/uploads/2019/06/clip_image002_2.gif)
+![hard-margin](/assets/img/ML/one-stop-machine-learning/hard-margin.gif)
 
 “软间隔”分类下引入松弛变量之后对样本点距离的要求，允许一些变量的距离小于1. ζ 即为松弛变量。可见如果松弛变量无穷大的话，所有样本点都可以满足要求，但是这样分类就变的无意义了。**使用松弛变量意味这我们放弃某些点的精确分类,**这样带来的好处也很明显，**不必使得分类面往outlier方向迁移，也可能获得更大的分类间隔**。
 
-![clip_image002[5]](http://www.jiangwq.com/wp-content/uploads/2019/06/clip_image0025.gif)
+![soft-margin](/assets/img/ML/one-stop-machine-learning/soft-margin.gif)
 
 可是怎么去衡量松弛变量带来的好处和坏处呢，即ζ 不能无限大啊。正则项可以选择**ζ的求和**，或是**ζ的平方和，**于是我们在原来的优化问题的基础上加上惩罚项
 
-![clip_image002[13]](http://www.jiangwq.com/wp-content/uploads/2019/06/clip_image00213.gif)
+![clip_image002[13]](/assets/img/ML/one-stop-machine-learning/soft-margin-full.gif)
 
 公式解析：
 
@@ -1414,11 +1456,11 @@ SMO算法求解拉格朗日乘子，带入上面的公式得到w和b
 
 其次，如果样本集本身的类别“偏斜”，即类别不平衡问题，一个类别样本的数量比另一个类别的样本数大的多的情况。这种情况下，minority category的样本的边界值极有可能没有达到真实边界值，分类间隔往往比理想的间隔要大，如图虚线方框是真实样本，但是在训练的时候，由于样本量有限，并么有出现该边界样本。
 
-![image_2](http://www.jiangwq.com/wp-content/uploads/2019/06/image_2.png)
+![image_2](/assets/img/ML/one-stop-machine-learning/relaxation.png)
 
 这种情况下，可以对不同类别的样本采用不同的C值，少数类别样本具有更大的C值，本来就是少数类别，他们的分类正确性就应该更加重视，惩罚项优化为如下：
 
-![clip_image002[5]](http://www.jiangwq.com/wp-content/uploads/2019/06/clip_image0025-1.gif)
+![clip_image002[5]](/assets/img/ML/one-stop-machine-learning/soft-margin-regulator.gif)
 
 SVM 特点：
 
@@ -1442,46 +1484,23 @@ SVM的空间消耗主要是存储训练样本和核矩阵，由于SVM是借助�
 
  
 
-
-
-模型之间的异同
-
-LR和SVM的区别
-
-- Linear SVM不直接依赖数据分布，分类平面不受一类点影响；LR则受所有数据点的影响，如果数据不同类别处于极其不平衡的状态, 一般需要先对数据做平衡处理。
-- Linear SVM依赖数据表达的距离测度，所以需要对数据先做标准化；LR不受其影响
-- Linear SVM依赖惩罚项的系数，实验中需要做[交叉验证](https://zhuanlan.zhihu.com/p/32627500)
-- Linear SVM和LR的执行都会受到异常值的影响，其敏感程度而言，谁更好很难下明确结论。
-- Linear SVM和LR损失函数不同, LR为logloss, SVM为hinge loss. 而SVM中的
-  称为**hinge loss**。
-
-GBDT 和xgboost的不同：
-GBDT的梯度拟合只考虑了一阶，xgboost做了泰勒2阶展开
-
-XGBOOST损失函数加入正则项
-
-xgboost支持并行化
-
-xgboost的正则函数：
-系数*节点个数+系数*（叶子节点值得L2范数和）
-
-xgboost 后续树拟合的还是残差，但是每一课树的损失函数不一样了，就是说指导树结构生成的策略不一样了，
-
-# 线性回归
+### 线性回归
 
 reference ：https://blog.csdn.net/xiazdong/article/details/7950084
 
 cost Function：
 
-![img](http://www.jiangwq.com/wp-content/uploads/2019/07/1346902047_6543-300x48.png)
+![img](/assets/img/ML/one-stop-machine-learning/LR-cost-func.png)
 
 cost function即为所有样本的均方误差
 
 为了求解权重theta，使用梯度下降法
 
-![img](http://www.jiangwq.com/wp-content/uploads/2019/07/1346902185_3233-300x181.png)
+![img](/assets/img/ML/one-stop-machine-learning/LR-theta.png)
 
-# 逻辑回归Logistics Regression
+
+
+### 逻辑回归Logistics Regression
 
 reference:
 
@@ -1539,10 +1558,8 @@ y = wT*x + b
 
 首先对权重n+1（因为包含了偏置b）分别求偏导，假设对wk求偏导：
 
- 
-
-![20140528205737500](http://www.jiangwq.com/wp-content/uploads/2019/06/20140528205737500.jpg)
-![20140528210021312](http://www.jiangwq.com/wp-content/uploads/2019/06/20140528210021312.jpg)
+![20140528205737500](/assets/img/ML/one-stop-machine-learning/max-likely.jpg)
+![20140528210021312](/assets/img/ML/one-stop-machine-learning/max-likely2.jpg)
 
 产生n+1 个等式，然后利用**牛顿法**迭代求解；
 
@@ -1552,19 +1569,19 @@ y = wT*x + b
 
 我们同时也可以用**梯度上升法**求解式3，求得一组w使得式3的达到最大值。或者我们在式3前面乘上一个负因子
 
-![20131113203644500](http://www.jiangwq.com/wp-content/uploads/2019/06/20131113203644500.jpg)
+![gradient-asc](/assets/img/ML/one-stop-machine-learning/gradient-asc.jpg)
 
 那么梯度上升法，就转换为了梯度下降法。**此时问题就变成了寻找一组w使得因子加权后的似然函数最小，是不是很熟悉，这个因子加权后的似然函数，不就是机器学习中常见的损失函数嘛**
 
-![20131113203723187](http://www.jiangwq.com/wp-content/uploads/2019/06/20131113203723187.jpg)
+![20131113203723187](/assets/img/ML/one-stop-machine-learning/LR-loss-solu.jpg)
 
 其中 g(x) = θT * x, 并且
 
-![20131113203741453](http://www.jiangwq.com/wp-content/uploads/2019/06/20131113203741453.jpg)
+![20131113203741453](/assets/img/ML/one-stop-machine-learning/LR-loss-solu2.jpg)
 
 权重θ 更新函数：由于1/m是个常数，和学习率a合并
 
-![20131113205240203](http://www.jiangwq.com/wp-content/uploads/2019/06/20131113205240203.jpg)
+![20131113205240203](/assets/img/ML/one-stop-machine-learning/LR-loss-func3.jpg)
 
 **梯度下降过程向量化**
 
@@ -1572,16 +1589,16 @@ y = wT*x + b
 
 记θ*x 即样本输入点乘权重的结果，经过sigmoid函数之前
 
-![20131113204012546](http://www.jiangwq.com/wp-content/uploads/2019/06/20131113204012546.jpg)
+![20131113204012546](/assets/img/ML/one-stop-machine-learning/LR-gd.jpg)
 
 基于向量A计算误差向量E：
 
-![20131113204103593](http://www.jiangwq.com/wp-content/uploads/2019/06/20131113204103593.jpg)
+![20131113204103593](/assets/img/ML/one-stop-machine-learning/LR-gd2.jpg)
 
 有了误差向量E之后， 权重更新就可以实现向量化，省去for loop， θj可以表示为式23，整个权重θ统一表示为式24
 
-![20131113204138093](http://www.jiangwq.com/wp-content/uploads/2019/06/20131113204138093.jpg)
-![20131113204152062](http://www.jiangwq.com/wp-content/uploads/2019/06/20131113204152062.jpg)
+![20131113204138093](/assets/img/ML/one-stop-machine-learning/LR-gd3.jpg)
+![20131113204152062](/assets/img/ML/one-stop-machine-learning/LR-gd4.jpg)
 
 **逻辑回归为什么要用sigmoid函数？能不能用其他函数？**
 
@@ -1614,7 +1631,9 @@ log(p/(1-p)) = w*x  =>  p = 1/1+e^(-w*x)
 
 无论是sigmoid函数还是probit函数都是**广义线性模型的连接函数**（link function）中的一种。选用联接函数是因为，从统计学角度而言，**普通线性回归模型是基于响应变量和误差项均服从正态分布的假设，且误差项具有零均值，同方差的特性**。但是，例如分类任务（判断肿瘤是否为良性、判断邮件是否为垃圾邮件），其响应变量一般不服从于正态分布，其服从于二项分布，所以选用普通线性回归模型来拟合是不准确的，因为不符合假设，所以，我们需要选用广义线性模型来拟合数据，通过标准联接函数(canonical link or standard link function)来映射响应变量，如：正态分布对应于恒等式，泊松分布对应于自然对数函数，二项分布对应于logit函数（二项分布是特殊的泊松分布）。
 
-# **KNN**
+
+
+### KNN
 
 reference:
 
@@ -1629,37 +1648,35 @@ KNN是一种**基于instance的学习算法**，基于instance的学习方法只
 
 KNN假设实例是n维空间中的一个点，，点与点的距离是由标准欧式距离定义的,当然也可以用Lp距离来定义
 
-![20140417163635812](http://www.jiangwq.com/wp-content/uploads/2019/07/20140417163635812.png)
-
-![WeChat Screenshot_20190811170305](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190811170305.png)
-
 在新样本输入，需要进行分类时候，对已知的每个样本点计算距离，取前k个样本中个数最多的类别作为新样本的类别，也可以进行加权求和最为新样本的类别或者回归问题的输出。
 
 改进型有weighted knn，根据距离进行贡献加权，很好理解。
 
 **KNN算法实现，KD树**
 
-![WeChat Screenshot_20190811181452](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190811181452.png)
+![WeChat Screenshot_20190811181452](/assets/img/ML/one-stop-machine-learning/knn-kd.png)
 
-![WeChat Screenshot_20190811181503](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190811181503.png)
+![WeChat Screenshot_20190811181503](/assets/img/ML/one-stop-machine-learning/knn-kd2.png)
 
 有几个重要的点，划分维度是循环的，假设有2个特征维度，6个数据点，kd树大概3层，第一层按照x轴划分，左右子集分别按照y轴划分，他们的左右子集又按照x轴划分，中位数所在的那个样本留在根节点，不被分为左右样本，这样每个节点至少有一个样本、
 
 搜索kd树的算法
 
-![081118282872_0WeChat Screenshot_20190811182745](http://www.jiangwq.com/wp-content/uploads/2019/07/081118282872_0WeChat-Screenshot_20190811182745.png)
+![081118282872_0WeChat Screenshot_20190811182745](/assets/img/ML/one-stop-machine-learning/kd-search.png)
 
 在建树的过程中， 每个叶子节点相当于分配了一个区域
 
 首先找到所在叶子节点，按照输入节点和所在叶子节点画球，往上遍历到父节点，如果父节点的另一个子节点的区域和这个球相交，说明可能这个区域内有更近的，遍历整个区域的点，如果有，更新最近点，然后再按照输入节点和最近的点画球。直到访问到最上面的根节点
 
-### 特点：
+**特点**：
 
 - 对样本量大的类别有偏向，但是在样本量足够大的情况下，效果不错。由于是k个加权平均，robustness 强
 - 距离容易被不相关的属性支配。距离是基于所有属性计算的，有些feature对于类别的重要性比较大，可能就在计算中导致偏差较大，可以考虑对属性进行加权
 - k值的选择对结果的影响很大，如果k值越小，相当于用越少的邻域中的训练实例进行预测，只有很相似的样本点参与预测，近似误差小，当前于在测试集上表现良好，模型越复杂，但是估计误差会增大，容易受噪声点支配；k越大，相当于在越大的邻域中进行预测，一些不相关的点也进来预测，近似误差大，但是估计误差好一点，模型越简单，极限情况下，k=N，模型一直返回多数类，相当于过于简单，返回恒定值
 
-# **朴素贝叶斯**
+
+
+### 朴素贝叶斯
 
 reference：https://wizardforcel.gitbooks.io/dm-algo-top10/content/naive-bayes.html
 
@@ -1667,7 +1684,7 @@ reference：https://wizardforcel.gitbooks.io/dm-algo-top10/content/naive-bayes.h
 
 首先肯定是贝叶斯公式：
 
-![img](https://wizardforcel.gitbooks.io/dm-algo-top10/content/img/latex-nb-3.gif)
+![img](/assets/img/ML/one-stop-machine-learning/by.png)
 
 P(B|A)称为后验概率 P（A|B）称为似然函数，P(A),P(B)为先验概率
 
@@ -1677,43 +1694,49 @@ P(B|A)称为后验概率 P（A|B）称为似然函数，P(A),P(B)为先验概率
 
 换言之，该假定说明给定实例的目标值情况下，观察到联合的*a*1,*a*2…*an*的概率正好是对每个单独属性的概率乘积：
 
-![img](https://wizardforcel.gitbooks.io/dm-algo-top10/content/img/20140403190357062.jpg)
+![img](/assets/img/ML/one-stop-machine-learning/nb1.jpg)
 
 **朴素贝叶斯分类的正式定义如下：**
 
-1、设![img](https://wizardforcel.gitbooks.io/dm-algo-top10/content/img/latex-nb-4.gif)为一个待分类项，而每个a为x的一个特征属性
+1、设![img](/assets/img/ML/one-stop-machine-learning/by2.gif)为一个待分类项，而每个a为x的一个特征属性
 
-2、有类别集合![img](https://wizardforcel.gitbooks.io/dm-algo-top10/content/img/latex-nb-5.gif)
+2、有类别集合![img](/assets/img/ML/one-stop-machine-learning/by3.gif)
 
-3、计算![img](https://wizardforcel.gitbooks.io/dm-algo-top10/content/img/latex-nb-6.gif)
+3、计算![img](/assets/img/ML/one-stop-machine-learning/by4.gif)
 
-4、如果![img](https://wizardforcel.gitbooks.io/dm-algo-top10/content/img/latex-nb-7.gif)，则![img](https://wizardforcel.gitbooks.io/dm-algo-top10/content/img/latex-nb-8.gif)
+4、如果![img](/assets/img/ML/one-stop-machine-learning/by5.gif)，则![img](/assets/img/ML/one-stop-machine-learning/by6.gif)
 
 那么现在的关键就是如何计算第3步中的各个条件概率。我们可以这么做：
 
 1、找到一个已知分类的待分类项集合，这个集合叫做训练样本集。
 
-2、统计得到在各类别下各个特征属性的条件概率估计。即![img](https://wizardforcel.gitbooks.io/dm-algo-top10/content/img/latex-nb-9.gif)。
+2、统计得到在各类别下各个特征属性的条件概率估计。即![img](/assets/img/ML/one-stop-machine-learning/by7.gif)。
 
 3、如果各个特征属性是条件独立的，则根据贝叶斯定理有如下推导：
 
-![img](https://wizardforcel.gitbooks.io/dm-algo-top10/content/img/latex-nb-10.gif)
+![img](/assets/img/ML/one-stop-machine-learning/by8.gif)
 
 因为分母对于所有类别为常数，因为我们只要将分子最大化皆可。又因为各特征属性是条件独立的，所以有：
 
-![img](https://wizardforcel.gitbooks.io/dm-algo-top10/content/img/latex-nb-11.gif)
+![img](/assets/img/ML/one-stop-machine-learning/by9.gif)
 
-# **LSTM**
+
+
+### LSTM
 
 谈到LSTM之前首先要说***Recurrent Neural Network***
 
-### **RNN**
+
+
+### RNN
 
 RNN能给传统的神经网络带来了时间维度的考虑，传统的DNN 假设输入之间是完全独立的。假定现在有一个分类的需求，一个球需要判断是往右滚还是往左滚，输入的label是球的坐标，在不给定时间序列的情况下，球左右滚都有可能，但是一定给定时间上的先后顺序，那么球的滚动方向就确定下来了。另外人类的语音输入也是具有强烈的前后关联的，单独把每个词分开看，并不能或者很难看出语句的含义。
 
 RNN则是在前馈神经网络上添加一个传递先前信息的循环，把上一个输入的hidden state 传递给下一个状态，但是如果状态数过多，太早的状态的信息由于梯度消失问题而消失，所以RNN只具有短期记忆
 
-# **聚类Clustering**
+
+
+## 聚类Clustering
 
 聚类不同于分类算法有一个最优化目标，而是一种统计方法，把相似的数据聚在一起。 在进行聚类之前，有必要对数据有一个初步的理解，如果数据是纯随机分布的话，虽然任何一个聚类算法都可以“强行”得到一个结果，但是这个聚类效果是没有意义的。
 
@@ -1779,9 +1802,9 @@ si接近-1，则说明样本i更应该分类到另外的簇；此时b接近0
 
 从小到大遍历K，在每个k值上重复运行数次kmeans(避免局部最优解)，并计算当前k的平均轮廓系数，最后选取轮廓系数最大的值对应的k作为最终的集群数目。
 
-### GMM
 
-### **Density-based spatial clustering of applications with noise (DBSCAN)** 
+
+### Density-based spatial clustering of applications with noise (DBSCAN)
 
  
 
@@ -1818,7 +1841,9 @@ DBSCAN的聚类定义很简单：由密度可达关系导出的最大密度相�
 - 密度不均匀，类内间距大的时候不适用
 - 于k-means相比对了一个参数需要调参，邻域范围和最小样本阈值都需要调参，且影响很大
 
-### **k-means 和 DBSCAN的区别：**
+
+
+### K-Means 和 DBSCAN的区别：
 
 **1)K均值和DBSCAN都是将每个对象指派到单个簇的划分聚类算法，但是K均值一般聚类所有对象，而DBSCAN丢弃被它识别为噪声的对象。**
 
@@ -1850,9 +1875,9 @@ DBSCAN的聚类定义很简单：由密度可达关系导出的最大密度相�
 
  
 
-# **NLP**
+## NLP
 
-### **TF-IDF**
+### TF-IDF
 
 TF(term frequency) = 词在文章中出现的次数/文章的总词数
 
@@ -1864,3 +1889,27 @@ TF-IDF = TF*IDF
 
 注意TF计算是针对这一篇文章，而IDF是针对整个语料库
 
+
+
+## 模型之间的异同
+
+LR和SVM的区别
+
+- Linear SVM不直接依赖数据分布，分类平面不受一类点影响；LR则受所有数据点的影响，如果数据不同类别处于极其不平衡的状态, 一般需要先对数据做平衡处理。
+- Linear SVM依赖数据表达的距离测度，所以需要对数据先做标准化；LR不受其影响
+- Linear SVM依赖惩罚项的系数，实验中需要做[交叉验证](https://zhuanlan.zhihu.com/p/32627500)
+- Linear SVM和LR的执行都会受到异常值的影响，其敏感程度而言，谁更好很难下明确结论。
+- Linear SVM和LR损失函数不同, LR为logloss, SVM为hinge loss. 而SVM中的
+  称为**hinge loss**。
+
+GBDT 和xgboost的不同：
+GBDT的梯度拟合只考虑了一阶，xgboost做了泰勒2阶展开
+
+XGBOOST损失函数加入正则项
+
+xgboost支持并行化
+
+xgboost的正则函数：
+系数*节点个数+系数*（叶子节点值得L2范数和）
+
+xgboost 后续树拟合的还是残差，但是每一课树的损失函数不一样了，就是说指导树结构生成的策略不一样了
