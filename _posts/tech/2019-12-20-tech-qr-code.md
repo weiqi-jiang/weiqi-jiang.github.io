@@ -6,7 +6,7 @@ tags: qr code
 description: qr code principle
 ---
 
-# 二维码(QR Code)
+## 二维码(QR Code)
 
 QR Code (quick response code)较之条形码能存储更多的信息，能表示更多的数据类型，一维条码只能在水平方向或者垂直方向上记录信息，而且只能由数字和字母组成，而二维码能存储汉字，数字，甚至图片等信息，它具有条码技术的一些共性：每种码制有其特定的字符集；每个字符占有一定的宽度；具有一定的校验功能等（[来自百科]([https://baike.baidu.com/item/%E4%BA%8C%E7%BB%B4%E7%A0%81/2385673?fr=aladdin](https://baike.baidu.com/item/二维码/2385673?fr=aladdin))）
 
@@ -14,7 +14,7 @@ QR Code (quick response code)较之条形码能存储更多的信息，能表示
 
 
 
-# Python 简单实现
+## Python 简单实现
 
 ### qrcode 库
 

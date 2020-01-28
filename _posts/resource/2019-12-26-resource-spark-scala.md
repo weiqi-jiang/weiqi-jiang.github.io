@@ -8,7 +8,7 @@ description:
 
 
 
-# Spark
+## 什么是spark
 
 Hadoop 和 Spark的关系：
 
@@ -16,17 +16,17 @@ hadoop的大致框架：由HDFS负责静态数据的存储，通过MapReduce将�
 
 Spark用于大数据量下的迭代式计算，Spark的出现是为了配合Hadoop而不是取代Hadoop；Spark比Hadoop更快的原因是Hadoop把计算中间结果从内存写入硬盘，然后下次迭代之前从硬盘读入, Spark全程的计算数据都存在内存，内存不足时溢出到硬盘中，直到计算出最终结果，然后把结果写入磁盘。
 
-**Spark系统架构**
+## Spark系统架构
 
 用户发起一个application，经过master节点，master节点上常驻master守护进程和driver进程，driver负责执行application中的main函数，并且创建SparkContext；master节点负责将串行任务变成可并行执行的任务集tasks，同时负责处理error。master节点将tasks分发到不同的worker nodes，worker nodes 存在一个或者多个executor进程，每个executor进程还有一个线程池，每个线程负责一个task，根据worker node的CPU 核数，可以最多并行等于CPU核数的task。
 
-![img](http://www.jiangwq.com/wp-content/uploads/2019/01/spark-300x153.jpg)
+![img](/assets/img/resource/sparks/spark-arch.jpg)
 
-**RDD（Resilent Distributed Datasets）**
+## RDD（Resilent Distributed Datasets）
 
 spark API 的所有操作都是基于RDD的；数据不止存储在一台机器上，而是分布在多台机器上。RDD是一种“只读”的数据块，任何对RDD的操作都会产生一个新的RDD；RDD之间的transformation和action都会被记录成lineage，lineage形成一个有向无环图（DAG），计算过程不需要将中间结果放入磁盘保证容错，如果某个节点的数据丢失，按照DAG关系重新计算即可。
 
-![img](http://www.jiangwq.com/wp-content/uploads/2019/01/855959-20160920113159606-662705486-280x300.png)
+![img](/assets/img/resource/sparks/rdd-backup.png)
 
 如图所示：RDD1的partition2 是根据RDD0的partition2计算而来，如果RDD1的partition2丢失，其他partition不需要重新计算，只需要从RDD0的partition2 重新计算一遍即可。
 
@@ -50,13 +50,13 @@ RDD在lineage有两种依赖方式：
 
 driver根据是否有shuffle（类似reduceByKey，join）操作将作业分为不同的stage，stage的边缘就是shuffle操作发生的地方。每个stage执行一部分代码片段，并为每个stage创建一批task，这些task分配到各个executor进程中执行，每个task执行同样的处理逻辑，只是处理数据块不同的部分罢了。一个stage的所有task执行完之后，将中间结果写入到磁盘，下个stage的输入就是上一个stage的输出，此处有大量的IO消耗，所以应该尽量减少shuffle操作。
 
-**SPARK缓存机制**
+## SPARK缓存机制
 
 每次对一个RDD进行操作的时候，都是按照lineage从头开始计算的，这一点和TF有点像，为了得到一个op的结果，每次sess.run(op)都是从头计算。那么如果一个RDD需要被经常使用，就需要使用缓存机制rdd.cache()默认是内存中缓存，cache内部调用默认的persist操作。cache的RDD 会一直占用内存，需要使用unpersist释放掉
 
-![img](http://www.jiangwq.com/wp-content/uploads/2019/01/v2-76d18f5711274ad4b5e33f0e8741d000_r-300x219.jpg)
+![img](/assets/img/resource/sparks/spark-buffer.jpg)
 
-**Spark 作业调度：**
+## Spark 作业调度：
 
 spark目前的资源分配有三种：
 
@@ -72,9 +72,8 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
 
 后续spark版本支持公平策略调度，采用round robin方式为每个job分配执行的tasks。sparks支持将不同的jobs划分到不同的调度池中，可以为每个调度池设置不同的属性调度池共享集群的资源，每个调度池内部，job是默认FIFO的方式运行的。
 
- 
 
-# Syntax
+## Syntax
 
 - val 用于定义常量 val x : int = 5 等价与 val x = 5，var用于定义变量, **值得注意的是使用val定的变量如果在后续程序中不小心进行了修改操作，那么这些操作会丢失，原常量的值不变**。
 - scala 的数据类型的关键词首字母大写如 Int, Short...
@@ -99,7 +98,7 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
 - 和c++ ， java一样 整形之间的除法是取整的，scala的类型转换不是(double) [这是java的写法] 而是  intNum.toDouble. 
 - **to,until** : for(i< 1 to 10){println} 会打印1到10（包含10）for(i<-1 until 10){} 打印1 到9 
 
-# Immutable Collection
+## Immutable Collection
 
 ### List
 
@@ -121,7 +120,7 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
 - val M: Map[keytype1 , valuetype] = Map()
 - 使用“+ （key->value）" 来添加键值对，“- key” 来去掉键值对
 
-# Mutable Collection
+## Mutable Collection
 
 > 需要Import 下列package
 >
@@ -133,15 +132,14 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
 >
 > val test = collection.mutable.Buffer(); test += value 就可以实现append操作
 
-# Collection Function
+## Collection Function
 
-- map
+### map
 
   : 对RDD集合中的每个元素应用指定的function，一般来说，如果想实现一个for循环对一个iterable结构进行遍历执行某个操作，都可以用map代替。执行结果替代元素值, 
 
   值得注意一点就是原List 如果是不可变的类型的话，经过map function是不会改变原来的值的，如果需要保存结果就需要把结果赋值给其他变量
 
-  。
 
   ```
   val testList = List(1,2,3)
@@ -149,8 +147,7 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
   // => 符号表示映射
   out=List(2,4,6)
   ```
-
-- foreach
+### foreach
 
   : 主要用来遍历集合元素输出
 
@@ -163,9 +160,10 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
   4
   ```
 
-- **collectAsMap**: 把[K,V]类型的RDD转换为Map格式，注意，**如果该RDD太大，会出现Java heap memory超的情况**
+### **collectAsMap**
+把[K,V]类型的RDD转换为Map格式，注意，**如果该RDD太大，会出现Java heap memory超的情况**
 
-- flatten: 
+### flatten: 
 
   对象是集合的集合， 把2层嵌套结构展平，超过两层就需要多调用几次，但是不如flatMap常用， stack overflow上说比flatMap more efficient （?）
 
@@ -175,7 +173,7 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
   out: List(2,4,6)
   ```
 
-- flatMap
+### flatMap
 
   : 和flatten差不多
 
@@ -185,7 +183,7 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
   out: List(2,4,6,8,10,12)
   ```
 
-- Join, leftOuterJoin, rightOuterJoin
+### Join, leftOuterJoin, rightOuterJoin
 
   ```
   #基本语法
@@ -196,11 +194,10 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
   (v1,((v2,v3,v4),(v5,v6)))
   ```
 
-   
 
-- reduce/reduceByKey
+### reduce/reduceByKey
 
-  ```
+```
   //reduce把RDD 的两两元素传递给操作函数，返回一个和元素同类型的值，然后和下一个element进行同样的操作，直到最后一个值。
   //例子：
   //求和 "_"是占位符表示一个element 使用"_"而不是其他符号只是为了简便  此时元素必须为一元，不能为tuple或者其他集合形式
@@ -213,9 +210,8 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
   //reduceByKey 对象是key-value类型的RDD，返回值也是RDD类型，如果是3元及以上的RDD，需要转换为二元key-value 例如（1,2,3,4）
   //不能直接reduceByKey，先转换为（1，（2,3,4））,"_"占位符代表是value元素
   .reduceByKey(_+_)
-  ```
+```
 
-   
 
 ## Rules
 
@@ -229,7 +225,6 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
 - 尽管var 定义的变量值可以reassign at anytime。 但是var的类型是不能变的
 - statement vs expression expression 有返回值， statement 没有返回值unit类型
 
-##  
 
 ## Option
 
@@ -246,7 +241,7 @@ Map(key)
 
  
 
-## **Spark中的DataFrame**
+## Spark中的DataFrame
 
 spark 中的dataframe 和RDD一样也是一个分布式的存储结构，并不是pandas中dataframe in memory 的数据结构
 
@@ -265,10 +260,10 @@ spark_df.persist() / spark_df.cache()
 ```
 
 debug:
-
 在pandas.dataframe 转成spark.dataframe 的时候可能会有‘Can not merge type <xxxxx>’
-
 解决方法： df中存在空值，需要先处理空值，处理完可能还是不行，这个时候就需要强制类型转换，强制保证一个字段下数据的类型一致
+
+
 
 ## Others
 

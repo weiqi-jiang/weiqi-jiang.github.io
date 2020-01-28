@@ -6,11 +6,12 @@ tags: python
 description: 主要是记录一些平时不经常用，但是偶尔还挺有用的python语法
 ---
 
-### python作为一个有点“骚”的语言, 是值得多学习的~
+> python作为一个有点“骚”的语言, 是值得多学习的~
+>
 
 
 
-#### 打包，用于提交到cloudml分布式平台上运行
+## 打包
 ```
 #在项目文件顶层文件夹下新建setup.py 文件,并且在想打包进package的文件夹下加上名为__init__.py的空文件
 
@@ -26,7 +27,7 @@ python setup.py sdist --formats=gztar
 
 #之后会在项目文件夹下生成新的几个文件夹，其中打包完的文件放在dist文件夹下上传tar包之前一定检查一下是不是包里包含所有需要的东西
 ```
-#### 执行其他脚本或cmd command
+## 执行其他脚本或cmd command
 
 ```
 #pythonfile1.py: 
@@ -49,8 +50,7 @@ if status ==0:
 ```
 
 
-
-####  logging module:  用于统一方便的管理日志
+##  logging module
 ```
 import logging 
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'，filename = "logs")#运行时间，模块名字，级别名字，信息 
@@ -60,7 +60,7 @@ logger.debug("xxx") # 文件级别是info的话 debug信息是不会输出的log
 ```
 
 
-#### ArgumentParser
+## ArgumentParser
 ```
 import argparse 
 parser = argparse.ArgumentParser() #ArgumentParser的参数都是keyword参数
@@ -73,7 +73,7 @@ parser.parse_args() # or parser.parse_known_args()
 ```
 
 
-#### 判断两个列表之间的包含关系
+## 判断两个列表之间的包含关系
 ```
 a = [1,2,3,4]
 b = [1,2,3]
@@ -87,7 +87,7 @@ a>c => False
 
 
 
-#### 变量赋值引用
+## 变量赋值引用
 ```
 res = []
 
@@ -102,7 +102,7 @@ new = res + [nums]
 ```
 
 
-#### 检查输入是否在dict的key set中
+## 检查输入是否在dict的key set中
 ```
 # O(n)
 if key in dict.keys()
@@ -111,7 +111,7 @@ if dict.get(key)
 ```
 
 
-#### 自定义排序函数；即自定义“大小”的定义
+## 自定义排序函数；即自定义“大小”的定义
 ```
 # 第一种方式
 def func(x,y):  
@@ -129,7 +129,7 @@ sorted( unsorted, func)# 第二个参数是类型是func 所以不需要传递fu
 ```
 
 
-#### char转ASCII CODE； ASCII CODE 转字符
+## char转ASCII CODE； ASCII CODE 转字符
 ```
 s = 'C'ord(s) # return ASCII 码
 chr(ord(s)) ASCII码转回char 
@@ -137,7 +137,7 @@ chr(ord(s)) ASCII码转回char
 ```
 
 
-#### 浮点数精度问题
+## 浮点数精度问题
 ```
 浮点数的小数部分转换为二进制小数的时候都是不断的*2 取整数部分的值作为一个二进制位0,1然后对剩余的小数部分重复操作
 0.1*2 = 0.2  整数0，小数0.2
@@ -150,7 +150,7 @@ chr(ord(s)) ASCII码转回char
 
 
 
-#### datetime & time & string 相互转换, 已经常用的指令
+## datetime & time & string 相互转换, 已经常用的指令
 ```
 import datetime
 
@@ -181,7 +181,7 @@ dt.weekday()
 
 
 
-#### 与os 的一些交互
+## 与os 的一些交互
 ```
 import os 
 
@@ -199,7 +199,7 @@ for root, dirs, files in os.walk(file_dir):
 
  
 
-#### __new__ 和__init__的关系
+## __new__ 和__init__的关系
 
 - __init__是当实例对象创建完成后被调用的，然后设置对象属性的一些初始值。
 - __new__是在实例创建之前被调用的，因为它的任务就是创建实例然后返回该实例，是个静态方法。
@@ -242,7 +242,7 @@ python里面%d表数字，%s表示字符串，%%表示一个%；
 
  
 
-#### python的异常处理机制
+## python的异常处理机制
 ```
 try:  
 	do sth0
@@ -259,7 +259,7 @@ finally:
 
  
 
-### **self解释**
+## **self解释**
 
 reference：https://www.cnblogs.com/jessonluo/p/4717140.html
 
@@ -271,7 +271,7 @@ reference：https://www.cnblogs.com/jessonluo/p/4717140.html
 
  
 
-### **杂七杂八：**
+## **杂七杂八：**
 
 - str.endswith(suff, start, end) start 与 end为可选参数，默认为0和str的长度
 - python2 math.floor(5.5) 返回5.0 python3 math。floor(5.5) 返回5

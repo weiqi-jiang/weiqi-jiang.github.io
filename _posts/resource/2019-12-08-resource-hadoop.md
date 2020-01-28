@@ -8,28 +8,24 @@ description: Hadoop 的一些架构知识，和常用指令
 
 
 
-# **Hadoop Arichitecture**
+## Hadoop Arichitecture
 
 **Name node**: keep track of where everything is
-
 **Data node**: store data
 
 process:
-
 1. client node –>(ask where data is ) name node
 2. name node –>(data address) client node
 3. clicent node –>(fetch data by address) data node
 
 如果 name node down掉怎么办？
-
 1. backup metadata
 2. secondary namenode
 3. HDFS federation(each name node only manage specific namespace volume)
 
- 
 
 ## 常用指令：
-
+### COMMON
 ```
 hadoop fs -mkdir  dir  创建文件夹
 hadoop fs -ls path  显示路径下的文件
@@ -43,7 +39,7 @@ hadoop fs -touchz file 创建一个空文件
 hadoop fs -tail file 输出最后1kb的内容
 ```
 
-## 把hdfs上的文件复制到本地/本地文件上传到HDFS：
+### 把hdfs上的文件复制到本地/本地文件上传到HDFS：
 
 ```
 hadoop fs -get  hdfsPath localPath  成功返回0 失败返回-1 如果本地有同名文件，则失败 
@@ -51,13 +47,13 @@ hadoop fs -copyToLocal  hdfsPath localPath 在公司工程机上不支持，不�
 hadoop fs -put  local/path/to/file   hdfs/path  如果有同名文件，则失败
 ```
 
-## 查看前几行，后几行,行数
+### 查看前几行，后几行,行数
 ```
  hadoop fs -cat /path/to/your/file | head -100
  hadoop fs -cat /path/to/your/file | tail -100
  hadoop fs -cat /path/to/your/file | wc -l
 ```
-## 查看文件夹下的文件并按照文件大小/时间排序 
+### 查看文件夹下的文件并按照文件大小/时间排序 
 hadoop查看文件的时候，输出的第一个参数是权限，… 第5个是大小，6,7个是时间
 ```
 hadoop fs -ls /path/to/your/dir | sort -k5   大小倒序排序，如果文件很多，不能显示全的话，推荐使用

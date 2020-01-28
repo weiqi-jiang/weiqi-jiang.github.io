@@ -11,9 +11,6 @@ description: markdown 常用语法
 reference :  [简书： markdown语法手册]( https://www.jianshu.com/p/8c1b2b39deb0 )
 
 
-
-
-
 ## 斜体/粗体/ 删除线
 
 ```
@@ -27,8 +24,6 @@ _test_ / *test*  斜体
 2： **test**
 3： _**test**_ 
 4： ~~test~~
-
-
 
 
 

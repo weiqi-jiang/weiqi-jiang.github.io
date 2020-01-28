@@ -6,9 +6,9 @@ tags: java
 description: 记录java常用语法，便于查看
 ---
 
-# **Java**
+# Java
 
-### **Principle**
+### Principle
 
 ***java源程序source code*** 就是我们根据语言规范编写的程序，扩展名为java，使用java编译器生成***bytes code字节码\***，扩展名为class，编译器在JDK或JRE中，JDK包含JRE，**字节码不是二进制文件**，字节码文件通过java解释器在**java虚拟机**上解释执行，java虚拟机就是在机器和编译的程序之间的一层抽象机器，编译程序只需要面对虚拟机，由虚拟机中的解释器负责把编译代码解释成机器码，不同的机器有不同的解释规则。
 
@@ -20,15 +20,13 @@ java虚拟机就是JRE，包含在JDK中，虚拟机的存在使得source code �
 
 函数中定义的变量和引用变量都在栈内存中，程序运行超过定义域时，自动释放内存
 
- 
 
 **Java中&& 和 &， || 和 | 都表示and 和 or**
 
 区别在于 & 会比较两个表达式，而&& 在第一个表达式为false时，就直接输出false了， || 和 | 同理
 
  
-
-print printf 和 printf 的区别
+** print printf 和 printf 的区别**
 
 1. print 和println基本相同
 2. printf 进行格式化输出； printf("i的值为%d, j 的值为%f"，i , j) ；%.2f 小数点保留后两位；%5d 表示输出5位int， 不足用0补位
@@ -46,8 +44,6 @@ print printf 和 printf 的区别
 - 静态方法内不可以直接调用非静态方法
 - 不可以使用this关键词（this 关键词和python中self类似）
 - 不能将method内的local variable设为静态
-
- 
 
 如果类中成员变量为定值 e.g.
 
@@ -97,6 +93,7 @@ abstractr 关键词
 
 **如果在方法中有和成员变量同名的局部变量时；以local variable 为主**
 
+
 ### **变量有效范围/能见度**
 
 成员变量（member variable）
@@ -109,6 +106,7 @@ abstractr 关键词
 1. 局部变量可以和成员变量的名字相同
 2. 成员变量在这时会被隐藏，通过className.staticVariable 访问隐藏的成员变量
 
+
 ### **可见度private，public,protected**
 
 private var/method 只能在本类中使用，子类不可见
@@ -120,8 +118,6 @@ public var/method/class 本类，子类，其他包中类，本包其他类都�
 protected var/method/class 本类，子类，本包其他类
 
 类的权限设置会约束类成员的权限
-
- 
 
 **这里是把类变量和static variable 搞混了，类变量不一定非要用static修饰，如果不用static修饰，实例对类变量的修改不会作用于类**
 
@@ -149,6 +145,7 @@ protected var/method/class 本类，子类，本包其他类
 成员变量存储在堆内存的对象中，所以也叫对象的特有数据。
 
 静态变量数据存储在方法区（共享数据区）的静态区，所以也叫对象的共享数据。
+
 
 ### **Syntax**
 
