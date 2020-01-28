@@ -6,23 +6,16 @@ tags: computer network
 description: 计算机网络基本知识，信息主要来源<计算机网络：自顶而下方法> 
 ---
 
-# 基础概念：
+## 基础概念：
 
- 
-
-***存储转发机制（store-and-forward transmission）***: **交换机能够最开始向输出链路传输该分组的第一个比特之前，必须接受整个分组**。也就是说交换机是以分组为单位进行传输的。
-
- 
-
+### 存储转发机制（store-and-forward transmission）
+交换机能够最开始向输出链路传输该分组的第一个比特之前，必须接受整个分组。也就是说交换机是以分组为单位进行传输的。
 如果由**N条速率均为R的链路组成的路径(一条路劲)**，从源到目的地发送**一个分组**端到端的时延为N*（L/R）如果P个分组进行N条链路序列的时延，从目的地host的角度去想，接受到第一个分组的时候花了N个单位，后来每过一个单位接受一个分组，剩下的有P-1个分组，因为第一个已经接受到了，(N + P-1)*(L/R)
-
- 
-
 一般分组交换机会与多条链路相连，对于每一条链路，分组交换机有一个**输出缓存(output buffer)**存储准备发往那条链路的分组。如果到达的分组发现链路正在忙着传输其他分组，那么就需要在输出缓存中等待。如果达到的分组发现输出缓存已经全部充满，那么达到的分组和已经排队的分组中的一个会被丢弃，**造成丢包(packet lost)**
 
  
 
-### **线路复用方式**
+### 线路复用方式
 
 **频分复用（Frequency division multiplexing,FDM)**
 
@@ -40,24 +33,18 @@ description: 计算机网络基本知识，信息主要来源<计算机网络：
 - 分组交换更加有效的原因，假设用户的使用频率10%，假设一条链路使用电路交换，被分为10条电路，只能服务10个用户；假设使用分组交换，35个用户的情况下，并发处理11个用户之上的概率为0.04%。几乎不会有延迟。或者是某一个用户突发的使用大数据量，其他用户保持缄默，电路交换的效率太低。
 
 **分组交换网络中的时延**
-
 1. 节点处理时延（node processing delay）
 2. 排队时延（queuing delay）
 3. 传输时延（transmission delay）
 4. 传播时延（propagation delay）
 5. 以上相加就是节点总时延（total nodal delay）
-
 **结点处理时延**：检查分组首部，决定出链路；检查差错，微秒或者更低
-
 **排队时延**：毫秒到微秒级别
-
 **传输时延**：分组长度/链路传输速率；将所有分组中的bit推向链路所需的时间
-
 **传播时延**：从链路的起点到终点所需的时间，毫秒级别
-
 比特到达队列的平均速率假设为La，a是一秒内到达队列的分组数，L为分组的平均长度；R为路由器的传输速率R； **La/R 表征流量强度；不能大于1**
 
-### **因特网的协议栈（protocol stack）**
+### 因特网的协议栈（protocol stack)
 
 1. 应用层
 2. 运输层
@@ -66,12 +53,10 @@ description: 计算机网络基本知识，信息主要来源<计算机网络：
 5. 物理层
 
 **应用层**
-
 - 应用层是网络应用程序及它们的应用层协议存留的地方。应用层包括的协议有**HTTP、SMTP、FTP、DNS**等。
 - 应用层协议分布在多个端系统上，一个端系统中的应用程序使用协议与另一个端系统中的应用程序交换信息的分组，位于应用层的信息分组称为**报文（message）**。
 
 **运输层**
-
 - 因特网的运输层在应用程序端点之间传送应用层报文。
 - 因特网中的两个运输协议：**TCP（Transmission Control Protocol）、UDP(User Datagram Protocol)**。
 - TCP协议向它的应用程序提供了**面向连接的服务**，包括应用层报文向目的地的**确保传递**和**流量控制**。TCP将长报文划分为短报文，并提供**拥塞控制机制**，因此当网络拥塞时，源抑制其传输速率。
@@ -79,35 +64,29 @@ description: 计算机网络基本知识，信息主要来源<计算机网络：
   运输层分组称为**报文段（segment）**
 
 **网络层**
-
 - 因特网的网络层负责将称为**数据报（datagram）**的网络层分组从一台主机移动到另一台主机。在一台源主机中的因特网运输层协议（TCP或UDP）向网络层递交运输层报文段和目的地址。
 - 因特网的网络层包括著名的IP协议，该协议定义了在数据包中的各个字段以及端系统和路由器如何作用于这些字段, 仅有一个IP协议，**所有具有网络层的因特网组建必须运行IP协议**。
 - 也包括一些决定路由的路由选择协议，使得数据报根据该路由从源传输到目的地
 
 **链路层**
-
 - 因特网的网络层通过源和目的地之间的一系列路由器路由数据报。
 - 在每个结点，网络层将数据包下传给链路层，链路层沿着路径将数据报传递给下一个结点。在下个结点，链路层将数据报上传给网络层
 - 由链路层提供的服务取决于应用于该链路的特定链路层协议。
 - 链路层的例子包括**以太网、WiFi和电缆接入网的DOCSIS协议**。**链路层分组称为帧（frame）**。
 
 **物理层**
-
 - 物理层的任务是将帧中的一个一个bit从一个结点移动到下一个结点。
 - 物理层的协议与链路相关，并且进一步与该链路（例如双绞铜线、单模光纤）的实际传输媒体相关。
 
 **七层OSI参考模型**
-
 - 七层OSI（开放系统互连）参考模型自顶向下依次为：**应用层，表示层，会话层，运输层，网络层， 链路层和物理层**。对比之下可以发现，OSI模型与因特网协议栈相近，只不过附加了两个层，即**表示层和会话层**。其它五层的功能与因特网协议栈大致相同。
 - 表示层的作用是使通信的应用程序能够解释交换数据的含义。这些服务包括数据压缩和数据加密（它们是自解释的），以及数据描述。
 - 会话层提供了数据交换定界和同步功能，包括了建立检查点和恢复方案的方法。
 - 因特网协议栈缺少的两层服务由应用程序开发者处理。应用程序开发者决定一个服务是否是重要的，如果该服务重要，应用程序开发者就应该在应用程序中构建该功能。
 
- 
-
 **不同层运行的协议：**
 
-![img](https://uploadfiles.nowcoder.com/images/20160716/167350_1468639869580_BE39D6E3949058E712B7CC0700C28AF2)
+![img](/assets/img/resource/computer-network/protocol.png)
 
  
 
@@ -115,39 +94,27 @@ description: 计算机网络基本知识，信息主要来源<计算机网络：
 
 ![img](https://uploadfiles.nowcoder.com/images/20170606/1158385_1496709959449_35352929445D5B453EA3677F7BE8336D)
 
-# **应用层**
+## 应用层
+### 应用层两个主流体系结构
 
- 
-
-### **应用层两个主流体系结构**
-
-1: **Client-server architecture**, 有一个永远打开的主机称为服务器
-
-2: **P2P architecture** 应用程序在间接连接的主机对之间使用直接通信，这些主机对被称为***对等方。***通信不必通过专门的服务器，体系结构被称为对等方到对等方的
+1. Client-server architecture**, 有一个永远打开的主机称为服务器
+2. P2P architecture** 应用程序在间接连接的主机对之间使用直接通信，这些主机对被称为***对等方。***通信不必通过专门的服务器，体系结构被称为对等方到对等方的
 
 **P2P体系结构面临三个挑战：**
-
 1. ISP 友好
 2. 安全性
 3. 激励
 
- 
-
-### **进程通信**
-
+### 进程通信
 不管在client-server 还是p2p结构中，发起通信的进程都被标记为客户，会话开始时等待联系的进程是服务器
-
 进程通过一个**套接字（socket）**接口向网络发送和接受报文, **socket 是同一台主机内应用层于运输层之间的接口，** 因为socket 是可编程的，也被称为**应用程序和网络之间的API**
 
-### **进程寻址**
-
+### 进程寻址
 接收进程需要定义两个信息
-
 1. 主机的地址（IP地址）
 2. 目标主机中的接受进程的标识符，**端口号**用于这个目的，已经给流行的应用分配了特有的端口号
 
 **常见默认端口号：**
-
 - FTP 21
 - SSH 22
 - TELNET 23
@@ -158,10 +125,9 @@ description: 计算机网络基本知识，信息主要来源<计算机网络：
 - HTTPS 443
 - TOMCAT 8080
 
-### **应用层协议（application- layer protocol）**
+### 应用层协议(application- layer protocol)
 
 应用层协议定义了：
-
 1. 交换的报文类型，请求报文还是响应报文
 2. 各种报文的语法
 3. 字段的语义
@@ -170,16 +136,13 @@ description: 计算机网络基本知识，信息主要来源<计算机网络：
 有些应用层协议是公开的例如HTTP，有些是专用的
 
 **HTTP（HyperText Transfer Protocol）基于TCP**
-
 - 由两个程序实现：一个客户程序一个服务器程序
 - 使用**TCP作为它的支撑运输协议**
 - 发送端使用套接口发送HTTP请求报文，接受HTTP响应报文，接收端使用套接口接受请求报文，发送响应报文
 - HTTP并不存储关于用户的任何信息，所以说**HTTP是无状态协议（stateless protocol）**
 
-### **HTTP 报文格式**
-
-**请求报文**
-
+**HTTP 报文格式**
+请求报文
 e.g.
 
 > *GET \*/somedir/page.html\* HTTP/1.1* 
@@ -192,10 +155,9 @@ e.g.
 >
 > *Accept-language*: *fr*
 
- 第一行请求行，剩余的叫做首部行； 三个字段： 方法字段、URL字段、HTTP版本字段；方法字段包含**GET,POST,HEAD,PUT,DELETE**
+第一行请求行，剩余的叫做首部行； 三个字段： 方法字段、URL字段、HTTP版本字段；方法字段包含**GET,POST,HEAD,PUT,DELETE**
 
 首部行
-
 - Host指明了对象所在的主机。（这是Web代理高速缓存所要求的）；
 - Connection：close表示浏览器要求服务器在发送完被请求的对象后就关闭该链接，keep-alive则是使用持续连接；
 - User-agent指明向服务器发送请求的浏览器的类型；
@@ -203,7 +165,7 @@ e.g.
 
 请求报文的通用格式：
 
-![20180401175015211](http://www.jiangwq.com/wp-content/uploads/2019/07/20180401175015211.png)
+![20180401175015211](/assets/img/resource/computer-network/request-post-application.png)
 
 其中entity body 在get方法中为空，用表单生成的请求使用POST方法，就要用到实体主体，包含一些必要的信息，例如搜索引擎的关键词；
 
@@ -238,7 +200,7 @@ e.g.
 
 响应报文的通用格式
 
-![20180401184007563](http://www.jiangwq.com/wp-content/uploads/2019/07/20180401184007563.jpg)
+![20180401184007563](/assets/img/resource/computer-network/response-post-application.jpg)
 
 **常用的状态码：**
 
@@ -253,7 +215,7 @@ e.g.
 - 505 HTTP Version Not Support不支持HTTP协议版本
 - 4xx 客户端错误，5xx服务器端错误
 
-**Cookie**
+### Cookie
 
 HTTP 服务器是stateless的，但是web站点通常是希望识别用户的，于是HTTP使用了cookie
 
@@ -264,7 +226,7 @@ cookie技术的四个组件
 3. 用户客户端保留一个cookie文件
 4. 位于web站点的一个后端数据库
 
-### **Web Cache,代理服务器（proxy server）**
+### Web Cache,代理服务器（proxy server）
 
 - web缓冲有自己的磁盘存储空间，保存最近请求的对象的副本
 - 代理服务器相当于在初始服务器和客户之间做一个“代理”，如果代理服务器中没有请求的内容，则向初始服务器请求，并在接受时保存一个副本，并响应给客户
@@ -275,7 +237,7 @@ cookie技术的四个组件
 2. 大大减少一个结构的接入链路到因特网的通信量，不必着急增加带宽，减少费用
 3. 存在缓冲服务器上的版本可能是陈旧的，可以通过**条件GET方法**确保版本最新
 
-### **条件GET方法**
+**条件GET方法**
 
 1. 在客户第一次像初始服务器请求报文，报文经过代理服务器，代理服务器向初始服务器发送请求报文
 2. 初始服务器向缓冲服务器发送带有请求的对象的响应报文
@@ -286,9 +248,9 @@ cookie技术的四个组件
 
  
 
-![WeChat Screenshot_20190704184330](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190704184330.png)
+![WeChat Screenshot_20190704184330](/assets/img/resource/computer-network/proxy-server.png)
 
-### **FTP 文件传输协议（基于TCP）**
+### FTP 文件传输协议（基于TCP）
 
 用户通过一个FTP用户代理与FTP交互（PUTTY，XSHELL）该用户首先提供远程主机的主机名，使本地主机的FTP客户进程创建一个到远程主机FTP服务器进程的**TCP连接**。该用户提供用户标识和口令，作为FTP命令的一部分在TCP连接上传送。一旦通过授权，就可以从远程服务器处传送或者接受文件
 
@@ -303,7 +265,7 @@ FTP协议首先建立一个客户到服务器的*控制TCP连接*，**当接收�
 - 由于FTP使用另一个TCP连接专门负责控制信息，所以FTP的控制信息是out-of-band传送的；HTTP 是带内传送控制信息的
 - FTP 需要维护用户的状态是有state的，因为需要知道用户当前的浏览目录等信息，所有限制了同时维持的会话数，**HTTP是stateless的，有更大的同时会话数**
 
-### **DNS 因特网的目录服务（Domain Name System）**
+### DNS 因特网的目录服务（Domain Name System）
 
 **基于UDP**
 
@@ -316,7 +278,7 @@ DNS协议运行在**UDP**之上，使用**53号端口**
 
 一个使用例子：
 
-![WeChat Screenshot_20190704193523](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190704193523.png)
+![WeChat Screenshot_20190704193523](/assets/img/resource/computer-network/DNS.png)
 
 相当于在正常HTTP请求之前加上了一段域名到IP的转换，**引入了额外的时延**
 
@@ -336,11 +298,11 @@ DNS同时提供以下服务：
 2. Top-Level Domain ,TLD
 3. 权威DNS服务器
 
-![WeChat Screenshot_20190704212045](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190704212045.png)
+![DNS-SERVER](/assets/img/resource/computer-network/DNS-SERVER.png)
 
-![WeChat Screenshot_20190704203652](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190704203652.png)
+![DNS-SERVER](/assets/img/resource/computer-network/DNS-SERVER1.png)
 
-![WeChat Screenshot_20190704203704](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190704203704.png)
+![DNS-SERVER](/assets/img/resource/computer-network/DNS-SERVER2.png)
 
 DNS大量使用**DNS缓存**
 
@@ -360,11 +322,11 @@ DNS 记录和报文
 - Type = CNAME value 是别名为Name的主机对应的规范主机名，提供一个主机别名对应的规范主机名
 - Type = MX Value 是个别名为Name的邮箱服务器的规范主机名
 
-### **P2P应用**
+
+
+### P2P应用
 
 参见计算机网络：自顶而下方法97-102
-
- 
 
 分布式散列表
 
@@ -372,21 +334,19 @@ DNS 记录和报文
 
 每个对等方用一个特别的键来查询该分布式数据库，分布式数据库定位拥有该相应键值对的对等方，向查询方返回键值对，任何对等方也将允许在数据库中插入新键值对
 
-### **UDP /TCP编程实现**
+
+
+### UDP /TCP编程实现
 
 github：https://github.com/JIANGWQ2017/Computer-Networking
 
- 
+![TCP](/assets/img/resource/computer-network/TCP.png)
 
-![WeChat Screenshot_20190705101156](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190705101156.png)
+![tcp2](/assets/img/resource/computer-network/tcp2.png)
 
-![WeChat Screenshot_20190705102321](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190705102321.png)
 
-# 
 
-# **运输层**
-
- 
+## 运输层
 
 运输层协议为运行在不同的主机上的应用进程之间提供**逻辑通信（logic communication），**并不是物理通信
 
@@ -399,7 +359,7 @@ github：https://github.com/JIANGWQ2017/Computer-Networking
 
 **运输层协议实现在端系统中**，而不是路由器中**，网络层是实现了\*主机\*之间的逻辑通信**，而运输层是运行在不同的主机上的应用进程之间提供逻辑通信；区别在于网络层负责信息从主机到另一个主机，运输层负责信息到达主机之后到进程的分发，因为运输层只实现在端系统中。把主机间交付扩展到进程间交付被称为**运输层的多路复用（Transport-layer multiplexing）和多路分解（demultiplexing）**
 
-![WeChat Screenshot_20190705204934](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190705204934.png)
+![WeChat Screenshot_20190705204934](/assets/img/resource/computer-network/WeChat-Screenshot_20190705204934.png)
 
 下面详细讲解上图就可以完全了解多路分解和多路复用的概念，以及运输层和网络层的异同；
 
@@ -445,15 +405,15 @@ github：https://github.com/JIANGWQ2017/Computer-Networking
 4. **流量控制**：当接收方来不及处理发送方的数据，能提示发送方降低发送的速率，**接收发送效率匹配**，防止包丢失。
 5. **拥塞控制**，降低速率，降低丢包率
 
-### **无连接运输UDP：**
+### 无连接运输UDP：
 
 UDP是一个轻量级的协议，对于IP，除了增加复用/分解功能，和少量差错检测外，基本不增加别的东西。所以选择UDP，则开发者基本都只和IP打交道。使用UDP发送报文之间，接收方和发送方是没有握手的，所以称为无连接运输，发送方发送报文之后，等待接收方响应，接受方这时有可能响应失败或者其他情况，使得发送方无响应。
 
-![WeChat Screenshot_20190705232028](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190705232028.png)
+![WeChat Screenshot_20190705232028](/assets/img/resource/computer-network/WeChat-Screenshot_20190705232028.png)
 
 UDP的报文段结构
 
-![WeChat Screenshot_20190705233755](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190705233755.png)
+![WeChat Screenshot_20190705233755](/assets/img/resource/computer-network/udp.png)
 
 UDP首部只有4个字段，每个字段两个字节；长度指明UDP报文字节数（包含首部）
 
@@ -467,15 +427,17 @@ TCP是面向连接的（connection-oriented）,**TCP 协议只在运输层中实
 
 发送端和接收端首先通过三次握手， 建立TCP连接，前两次握手不承载“有效载荷”，第三次握手承载“有效载荷”，TCP从套接字中接收到应用层发来的数据，引导这些数据进入发送缓存（send buffer），然后TCP时不时的从缓存中提取数据，TCP从缓存中提取数据放入报文段的大小受最大报文段长度的限制（Maximum,Segment Size,指的是报文段中应用层数据的最大长度，不包含首部段）TCP为每个客户数据配上一个TCP首部，从而形成多个TCP报文段（TCP segment），
 
-![WeChat Screenshot_20190706151447](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190706151447.png)
+![WeChat Screenshot_20190706151447](/assets/img/resource/computer-network/transport-tcp.png)
 
-![WeChat Screenshot_20190706151547](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190706151547.png)
+![WeChat Screenshot_20190706151547](/assets/img/resource/computer-network/transport-tcp2.png)
 
 TCP报文段的首部字段详细解释，不需要太了解。大概看一下就好。
 
 TCP协议在IP不可靠的经历而为的服务上，创建了一种可靠数据传输服务，TCP的可靠数据传输服务是保证一个进程从接收缓存中提取的数据流是无损坏，无间隔，非冗余和按序的数据流
 
-### **三次握手**
+
+
+### 三次握手
 
 **第一步**： client的TCP首先像服务器的TCP发送一个特殊的TCP报文段，报文段中不包含应用层数据，报文段首部中的一个标志位SYN比特会置位1，故该特殊报文段被称为SYN报文段，另外client会随机选择一个初始序号，并放置于该起始的TCP SYN报文段的序号字段中。
 
@@ -489,7 +451,7 @@ TCP协议在IP不可靠的经历而为的服务上，创建了一种可靠数据
 
 **防止服务器端因为接收到了早已失效的连接请求报文**，从而一直等待客户端请求，而且服务器端一直保留该TCP连接的缓存和资源，可是服务器端早已经觉得该TCP连接过期，不会发送数据，最终导致**形成死锁，浪费资源。**
 
-![img](https://img-blog.csdn.net/20150510153905472)
+![img](/assets/img/resource/computer-network/three-handshake.jpg)
 
 **connect(),listen(),accept() 函数**
 
@@ -503,15 +465,13 @@ accept()系统调用主要用在基于连接的套接字类型，比如SOCK_STRE
 
 备注：新建立的套接字准备发送send()和接收数据recv()。
 
-![WeChat Screenshot_20190706161308](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190706161308.png)
+![WeChat Screenshot_20190706161308](/assets/img/resource/computer-network/tcp-handshake.png)
 
 ### **四次挥手-TCP连接的终止**
 
- 
+![944365-91b079843a9e8235](/assets/img/resource/computer-network/4handshake.png)
 
-![944365-91b079843a9e8235](http://www.jiangwq.com/wp-content/uploads/2019/07/944365-91b079843a9e8235.png)
-
-![WeChat Screenshot_20190706162546](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190706162546.png)
+![WeChat Screenshot_20190706162546](/assets/img/resource/computer-network/4handshake2.png)
 
 **为什么需要四次挥手？**
 
@@ -535,13 +495,13 @@ accept()系统调用主要用在基于连接的套接字类型，比如SOCK_STRE
 
 服务器接收到请求报文，在该TCP连接上发送HTML文件
 
-![WeChat Screenshot_20190704161336](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190704161336.png)
+![WeChat Screenshot_20190704161336](/assets/img/resource/computer-network/tcp-timedelay.png)
 
 粗略的说总得响应时间就是两个RTT（round-trip time），一个RTT用来创建TCP 连接，一个RTT用来传送数据，加上传送HTML文件的时间
 
-# 
 
-# **网络层**
+
+# 网络层
 
 网络层的作用很简单，即将分组从一台发送主机移动到一台接收主机。需要两种重要的网络层功能：
 
@@ -553,7 +513,7 @@ accept()系统调用主要用在基于连接的套接字类型，比如SOCK_STRE
 
 因特网网络层提供**单一**的服务，称为***尽力而为服务（best-effort service）***,其实等同于无服务，没有丢包保证，没有有序保证，没有定时保证，没有拥塞控制，没有带宽保证
 
-### **网际协议（IP protocol）**
+### 网际协议（IP protocol）
 
 因特网的网络层有三个主要组件
 
@@ -563,7 +523,7 @@ accept()系统调用主要用在基于连接的套接字类型，比如SOCK_STRE
 
 网络层分组被称为*数据报，*IPv4数据报格式如下
 
-![WeChat Screenshot_20190706203328](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190706203328.png)
+![WeChat Screenshot_20190706203328](/assets/img/resource/computer-network/ipv4-post.png)
 
 **IP数据报分片**
 
@@ -583,7 +543,7 @@ C类地址：**192**.0.0.0 ~ 223.255.255.255
 D类地址：**224**.0.0.0 ~ 239.255.255.255
 E类地址：**240**.0.0.0 ~ 247.255.255.255
 
-![WeChat Screenshot_20190706213123](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190706213123.png)
+![WeChat Screenshot_20190706213123](/assets/img/resource/computer-network/ip-addressing.png)
 
 互联这三个主机接口和1个路由器接口的网络形成一个**子网（sub-net）**IP编址为每个子网分配一个地址：223.1.1.0/24 有时称为**子网掩码，** /24用于指示前24比特定义了子网地址,数字可以不为24.
 
@@ -593,29 +553,29 @@ E类地址：**240**.0.0.0 ~ 247.255.255.255
 
 **网络地址转换**
 
-![WeChat Screenshot_20190706233446](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190706233446.png)
+![WeChat Screenshot_20190706233446](/assets/img/resource/computer-network/ip-address-transform.png)
 
-![WeChat Screenshot_20190706233505](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190706233505.png)
+![WeChat Screenshot_20190706233505](/assets/img/resource/computer-network/WeChat-Screenshot_20190706233505.png)
 
-![WeChat Screenshot_20190706233514](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190706233514.png)
+![WeChat Screenshot_20190706233514](/assets/img/resource/computer-network/ip-address-transform3.png)
 
 **IPv6编址**
 
 IPv6的数据报文
 
-![WeChat Screenshot_20190707132314](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190707132314.png)
+![ipv6-post](/assets/img/resource/computer-network/ipv6-post.png)
 
 - 扩大的地址容量： 地址长度从32比特增加到128比特，128比特够地球上的每个沙粒都分配一个IP地址，除了**多播地址（点对子集）**和**单播地址(点对点)**以外，IPv6新增**任播地址**（anycast address）使得数据报交付给一组主机中的任何一个
 - 简化高效的40字节首部
 - 流标签和优先级，给特殊的流打上标签，这些特殊流可能是发送方要求特殊处理的
 
-### **因特网控制报文协议（ICMP）**
+### 因特网控制报文协议（ICMP）
 
 ICMP其实在体系结构上是位于IP之上的，ICMP报文作为IP有效载荷承载的，就像TCP和UDP报文段作为有效承载一样，主机接收到IP报文，会把分解出的数据报的内容交给ICMP，如果收一个指明上层协议是ICMP的话，就和分解数据报交给UDP,ICP一样。当发生主机不可达，或者其他不可达情况，ICMP协议负责把情况封包，传送回主机
 
-![WeChat Screenshot_20190707001105](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190707001105.png)
+![WeChat Screenshot_20190707001105](/assets/img/resource/computer-network/icmp.png)
 
-### **路由选择算法（单播）**
+### 路由选择算法（单播）
 
 路由选择的工作是：确定从发送方到接收方通过路由器网络的好路径，通常一条好路径是指的是cost低的路径
 
@@ -636,7 +596,7 @@ ICMP其实在体系结构上是位于IP之上的，ICMP报文作为IP有效载�
 - 负载敏感，链路费用动态反应链路的拥塞程度
 - 负载迟钝
 
-### **广播路由选择算法**
+### 广播路由选择算法
 
 源节点产生分组的N分副本，并用单播路由选择向N个目的地传输N分副本称为**N次单播**，这样效率很低，多个副本可能通过同一链路传播，不如让中间路由节点在需要的时候才产生副本，而不是一开始就产生然后传输很多遍，由于N次单播的种种缺点，让网络参与分组复制，转发就很自然的想到
 
@@ -649,9 +609,9 @@ ICMP其实在体系结构上是位于IP之上的，ICMP报文作为IP有效载�
 
 使用**间接寻址（address indirection）,** 用一个标志来表示一组接受方，寻址到该组的分组副本被交付给所有与该组相关联的多播接收方。一组接受方的单一表示就是一个D类多播地址，于D类地址相关联的接收方小组称为一个多播组（multicast group）
 
-# 
 
-# **链路层**
+
+# 链路层
 
 任一链路层的基本服务都是将数据报通过单一通信链路从一个结点移动到相邻结点，链路层**可能提供的服务**
 
@@ -681,9 +641,9 @@ ICMP其实在体系结构上是位于IP之上的，ICMP报文作为IP有效载�
 
  
 
-![WeChat Screenshot_20190707164919](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190707164919.png)
+![WeChat Screenshot_20190707164919](/assets/img/resource/computer-network/WeChat-Screenshot_20190707164919.png)
 
-![WeChat Screenshot_20190707164930](http://www.jiangwq.com/wp-content/uploads/2019/07/WeChat-Screenshot_20190707164930.png)
+![WeChat Screenshot_20190707164930](/assets/img/resource/computer-network/WeChat-Screenshot_20190707164930.png)
 
 首先考虑在局域网中传送数据报的情况，图5-17 主机C发送数据报到主机A，主机C要向网络适配器不仅提供IP数据还要提供A的MAC地址，链路层把网络层数据报IP封装，**构造一个包含目的地MAC地址的链路层帧。**主机C怎么知道主机A的MAC地址呢，就通过ARP协议，提供相同局域网上任何IP地址作为输入，返回相应的MAC地址，类似DNS提供的服务，每台主机或路由器在其内存中具有一个ARP table，类似key-value pair
 
