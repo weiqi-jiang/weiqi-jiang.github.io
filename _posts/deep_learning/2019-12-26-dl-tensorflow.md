@@ -8,6 +8,52 @@ description: TensorFlow 用法
 
 
 
+## 安装
+
+Tensorflow的安装...一言难尽，坑真的多
+
+**情况一：python3.7 + tensorflow2.1.0**(lastest)
+
+Error:  msvcp140.dll丢失
+
+Solution:  
+
+下载   [Microsoft Visual C++ 2015 Redistributable Package](https://www.microsoft.com/en-us/download/details.aspx?id=48145) ,  本人下载完之后安装报错，原因是有更高级版本，不允许安装低级版本。而且检查了系统路径下是存在目标dll文件的。推测是版本问题
+
+**情况二：python3.6.8 + tensor2.1.0**(lastest)
+
+Error：如果直接用pip install tensorflow 报错，原因是找不到合适的tensorflow版本
+
+Solution：手动找到[tensorflow2.1.0](https://pypi.org/project/tensorflow/#modal-close) 64位python3.6版本, 安装成功，但是当import tensorflow 的时候会报错
+
+ImportError: DLL load failed: 找不到指定的模块；Failed to load the native TensorFlow runtime.
+
+**情况三：python3.6.8 + tensor1.4 + keras（latest）**
+
+Error：安装成功，可以正常import，但是在pip install keras之后 如果import keras，会报ImportError: cannot import name 'tf_utils'错误
+
+Solution：tensorflow 和keras的兼容问题，把keras版本降低至2.0.8解决
+
+[tensorflow，keras，python版本对照表](https://docs.floydhub.com/guides/environments/)
+
+### 可能用到的指令
+
+```
+# 安装制定版本的tensorflow
+pip uninstall tensorflow
+pip install tensorflow==1.7.0
+# 升级pip
+python -m pip install --upgrade pip
+# 查看已经安装的module
+pip list
+# 搜索module
+pip search tensorflow
+```
+
+
+
+
+
 ## 背景知识
 
 ### 理论

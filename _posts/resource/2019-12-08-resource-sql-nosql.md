@@ -188,7 +188,7 @@ full join: 只要出现过的key都算
 
 hive中没有left outer join，right outer join 语句实现left outer join, right outer join
 
-```mysql
+```
 SELECT a.col , b.col FROM a LEFT JOIN b WHERE b.key IS NULL
 SELECT a.col , b.col FROM a RIGHT JOIN b WHERE a.key IS NULL
 ```

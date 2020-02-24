@@ -87,6 +87,24 @@ a>c => False
 
 
 
+## Numpy
+
+### reshape(-1,1); reshape(1,-1)
+
+```python
+>>> a = np.array([[1],[2],[3]])
+>>> a.reshape(-1,1)
+array([[1],
+       [2],
+       [3]])
+>>> a.reshape(1,-1)
+array([[1, 2, 3]])
+```
+
+
+
+
+
 ## 变量赋值引用
 ```
 res = []
@@ -197,7 +215,14 @@ for root, dirs, files in os.walk(file_dir):
 
 ```
 
- 
+## 引用上一级module
+
+需要把上一级module 的地址加入到系统路径中才能正常引用
+
+```python
+import sys
+sys.path.append('..')
+```
 
 ## __new__ 和__init__的关系
 
@@ -271,7 +296,7 @@ reference：https://www.cnblogs.com/jessonluo/p/4717140.html
 
  
 
-## **杂七杂八：**
+## 杂七杂八
 
 - str.endswith(suff, start, end) start 与 end为可选参数，默认为0和str的长度
 - python2 math.floor(5.5) 返回5.0 python3 math。floor(5.5) 返回5

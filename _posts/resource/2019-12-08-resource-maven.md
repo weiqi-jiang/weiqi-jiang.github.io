@@ -27,7 +27,8 @@ pom.xml （project object model）
 
 ### 常用cmd
 
-``` mvn clean package 清除之前的包重新打包
+``` 
+mvn clean package #清除之前的包重新打包
 mvn clean #删除target 文件夹
 mvn package #生成jar包
 mvn compile #编译源代码
