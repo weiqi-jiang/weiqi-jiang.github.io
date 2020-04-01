@@ -36,18 +36,37 @@ Solution：tensorflow 和keras的兼容问题，把keras版本降低至2.0.8解�
 
 [tensorflow，keras，python版本对照表](https://docs.floydhub.com/guides/environments/)
 
+----------------------------------------2020.3.30更新---------------------------------------------
+
+发现新坑，如果本机上有多个python, 例如anaconda一个python，自己另外安装了一个python，pip install xxx的时候容易出错，版本对不上，需要先确定默认的python和pip版本，然后在安装，不容易出错
+
+
+
 ### 可能用到的指令
 
 ```
-# 安装制定版本的tensorflow
+# 卸载tensorflow
 pip uninstall tensorflow
+
+# 安装指定版本的tensorflow
 pip install tensorflow==1.7.0
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow-gpu==1.4.0
+
 # 升级pip
 python -m pip install --upgrade pip
+
 # 查看已经安装的module
 pip list
+
 # 搜索module
 pip search tensorflow
+
+# 查看默认的python和pip
+# 修改默认python 和pip的方法很简单，在环境变量中修改路径的前后顺序就可以，默认版本的路径前提，非默认版本后放
+which python
+where python
+which pip
+where pip
 ```
 
 
