@@ -3,7 +3,7 @@ layer: post
 title: 记账系统设计
 category: Life
 tags: 记账
-description： 记账系统设计和代码流程
+description: 记账系统设计和代码流程
 ---
 
 ## 初衷
