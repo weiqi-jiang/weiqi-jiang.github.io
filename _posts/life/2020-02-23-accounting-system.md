@@ -25,6 +25,10 @@ description: 记账系统设计和代码流程
 ## 实现思路
 
 1. 由于记账工具主要为个人使用，实用性要求比美观性更强，使用tkinter包简单实现就好，如果后续有美观的要求再进行优化也不迟。
+   \-------------------------------------------------分割线----------------------------------------------------------------
+
+   在开发过程中，发现tkinter的界面实在有点简陋，不能忍，果断选择pyqt
+
 2. 分为账户总额，支付宝总额，微信总额，股票证券总额，银行卡总额，现金总额，其他总额
 
 
@@ -41,7 +45,7 @@ reference：
 
 
 
-## SQL Server 使用
+## SQL Server 语法
 
 sql server和hive， mysql等语法有些许区别，在此记录一下用到过得指令
 
@@ -51,11 +55,10 @@ select top 1 * from table where conditions
 
 # 插入数据 insert data
 insert into table[(fea1,fea2,fea3)] values(val1,val2,val3)
+
+# 更新数据
+update tablename set col=1, col=2 where conditions
 ```
-
-
-
-
 
 
 
@@ -119,9 +122,9 @@ connect.close()
 
 
 
+## GUI设计
 
-
-## Tkinter包使用
+### Tkinter包使用
 
 Reference: [python 图形化界面设计](https://www.jianshu.com/p/91844c5bca78)
 
@@ -142,6 +145,7 @@ x=x, y=x, width=w, height=h 绝对像素值
 
 
 from tkinter import *
+from tkinter import ttk
 # 创建根窗体实例
 root = Tk()
 # 窗口名称
@@ -156,8 +160,26 @@ en = Entry(root)
 en.place(relx=rx, rely=ry, relwidth=rw, relheight=rh, x=x, y=x, width=w, height=h)
 
 # 按钮，最主要的参数是command，按下之后调用的函数
-btn = Button(rrot, text='xxx', command=lambda: func())
+btn = Button(root, text='xxx', command=lambda: func())
 btn.pack()
+
+# 下拉框 在ttk中，需要额外import, textvarible 需要提前定义
+var = Stringvar()
+bb = ttk.Combobox(root, textvarible = var, values=['v1','v2','v3'])
+# 设置默认值， 把values index为0的值设置成默认值
+# 一个很尴尬的地方，如果在函数中创建控件，设置默认值不会显示，只有把控件实例返回，在函数体外设置默认值
+bb.current(0)
+
+# 弹窗
+import tkinter.messagebox
+tkinter.messagebox.showinfo('title','info')
+tkinter.messagebox.showwarning('title','warning')
+tkinter.messagebox.showerror('title','error')
+
+# 子窗口, 后续控件只需要指定窗口为top即可
+top = tkinter.Toplever()
+top.title('child window')
+
 
 # 主循环
 root.mainloop()
