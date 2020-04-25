@@ -151,6 +151,7 @@ dir 返回对象拥有的所有方法和属性, dict 查看属性名和属性值
 ```python
 hasattr(obj, name)# 属性和方法都属于attr，返回True false， 无法分清属性还是方法
 getattr(obj, name[, default]) # 返回属性值， 或者方法信息，如果属性或方法不存在对象中，返回default，如果没有指定默认值，抛出AttributeError
+setattr(obj, name, value)
 ```
 
 
