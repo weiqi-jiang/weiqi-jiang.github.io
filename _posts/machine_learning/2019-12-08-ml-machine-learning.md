@@ -6,6 +6,18 @@ tags: Machine Learning
 description: machine learning
 ---
 
+<head>
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+            inlineMath: [['$','$']]
+            }
+        });
+    </script>
+</head>
+
 ## 1 背景知识
 
 此部分主要是一些通用的背景知识，不局限于机器学习领域，在其他领域也有广泛应用。
