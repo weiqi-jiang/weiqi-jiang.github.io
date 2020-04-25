@@ -49,7 +49,7 @@ P(A\|B)为后验概率， 发生某个事件的情况下，参数为A的概率�
 
 f(x0,θ)=(1−θ)×θ×θ×θ×θ×(1−θ)×θ×θ×θ×(1−θ)=θ^7(1−θ)^3=f(θ) , 此时如果画出似然函数的图像可以看出θ为0.7左右的时候似然函数概率最大，在该事件发生的情况下，用最大似然估计的方法估计出的正面向上的概率值是0.7。但是这仅仅根据一次投掷结果就推测实在有点武断，需要引入先验概率，也就是最大后验概率估计。
 
-![](C:\Users\Jiang\Documents\GitHub\weiqi-jiang.github.io\assets\img\ML\one-stop-machine-learning\MLE.png)
+![](/assets/img/ML/one-stop-machine-learning/MLE.png)
 
 #### 最大后验概率估计(MAP)
 
