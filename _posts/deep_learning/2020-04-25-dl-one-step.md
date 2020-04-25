@@ -6,11 +6,11 @@ tags: deep learning
 description: basic knowledges among deep learning field
 ---
 
-## 基础知识
+## 1 基础知识
 
 此部分涉及到的知识有一定的理解门槛，如果基础知识有遗忘或者掌握不牢，参见一站式机器学习前部背景知识部分，此文不再重复。
 
-### 常见损失函数
+### 1.1 常见损失函数
 
 ![loss-func](/assets/img/deeplearning/one-stop/loss-func.png)
 
@@ -33,14 +33,17 @@ description: basic knowledges among deep learning field
 **条件熵**
 
 两个随机变量x,y的联合熵
+
 $$
 H(x,y) = -P(x,y)logP(x,y)
 $$
+
 在x发生的条件下，y带来的新的熵称为x的条件熵H(Y|X) 衡量已知随机变量x的情况，y的不确定性H(Y|X) = H(X, Y) - H(X)
 
 ![img](https://uploadfiles.nowcoder.com/images/20190315/311436_1552628862555_DBA6F761056A8FA361E96F7E44D51F7B)
 
 **互信息**
+
 $$
 I(x,y) = \sum p(x,y)log^{\frac {p(x,y)}{p(x)p(y)}}
 $$
@@ -48,6 +51,7 @@ $$
 I(X,Y)=D(P(X,Y)||P(X)P(Y))
 
 **交叉熵**
+
 $$
 L = -[ylog\hat{y} + (1-y)log(1-\hat{y})]
 $$
@@ -57,11 +61,13 @@ $$
 $$
 L = -log\hat{y}
 $$
+
 当y = 0
 
 $$
 L = -log(1-\hat{y})
 $$
+
 两者的函数图像都是接近正确分类时，损失函数越小，而且隔得越远，交叉熵越大
 
 注意：**一般用神经网络解决多分类问题，会在输出层设置和类别数量一致的节点数，交叉熵衡量的是两个概率分布之间的相似度，label是概率分布，但是神经网络的输出不是概率分布，需要用softmax把神经网络的输出映射到概率分布**
@@ -80,13 +86,11 @@ $$
 
 **Reference：**
 
- https://zhuanlan.zhihu.com/p/38241764
+[简单的交叉熵损失函数，你真的懂了吗？](https://zhuanlan.zhihu.com/p/38241764)
 
-https://blog.csdn.net/tsyccnh/article/details/79163834
+[一文搞懂交叉熵在机器学习中的使用，透彻理解交叉熵背后的直觉](https://blog.csdn.net/tsyccnh/article/details/79163834)
 
-
-
-### 常见激活函数的比较
+### 1.2 常见激活函数
 
 激活函数的发展过程：Sigmoid -> Tanh -> ReLU -> Leaky ReLU -> MaxOut
 
@@ -149,6 +153,7 @@ ReLU单元比较脆弱并且可能“死掉”，而且是不可逆的，因此�
 3. 输入小于0时权重值是超参数
 
 **MaxOut**
+
 $$
 Maxout(x) = max(w_1^T + b_1, w_2^T + b_2)
 $$
@@ -166,6 +171,7 @@ _softmax一般只作为多分类的模型的最后一层的激活函数_，一�
 $$
 Loss = -\sum_iy_ilna_i
 $$
+
 在多分类问题中，N长的label向量其中只有1个1其他全都为0，所以交叉熵中的求和可以忽略掉
 
 ![softmax-hand1](/assets/img/deeplearning/one-stop/softmax-hand1.jpg)
@@ -180,11 +186,9 @@ $$
 
 [常见激活函数的比较](https://zhuanlan.zhihu.com/p/32610035)
 
-[softmax](https://zhuanlan.zhihu.com/p/25723112)
+[详解softmax函数以及相关求导过程](https://zhuanlan.zhihu.com/p/25723112)
 
-
-
-### 梯度爆炸/消失
+### 1.3 梯度爆炸/消失
 
 梯度爆炸和梯度消失在某种程度上其实是一回事，在BP过程中，如果激活函数的梯度大于1，那么经过链式求导法则之后，梯度值会以指数形式增加，发生梯度爆炸，反之会以指数形式缩小，发生梯度消失。
 
@@ -198,9 +202,7 @@ sigmoid函数的梯度随着x的增大或减小和消失，而ReLU不会。
 
 通过规范化操作将输出信号x规范化到均值为0，方差为1保证网络的稳定性。从上述分析分可以看到，反向传播式子中有w的存在，所以w的大小影响了梯度的消失和爆炸，Batch Normalization 就是通过对每一层的输出规范为均值和方差一致的方法，消除了w带来的放大缩小的影响，进而解决梯度消失和爆炸的问题。
 
-
-
-### 为什么神经网络中会使用交叉熵作为损失函数？
+### 1.4 为什么神经网络中使用交叉熵作为损失函数？
 
 **特别注意，这里是说最后输出层的损失函数和激活函数**
 
@@ -213,31 +215,42 @@ sigmoid函数的梯度随着x的增大或减小和消失，而ReLU不会。
 $$
 loss = 0.5*(y-a)^2
 $$
+
 a是激活函数的输出结果，如果是sigmoid 
+
 $$
 a = sigmoid(z)
 $$
+
 其中
+
 $$
 z = w*x +b
 $$
+
 loss 对w求偏导,链式求导法则可知。 
+
 $$
 loss^, = (a-y)a * (1-a)*x
 $$
+
 **这其中(a-y)是损失函数导数，a\*(1-a)是激活函数的导数，x是线性函数的导数**，最大值才0.25,当label = 0 predict 接近1 或者label = 1,predict 接近0 的时候，sigmoid的导数值都很小，导致更新很慢，假设一种情况，初始化的时候很极端，正样本的预测值都很接近0，负样本的预测值都很接近1，这种情况下应该是非常错误的，应该马上大跨步的更新权重，但是如果是均方差loss func 并且采用sigmoid，梯度更新很慢。如果采用交叉熵作为损失函数，上面的loss对w求偏导只需要改一下loss函数的导数即可, 交叉熵的导数是
+
 $$
 crossentropy^, = (a-y)/a(1-a)
 $$
+
 和 sigmoid的导数相乘正好消除掉分母的影响，loss 对w的导数变成，这个时候predict 和label的差越大，梯度更新越快（起码最后一层的梯度更新快）
+
 $$
 (a-y)*x
 $$
-Reference
 
-http://heloowird.com/2017/03/08/diff_errors_of_neural_network/
+**Reference**
 
-### 输出层的损失函数和激活函数选择
+[使用神经网络解决分类问题时，为什么交叉熵误差更好](http://heloowird.com/2017/03/08/diff_errors_of_neural_network/)
+
+### 1.5 输出层的损失函数和激活函数选择
 
 二分类： sigmoid+交叉熵
 
@@ -247,9 +260,9 @@ http://heloowird.com/2017/03/08/diff_errors_of_neural_network/
 
 **输出层的激活函数是按照任务来定的，二分类就是sigmoid，多分类是softmax，回归是线性激活函数**，但是在hidden layer中，为了抑制梯度消失，一般采用Relu。当sigmoid/softmax作为最后一层激活函数的时候为了让最后一层也可以加速梯度更新，抑制梯度消失，一般使用交叉熵作为损失函数。
 
-### Batch Normalization
+### 1.6 Batch Normalization
 
-#### 为什么想要去做BN？
+**为什么想要去做BN？**
 
 神经网络，特别是深度神经网络，随着梯度更新，各层权重w的值会增大，深层的网络激活函数输出已经到了饱和区（使用饱和激活函数例如sigmoid），浅层的梯度更新缓慢；称为Internal Covariate Shift(ICS)问题
 
@@ -261,7 +274,7 @@ http://heloowird.com/2017/03/08/diff_errors_of_neural_network/
 
 BN层就是从第二个角度出发的。
 
-#### 算法思路
+**算法思路**
 
 首先要说的是Batch Normalization是基于Mini Batch的，并且作用于激活函数之前
 
@@ -270,6 +283,7 @@ BN层就是从第二个角度出发的。
 $$
 \hat{Z_j} = \frac{Z_j - \mu_j}{\sqrt{\sigma_j^2 + \epsilon}}
 $$
+
 这样处理之后，激活函数的输入是均值为0，方差为1的N个特征值；缓解了梯度饱和的问题，使得输入落在激活函数的敏感区间，**可是这样带来了一个更大的问题，经过normalization后的数据的表达能力下降**，为什么？因为均值为0，方差为1 的输入会落在sigmoid函数的0值附近，**进入了非线性激活函数的线性区域，丧失了非线性的表达能力**
 
 因此，BN又引入了两个**可学习（learnable）的参数 ![[公式]](https://www.zhihu.com/equation?tex=%5Cgamma) 与 ![[公式]](https://www.zhihu.com/equation?tex=%5Cbeta)** 。这两个参数的引入是为了恢复数据本身的表达能力，对规范化后的数据进行线性变换，即 ![[公式]](https://www.zhihu.com/equation?tex=%5Ctilde%7BZ_j%7D%3D%5Cgamma_j+%5Chat%7BZ%7D_j%2B%5Cbeta_j) 。特别地，当 ![[公式]](https://www.zhihu.com/equation?tex=%5Cgamma%5E2%3D%5Csigma%5E2%2C%5Cbeta%3D%5Cmu) 时，可以实现等价变换（identity transform）并且保留了原始输入特征的分布信息。除非完全等价还原，否则一定损失了部分表达能力。用数据的表达能力换取模型的更快拟合。
@@ -287,27 +301,72 @@ $$
 3. **BN层允许模型使用饱和激活函数，缓解梯度消失问题**
 4. **BN层有一定的正则化效果，抑制过拟合**；对于任意一个样本，和不同的其他样本组合成mini-batch，它自己变化后的值都是不同的，相当于给模型添加了噪声，抑制过拟合
 
-Reference
+**Reference**
 
-https://zhuanlan.zhihu.com/p/25723112
+[详解softmax函数以及相关求导过程](https://zhuanlan.zhihu.com/p/25723112)
 
-https://zhuanlan.zhihu.com/p/34879333
+[Batch Normalization原理与实战](https://zhuanlan.zhihu.com/p/34879333)
 
-## Time Series Model
+## 2 DNN
 
-### RNN
+### 2.1 Perceptron
+
+感知机模型对应于特征空间中将实例划分为正负两类的分离超平面，故而是判别式模型
+
+![perceptron](/assets/img/ML/one-stop-machine-learning/perceptron.png)
+
+原始perceptron采用的激活函数是单位阶跃函数，value set {+1，-1}
+
+由于感知机模型的输出是0和1两个离散的值，如果使用基于分类错误的平方误差，会使得损失函数不连续，更别说是否可导了。所以这里使用下面这个损失函数； 该函数在SVM模型中被称为函数间隔 margin
+
+![perceptron-loss](/assets/img/ML/one-stop-machine-learning/perceptron-loss.png)
+
+其中
+
+M 表示被分类错的样本集
+
+t 表示样本的原始类别
+
+∅(x) 表示经过处理后的输入，w*∅(x) 表示在经过activation function之前的矩阵点乘结果  由于M 是分错类的样本集，w*∅(x) 和 t 始终异号，结果始终大于零
+
+所以损失函数就是 |w*∅(x)| 求和，是一个连续值， 且是凸函数，凸函数可以利用梯度下降法求解，需要求解什么，就对什么求梯度。
+
+![perceptron-gradient](/assets/img/ML/one-stop-machine-learning/perceptron-gradient.png)
+![perceptron-gradient1](/assets/img/ML/one-stop-machine-learning/perceptron-gradient1.png)
+
+由上式可以看出，下一次迭代时的权重，由上一次的权重加上学习率加权过的全部输入结果的总和（input set 是分类错的样本集），是明显的batch training，由于巨大的计算量，可以改进为随机梯度下降方法，随机取M中的一个进行梯度下降，此时的梯度下降方法跳跃很大，但是总体上是往最优值跳跃的
+
+![perceptron-sgd](/assets/img/ML/one-stop-machine-learning/perceptron-sgd.png)
+
+每当有分类错误点，权重更新使得分类面朝分类错误点移动
+
+感知机收敛的条件是训练集是线性可分的，如果线性不可分，那么感知机训练过程将永远不会收敛。
+
+感知机一旦训练到没有分类错误点就停止了，也就是即是刚刚移动到一个满足全部分类正确的位置，就停止了，没有进行最优化判断，不同的初值会影响最后的分类面。
+
+[感知机代码实现](https://github.com/JIANGWQ2017/ML/blob/master/perceptron.py)
+
+**Reference**
+
+[感知机](https://www.zybuluo.com/Duanxx/note/425280)
+
+
+
+## 3 Time Series Model
+
+### 3.1 RNN
 
 RNN能给传统的神经网络带来了时间维度的考虑，传统的DNN 假设输入之间是完全独立的。假定现在有一个分类的需求，一个球需要判断是往右滚还是往左滚，输入的label是球的坐标，在不给定时间序列的情况下，球左右滚都有可能，但是一定给定时间上的先后顺序，那么球的滚动方向就确定下来了。另外人类的语音输入也是具有强烈的前后关联的，单独把每个词分开看，并不能或者很难看出语句的含义。
 
 RNN则是在前馈神经网络上添加一个传递先前信息的循环，把上一个输入的hidden state 传递给下一个状态，但是如果状态数过多，太早的状态的信息由于梯度消失问题而消失，所以RNN只具有短期记忆
 
-### LSTM
+### 3.2 LSTM
 
 谈到LSTM之前首先要说***Recurrent Neural Network**
 
-## NLP
+## 4 NLP
 
-### TF-IDF
+### 4.1 TF-IDF
 
 TF(term frequency) = 词在文章中出现的次数/文章的总词数
 
