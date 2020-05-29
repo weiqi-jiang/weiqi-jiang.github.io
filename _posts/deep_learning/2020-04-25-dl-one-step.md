@@ -84,7 +84,7 @@ $$
 
 ![WeChat Screenshot_20190812224516](/assets/img/deeplearning/one-stop/KL2.png)
 
-**Reference：**
+**Reference**
 
 [简单的交叉熵损失函数，你真的懂了吗？](https://zhuanlan.zhihu.com/p/38241764)
 

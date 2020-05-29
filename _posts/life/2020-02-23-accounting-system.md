@@ -19,171 +19,458 @@ description: 记账系统设计和代码流程
 2. 显示交互界面
 2. 显示账户总额，分渠道显示渠道总额
 3. 增改查删，支出收益记录
-4. 记录股票买入和卖出记录，在买入时记录买入成本，卖出时核算最终收益，入账
-5. 支付宝，微信账单批量导入
+5. 数据可视化
+6. 支付宝，微信账单[自动]批量导入(考虑web 端爬虫实现)
 
 ## 实现思路
 
-1. 由于记账工具主要为个人使用，实用性要求比美观性更强，使用tkinter包简单实现就好，如果后续有美观的要求再进行优化也不迟。
-   ----------------分割线---------------------
-
-   在开发过程中，发现tkinter的界面实在有点简陋，不能忍，果断选择pyqt
-
-2. 分为账户总额，支付宝总额，微信总额，股票证券总额，银行卡总额，现金总额，其他总额
 
 
+## 前置知识
 
-## SQL Server 安装
+### HTML(Hyper Text Markup Language)
 
-reference：
+html对于大小写不敏感
 
-[SQL Server 安装教程最全](https://blog.csdn.net/NBbz2018/article/details/92669721)
+| element                                             | comment                                                      |
+| --------------------------------------------------- | ------------------------------------------------------------ |
+| \<html>                                             | 页面根元素                                                   |
+| \<head>                                             | 在头部标签中可以插入\<title>, \<style>, \<meta>, \<link>, \<script>, \<noscript>, and \<base>. |
+| \<base>                                             | 描述基本的链接地址，所有链接标签的默认链接                   |
+| \<link>                                             | 定义了文档与外部资源之间的关系，通常用于连接css              |
+| \<style>                                            | 定义css文件的引用地址，也可以直接添加样式                    |
+| \<meta>                                             | 元数据，例如网页描述作者修改时间等                           |
+| \<script>                                           | 用于添加脚本 通常是js                                        |
+| \<title>                                            | 网页标题，浏览器最上方的那个标题                             |
+| \<body>                                             | 可见的页面内容                                               |
+| \<h1>"title"\</h1>                                  | 大标题                                                       |
+| \<p>"paragraph"\</p>                                | 段落                                                         |
+| \<a href='https://xxxx' target="_blank">"link"\</a> | 链接,href定义链接内容，target指定链接展示位置，本例为新窗口展示 |
+| \<img src='path/to/img' width=xxx, height=xxx />    | img标签具有空内容，在开始标签中进行关闭                      |
+| \<hr>                                               | 创建水平线，没有关闭标签                                     |
+| \<!-- html comments -->                             | 注释                                                         |
+| \<br>                                               | 在不添加p标签的情况在段内换行                                |
+| \<b> “bold”\</b>                                    | 粗体                                                         |
+| \<i> “italic” \</i>                                 | 斜体 更多文本格式化标签见reference                           |
 
-[手把手教你使用python连接sql server 2014 本地数据库](http://www.pianshen.com/article/9608108141/)
+一个常见的html结构
 
-第一个ref 基本就把安装的流程和可能遇到的问题涵盖了，第二个ref介绍了连接了本地数据库的方法，照着来，基本就没有问题了。
+```html
+<!-- 可视化的HTML 页面结构 -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>"title here"</title>
+    </head>
+    <!-- 只有body部分是浏览器中显示的-->
+    <body>
+        <h1>"head1 here"</h1>
+        <p>"paragraph here"</p>
+    </body>
+</html>
 
-
-
-## SQL Server 语法
-
-sql server和hive， mysql等语法有些许区别，在此记录一下用到过得指令
 
 ```
-# 在sql server中实现limit，使用top n
-select top 1 * from table where conditions
 
-# 插入数据 insert data
-insert into table[(fea1,fea2,fea3)] values(val1,val2,val3)
+大多数标签都有属性，下面是一些通用的属性
 
-# 更新数据
-update tablename set col=1, col=2 where conditions
+| attr  | comment                               |
+| ----- | ------------------------------------- |
+| class | 定义一个或者多个类名，类格式从css引入 |
+| id    | 定义元素唯一的id                      |
+| style | 行内样式                              |
+| title | 描述元素额外信息                      |
+
+Reference
+
+[HTML教程](https://www.runoob.com/html/html-tutorial.html)
+
+### WSGI(Web Server Gateway Interface)
+
+WSGI帮助我们开发人员专心生成HTML文档，不必关注HTTP请求，响应格式，只需要定义一个响应函数，就可以响应HTTP请求
+
+遵循WSGI 规范的web后端系统有两个部分组成，wsgi web server, wsgi web application
+
+web server主要负责高效的处理请求，可以是多线程，多进程； web application 负责处理业务逻辑。web server 接受到前端http请求后，调用web application接口处理请求，请求处理完结果返回给web server 然后返回给前端。
+
+Reference
+
+[WSGI接口]( https://www.liaoxuefeng.com/wiki/1016959663602400/1017805733037760)
+
+[白月黑羽教python](http://www.python3.vip/doc/tutorial/django/02/)
+
+
+
+## Django + Vue 环境搭建
+
+### 创建Django 项目/APP
+
+```
+django-admin startproject projectname
+
+'''
+结构
+|--manager.py
+|--projectname
+	|--__init__.py
+	|--settting.py
+	|--urls.py
+	|--wsgi.py
+'''
+
+python manage.py startapp appname 
+'''
+结构
+|--migration
+	|--__init__.py
+|--admin.py
+|--models.py
+|--tests.py
+|--views.py
+'''
+
+```
+
+### 创建Vue 项目
+
+```
+vue-init webpack frontend
+```
+
+要使Vue文件变成浏览器能解析的文件格式需要用到webpack
+
+```
+cd frontend 
+# 根据package.json 安装依赖
+npm install 
+npm run build 
+
+'''
+npm run build 会生成一个dist文件夹
+dist
+|--index.html
+|--static
+	|--css
+	|--fonts
+	|--img
+	|--js 
+'''
+```
+
+### 连接Django和Vue
+
+1. 在django项目中urls.py 指定主页路径
+
+   ```python
+   from django.contrib import admin
+   from django.urls import path, include, re_path
+   
+   #添加
+   from django.conf.urls.static import static
+   from django.views.generic.base import TemplateView
+   
+   urlpatterns = [
+       path('admin/', admin.site.urls),
+       path('records/', include('recorder.urls')),
+       re_path(r'^$', TemplateView.as_view(template_name='index.html')),
+   
+   ] + static('/', document_root='frontend/dist')
+   ```
+
+2. 在django项目setting.py文件中
+
+   ```python
+   TEMPLATES = [
+       {
+           'BACKEND': 'django.template.backends.django.DjangoTemplates',
+           'DIRS': [os.path.join(BASE_DIR, 'frontend/dist')], # 添加
+           'APP_DIRS': True,
+           'OPTIONS': {
+               'context_processors': [
+                   'django.template.context_processors.debug',
+                   'django.template.context_processors.request',
+                   'django.contrib.auth.context_processors.auth',
+                   'django.contrib.messages.context_processors.messages',
+               ],
+           },
+       },
+   ]
+   
+   
+   # 添加
+   STATICFILES_DIRS= [
+   os.path.join(BASE_DIR, 'frontend/dist/static'),
+   ]
+   ```
+
+### 运行django/vue项目
+
+运行前端项目，主要是用来看前端效果，修改代码保存后，会自动更新效果
+
+```
+cd path/to/frontend_project
+npm run dev
+```
+
+运行后端项目，如果前后端连接一切正常，看起来的效果和前端是一样的，如果不一样，可能是前端文件没有更新，需要"npm run build" 重新生成最新文件。
+
+```
+ python manage.py runserver
 ```
 
 
 
-## SQL Server + Python 使用
+## 前端VUE
 
-reference： [pymssql模块使用指南](https://blog.csdn.net/lin_strong/article/details/82868160)
 
-首先安装pymssql module 用于连接Microsoft SQL Server， pip install pymssql
 
-使用流程:
 
-1. 创建链接
-2. 交互操作
-3. 关闭链接connect
 
-直接上代码讲解
+## 接口文档
 
-```python
-import pymssql
+### 列出所有消费记录
 
-config_dict = {
-host = 'host'
-user = 'user'
-password = 'password'
-db = 'db'
+请求消息
+
+```
+get records/allrecords HTTP/1.1
+```
+
+响应消息
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+
+响应体
+
+响应消息body中包含响应内容，数据结构为JSON格式
+
+```
+{
+    "ret_code": 0,
+    "records": [
+        {
+            "date":'2020-03-04',
+            "id": 1,
+            "amount": -100,
+            "channel": "alipay"
+        },
+        
+        {
+            "date":'2020-03-04',
+            "id": 2,
+            "amount": 100,
+            "channel": 'wepay'
+        }
+    ]              
 }
+```
 
-# 创建链接; 
-# as_dict=False 返回值为字典形式，否则为list，autocommit=False
-connect = pymssql.connect(config_dict)
+### 添加消费记录
 
-# 创建cursor实例，与数据库的交互通过cursor进行，一个connect在任何时候只有一个cursor对象处于查询状态
-cursor = connect.cursor()
+请求信息
 
-# 执行sql语句， 特别注意如果sql语句中有字符串的化 需要在字符串外加上‘引号’
-cursor.execute('''
-sql sentence
-''')
+```
+post records/api HTTP/1.1
+Content-Type:   application/json
+```
 
-# 如果上面的sql语句对数据本身进行了修改 需要调用commit保存
-#也可以在建立connect的时候autocommit设为True
-connect.commit()
+请求体
 
-# 有返回值的sql语句 需要用到fetch方法来获得结果
-cursor.execute('''
-select * from table
-''')
+```
+{
+    "action":"add_customer",
+    "record":{
+        "date":"2020-04-03",
+        "amount": 10,
+        "channel":"alipay"
+    }
+}
+```
 
-# fetchone()返回一条tuple，可以用while row： cursor.fetchone() 来循环打印
-#fetchall() 返回一个list of tuple，一个tuple的数据分别对应select的字段
-# fetchmany(n) 返回多条数据
-row = cursor.fetchone() 
+后端接受该请求后，在数据库中按照date amount channel字段调价消费记录
 
-cursor.close()
-connect.close()
+响应消息
 
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
 
+响应体
 
+```
+{
+    "ret_code": 0,
+    "id" : 677
+}
+```
 
+如果成功返回，ret_code为0， 返回失败为1， id为新记录的id号
+
+```
+{
+    "ret_code": 1,    
+    "error_msg": "输入格式错误"
+}
+```
+
+### 修改消费记录
+
+请求消息
+
+```
+PUT  records/api  HTTP/1.1
+Content-Type:   application/json
+```
+
+请求体
+
+```
+{
+    "action":"update_record",
+    "id": 6,
+    "newdata":{
+        "date":"2020-03-04",
+        "amount":10,
+        "channel": 'alipay'
+    }
+}
+```
+
+响应消息
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+
+响应体
+
+修改成功
+
+```
+{
+    "ret_code": 0 
+}
+```
+
+修改失败
+
+```
+{
+    "ret_code": 1，
+   'error_msg': '该id消费记录不存在'
+}
+```
+
+### 删除记录
+
+请求信息
+
+```
+DELETE  records/api  HTTP/1.1
+Content-Type:   application/json
+```
+
+请求体
+
+```
+{
+    "action":"del_record",
+    "id": 6
+}
+```
+
+响应消息
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+
+响应体
+
+删除成功
+
+```
+{
+    "ret_code": 0
+}
+```
+
+删除失败
+
+```
+{
+    "ret_code": 1,    
+    "error_msg": "id为xxx的消费记录不存在"
+}
 ```
 
 
 
-## GUI设计
+## 前后端数据交互
 
-### Tkinter包使用
+### axios模块安装
 
-Reference: [python 图形化界面设计](https://www.jianshu.com/p/91844c5bca78)
-
-tkinter module python自带，无需安装。
-
-```python
-'''
-设置位置的方法主要有.pack() .place()
-
-.place()方法主要参数
-relx, rely, relwidth, relheight 相对与根窗口的宽度高度，起始位置， 左上角为起点；取值为0-1
-x=x, y=x, width=w, height=h 绝对像素值
-
-.pack()
-默认按布局先后以最小占用空间的方式自上而下的排列控件实例，并保持控件的最小尺寸
-
-'''
-
-
-from tkinter import *
-from tkinter import ttk
-# 创建根窗体实例
-root = Tk()
-# 窗口名称
-root.title('name')
-# 窗口大小
-root.geometry('480x480')
-
-lb = Label(root, text='xxx').pack()
-
-# 输入框，常用方法有.get()返回数据框的输入值 .delete(start,end)清空起止index之间的字符
-en = Entry(root)
-en.place(relx=rx, rely=ry, relwidth=rw, relheight=rh, x=x, y=x, width=w, height=h)
-
-# 按钮，最主要的参数是command，按下之后调用的函数
-btn = Button(root, text='xxx', command=lambda: func())
-btn.pack()
-
-# 下拉框 在ttk中，需要额外import, textvarible 需要提前定义
-var = Stringvar()
-bb = ttk.Combobox(root, textvarible = var, values=['v1','v2','v3'])
-# 设置默认值， 把values index为0的值设置成默认值
-# 一个很尴尬的地方，如果在函数中创建控件，设置默认值不会显示，只有把控件实例返回，在函数体外设置默认值
-bb.current(0)
-
-# 弹窗
-import tkinter.messagebox
-tkinter.messagebox.showinfo('title','info')
-tkinter.messagebox.showwarning('title','warning')
-tkinter.messagebox.showerror('title','error')
-
-# 子窗口, 后续控件只需要指定窗口为top即可
-top = tkinter.Toplever()
-top.title('child window')
-
-
-# 主循环
-root.mainloop()
+```
+npm install axios --save
 ```
 
+### 导入axios模块
 
+```
+# main.js文件中
+import axios from 'axios'
+Vue.prototype.$axios = axios
+```
+
+### 使用示例
+
+在组件中例如加上监听点击行为 @click.native='click_test'，注意一定要带.native否则不会触发，然后methods内加上对应方法 
+
+```vue
+<template>
+<!-- ... -->
+    
+    <el-submenu index="1">
+        <template slot='title'><i class='el-icon-more'></i>消费记录</template>
+        <el-button @click.native="clickfun">添加记录</el-button>
+    </el-submenu>
+<!-- ... -->
+</template>
+
+<script>
+export default {
+  data () {
+    return {
+      tabledata: [
+        {
+          date: '2020-04-01',
+          amount: 10,
+          channel: 'xxx'
+        }
+      ]
+    }
+  },
+  methods: {
+	click_test() { 
+        this.$axios.get('url') // 后台接口
+        .then(response => {  // 请求成功
+        	console.log('请求成功');
+        	console.log(response.data);
+        	this.course_ctx = response.dat
+      })
+		.catch(error => {  // 请求失败
+      	console.log('请求失败');
+      	console.log(error);
+      })
+  }
+}
+</script>
+}
+```
 
