@@ -237,10 +237,6 @@ ROC曲线和AUC的值有一个很好的特性就是当测试集中的正负样�
 
 [ROC & AUC](http://alexkong.net/2013/06/introduction-to-auc-and-roc/)
 
-
-
-
-
 ### 2.5 L1, L2正则化
 
 范围的作用就是把向量映射到[0, )的范围只有零向量可以取到0，用向量的范数衡量两个向量的距离
@@ -269,8 +265,6 @@ Reference
 
 https://www.zhihu.com/question/26485586
 
-
-
 ### 2.6 分类问题Metric
 
 ![WeChat Screenshot_20190811155725](/assets/img/ML/one-stop-machine-learning/classification-metric.png)
@@ -278,8 +272,6 @@ https://www.zhihu.com/question/26485586
 Accuracy： A = （TP+TN）/（P+N）
 
 **当样本分布极为不均的时候，accuracy最不准确，只需要无脑预测多数类，就能有一个很好的准确率**
-
-
 
 ### 2.7 数据的归一化
 
@@ -571,8 +563,6 @@ TODO PROOF
 Reference
 
 [Adaboost算法详述 ](https://zhuanlan.zhihu.com/p/42915999)，[Adaboost 算法的原理与推导](https://blog.csdn.net/v_JULY_v/article/details/40718799)
-
-
 
 ### 4.2 决策树
 
