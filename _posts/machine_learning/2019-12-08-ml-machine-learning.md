@@ -261,9 +261,9 @@ L1,L2的函数图像和对应导数图像
 
 ![img](/assets/img/ML/one-stop-machine-learning/l1l2-d.jpg)
 
-Reference
+**Reference**
 
-https://www.zhihu.com/question/26485586
+[l1正则与l2正则的特点是什么，各有什么优势？](https://www.zhihu.com/question/26485586)
 
 ### 2.6 分类问题Metric
 
@@ -471,9 +471,9 @@ GBDT+LR; GBDT的输入就是整个特征集，输入一个样本，GBDT 生成�
 
 ### 3.4 特征降维方法
 
-**PCA #todo**
+**PCA \#to be completed**
 
-**LDA #todo**
+**LDA \# to be completed**
 
 ### 3.5 Embedding
 
@@ -558,9 +558,7 @@ TODO PROOF
 
 **在样本更新函数，以及损失函数为exp函数的时候，前向分布方法等到的最优解和直接解全局最优解的结果一样。**
 
-[adaboost 的代码实现](https://github.com/JIANGWQ2017/ML/blob/master/adaboost/adaboost.py)
-
-Reference
+**Reference**
 
 [Adaboost算法详述 ](https://zhuanlan.zhihu.com/p/42915999)，[Adaboost 算法的原理与推导](https://blog.csdn.net/v_JULY_v/article/details/40718799)
 
@@ -669,8 +667,6 @@ gini系数和熵的区别：
 剪枝过程就是最小化决策树整体的损失函数，损失函数如下，等于每一个叶子节点上样本的经验熵*样本个数求和+叶子节点个数，叶子越多，叶子节点上的经验熵越小，整体损失函数是变大还是变少，受两个方面的影响，就限制了决策树无限增殖的趋势
 
 ![WeChat Screenshot_20190811204303](/assets/img/ML/one-stop-machine-learning/tree-cutting-loss.png)
-
-决策树代码实现：[ decision tree ](https://github.com/JIANGWQ2017/ML/blob/master/decision_tree/decision_tree.py)
 
 **Reference**
 
@@ -1108,7 +1104,7 @@ SVM 特点：
 
 **Reference**
 
-[SVM原理详解](https://blog.csdn.net/abcd_d_/article/details/45094473)，
+[SVM原理详解](https://blog.csdn.net/abcd_d_/article/details/45094473)
 
 [支持向量机通俗导论（理解SVM的三层境界）](https://blog.csdn.net/v_july_v/article/details/7624837)
 

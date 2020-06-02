@@ -13,7 +13,6 @@ description: basic knowledges among deep learning field
 ### 1.1 常见损失函数
 
 **01损失函数**
-
 $$
 L(Y, f(x)) =
 \begin{cases}
@@ -375,8 +374,6 @@ t 表示样本的原始类别
 
 感知机一旦训练到没有分类错误点就停止了，也就是即是刚刚移动到一个满足全部分类正确的位置，就停止了，没有进行最优化判断，不同的初值会影响最后的分类面。
 
-[感知机代码实现](https://github.com/JIANGWQ2017/ML/blob/master/perceptron.py)
-
 **Reference**
 
 [感知机](https://www.zybuluo.com/Duanxx/note/425280)
@@ -394,6 +391,8 @@ RNN则是在前馈神经网络上添加一个传递先前信息的循环，把�
 ### 3.2 LSTM
 
 谈到LSTM之前首先要说***Recurrent Neural Network**
+
+\#to be completed
 
 ## 4 NLP
 

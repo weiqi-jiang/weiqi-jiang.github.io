@@ -22,8 +22,6 @@ description: 推荐系统模型，算法，框架，相关论文
 
 
 ## 知识图谱
-reference：https://www.cnblogs.com/huangyc/p/10043749.html
-
 定义：**结构化的语义知识库**
 ![img](/assets/img/recommendation_system/knowledge_map.jpeg)
 节点称为**实体（Entity）**
@@ -36,8 +34,13 @@ reference：https://www.cnblogs.com/huangyc/p/10043749.html
 3. 非结构化数据（Unstructured Data）: 图片，视频
 
 **存储方式：**
+
 1. RDF（resource description framework）
 2. 图数据库（Neo4j）
+
+**Reference**
+
+[通俗易懂解释知识图谱（Knowledge Graph）](https://www.cnblogs.com/huangyc/p/10043749.html)
 
 ##  关联规则挖掘
 关联规则描述两个不同事物之间的关联性，假设有两个非空集合x,y 存在 X->Y 则称之为一条关联规则
@@ -64,15 +67,13 @@ aprior算法的流程大概如下，是一个迭代的过程，一直到不存�
 
 ![img](/assets/img/recommendation_system/relation_mining.png)
 
-参考文档 ：
+**Reference**
 
-[1](https://www.cnblogs.com/fengfenggirl/p/associate_apriori.html)
+[数据挖掘系列（1）关联规则挖掘基本概念与Aprior算法](https://www.cnblogs.com/fengfenggirl/p/associate_apriori.html)
 
 [Fast algorithm for mining association rules](http://rakesh.agrawal-family.com/papers/vldb94apriori.pdf)
 
 ## **协同过滤（UserCF,ItemCF）**
-
-reference：https://www.jianshu.com/p/ec3de12db6e7
 
 ### **UserCF**
 基于用户对商品的行为，计算行为相似的用户，推荐相似用户的商品给他
@@ -131,6 +132,10 @@ d[i][j]表示用户i对j商品的行为的总分，收藏，购买，点赞等�
 Item CF 和 User CF 是基于协同过滤推荐的两个最基本的算法，User CF 是很早以前就提出来了，Item CF 是从 Amazon 的论文和专利发表之后（2001 年左右）开始流行，大家都觉得 Item CF 从性能和复杂度上比 User CF 更优，其中的一个主要原因就是对于一个在线网站，用户的数量往往大大超过物品的数量，同时物品的数据相对稳定，因此计算物品的相似度不但计算量较小，同时也不必频繁更新。但我们往往忽略了这种情况只适应于提供商品的电子商务网站，对于新闻，博客或者微内容的推荐系统，情况往往是相反的，物品的数量是海量的，同时也是更新频繁的，所以单从复杂度的角度，这两个算法在不同的系统中各有优势，推荐引擎的设计者需要根据自己应用的特点选择更加合适的算法。
 
 在非社交网络的网站中，内容内在的联系是很重要的推荐原则，它比基于相似用户的推荐原则更加有效。在社交网络站点中，User CF 是一个更好错的选择，User CF 加上社会网络信息，可以增加用户对推荐解释的信服程度。
+
+**Reference**
+
+[推荐系统UserCF, ItemCF](https://www.jianshu.com/p/ec3de12db6e7)
 
 ## **用户冷启动**
 

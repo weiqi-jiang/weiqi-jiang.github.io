@@ -18,7 +18,7 @@ Error:  msvcp140.dll丢失
 
 Solution:  
 
-下载   [Microsoft Visual C++ 2015 Redistributable Package](https://www.microsoft.com/en-us/download/details.aspx?id=48145) ,  本人下载完之后安装报错，原因是有更高级版本，不允许安装低级版本。而且检查了系统路径下是存在目标dll文件的。推测是版本问题
+下载   [Microsoft Visual C++ 2015 Redistributable Package](https://www.microsoft.com/en-us/download/details.aspx?id=48145) ,  本人下载完之后安装报错，原因是有更高级版本，不允许安装低级版本。而且检查了系统路径下是存在目标dll文件的，推测是版本问题。
 
 **情况二：python3.6.8 + tensor2.1.0**(lastest)
 
@@ -34,7 +34,7 @@ Error：安装成功，可以正常import，但是在pip install keras之后 如
 
 Solution：tensorflow 和keras的兼容问题，把keras版本降低至2.0.8解决
 
-[tensorflow，keras，python版本对照表](https://docs.floydhub.com/guides/environments/)
+
 
 ----------------------------------------2020.3.30更新---------------------------------------------
 
@@ -70,6 +70,10 @@ where pip
 ```
 
 
+
+**Reference**
+
+[tensorflow，keras，python版本对照表](https://docs.floydhub.com/guides/environments/)
 
 
 

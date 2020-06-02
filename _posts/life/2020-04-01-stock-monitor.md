@@ -113,10 +113,6 @@ document.save('document.docx')
 
 ### 发送邮件模块
 
-reference：
-
-[简单三步，用python发邮件](https://zhuanlan.zhihu.com/p/24180606) 
-
 主要用到的模块smtplib，email模块，其中smtplib负责和邮件服务器之间的通信，email负责邮件的编辑
 
 ```python
@@ -168,7 +164,9 @@ except smtplib.SMTPException as e:
     
 ```
 
+**Reference**
 
+[简单三步，用python发邮件](https://zhuanlan.zhihu.com/p/24180606) 
 
 ## 目前进度以优化点
 

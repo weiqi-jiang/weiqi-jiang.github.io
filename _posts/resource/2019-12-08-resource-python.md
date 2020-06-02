@@ -282,11 +282,15 @@ finally:
 
 ### self解释
 
-reference：https://www.cnblogs.com/jessonluo/p/4717140.html
+
 
 1. self代表是类的实例，而不是类本身，self.__class__ 才是类本身
 2. self只是一个约定俗成的写法，本身就是一个参数，所以是可以更改的，比如写成this
 3. **self是不能不写的**，比如有一个成员函数是Test类的成员函数是test，实例是a，解释器运行的时候是Test.test(a)把实例当成一个参数传入到self的位置，所以self是不能不写的。有一种情况可以不写，那就是类方法，只能通过Test.test()这种方式去调用。
+
+**Reference**
+
+[一篇文章让你彻底搞清楚Python中self的含义](https://www.cnblogs.com/jessonluo/p/4717140.html)
 
 
 

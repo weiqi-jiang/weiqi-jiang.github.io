@@ -326,10 +326,8 @@ END
 Single line comments start with '--'
 Multiline comments start with /\*and end with '\*/ '
 
+### TABLE RELATED
 
-
-
-#### TABLE RELATED
 **UPDATE TABLE**
 
 update table_name
@@ -345,7 +343,6 @@ INSERT into table_name (col1,col2,col3...)
 values (v1,v2,v3...),(v1,v2,v3...)...
 自己指定数据的方式太繁琐，可以通过select 语句批量导入数据
 INSERT INTO table_name SELECT * FROM table_name
-
 
 
 
@@ -396,10 +393,7 @@ actions:
 - DROP INDEX index_name ON table_name;   --> MS access
 - ALTER TABLE table_name DROP INDEX index_name;  --> MySQL
 
-
-
-
-#### DATABASE RELATED
+### DATABASE RELATED
 
 - CREATE DATABASE  databasename
 
@@ -411,7 +405,7 @@ actions:
 
   
 
-#### **Advanced Usage** 
+### Advanced Usage
 
 **COUNT conditional filtering**
 

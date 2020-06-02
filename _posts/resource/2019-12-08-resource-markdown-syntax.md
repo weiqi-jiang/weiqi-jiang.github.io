@@ -8,8 +8,6 @@ description: markdown 常用语法
 
 # <a id='index' >MarkDown 基本语法 </a>
 
-reference :  [简书： markdown语法手册]( https://www.jianshu.com/p/8c1b2b39deb0 )
-
 
 ## 斜体/粗体/ 删除线
 
@@ -88,3 +86,9 @@ _test_ / *test*  斜体
 3:  <'https://xxxx'>
 
 4:  跳转到[主标题](#index)
+
+
+
+**Reference** 
+
+[简书： markdown语法手册]( https://www.jianshu.com/p/8c1b2b39deb0 )
