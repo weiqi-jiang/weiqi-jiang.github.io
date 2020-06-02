@@ -17,11 +17,11 @@ description: 常用的一些数据结构和算法，例如最短路径，BFS,DFS
 - 就像水管，“水（data）”从固定一头进去，从另一头按照同样的顺序出来
 
 ### 循环队列
-reference:https://www.jianshu.com/p/6b88855017d5
 循环队列是队列存储结构中最常使用的，因为如果是普通队列，pop出头节点是需要把后续节点前移的，如果不前移，仅仅是使用front，rear指针会出现“假溢出”，pop 和插入的时候分别front+=1 rear+=1，会出现队列其实没有满，但是rear已经到队列地址的最后了，不能+1了。
 *front永远指向头部元素，tail用于指向队列最后一个元素的下一个地址*
 循环队列可以解决这个问题，当rear到尾部的时候，再插入的话，rear指向首地址
 判断条件：
+
 - 队列为空 front == rear
 - 队列满： (rear+1)%maxsize == front
 - 队列长度 (rear-front + maxsize)%maxsize
@@ -33,6 +33,10 @@ rear = (rear+1)%maxsize
 
 弹出操作：
 front = (front+1)%maxsize
+
+**Reference**
+
+[深入理解循环队列----循环数组实现ArrayDeque](https://www.jianshu.com/p/6b88855017d5)
 
 ### Heap(堆)
 - 完全二叉树
@@ -161,8 +165,6 @@ DFS时间复杂度：
 
 ## 字符串匹配(BF-KMP)
 
-reference: https://blog.csdn.net/ns_code/article/details/19286279
-
 ### BF 算法（Brute Force）
 其实就是暴力解，设str1 是被查找字符串，str2是pattern
 ```
@@ -184,11 +186,11 @@ else:
 
 我个人觉得最好的情况是O（str）也就是一个字符都不匹配
 
-## 背包问题
+**Reference**
 
-reference:
-https://www.kancloud.cn/kancloud/pack/70125
-https://blog.csdn.net/Ratina/article/details/87859525
+[模式匹配——从BF算法到KMP算法](https://blog.csdn.net/ns_code/article/details/19286279)
+
+## 背包问题
 
 ### **基本01背包问题：**
 背包重量最大H，n个物品，有对应的n个价格V，对应的n个重量w
@@ -223,3 +225,7 @@ for i in range(n):
 
 ### **完全背包问题**
 	todo
+
+**Reference**
+[背包问题九讲](https://www.kancloud.cn/kancloud/pack/70125)
+[DP背包问题的 恰好装满 问题](https://blog.csdn.net/Ratina/article/details/87859525)

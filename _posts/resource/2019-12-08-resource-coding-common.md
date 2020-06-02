@@ -10,7 +10,7 @@ description: 一些编程语言通用的知识，例如正则表达式
 
 ## **命名规则**
 
-### Summary：
+### Summary
 
 - 函数名，变量名，文件名要有描述性，少用缩写
 
@@ -111,8 +111,6 @@ description: 一些编程语言通用的知识，例如正则表达式
 
 ### C/C++ sizeof函数
 
-reference：https://www.cnblogs.com/0201zcr/p/4789332.html
-
 常见基本类型的大小
 
 ​           32位         64位
@@ -158,6 +156,10 @@ struct stu2
 # t的偏移量为4
 # 结构体的大小是6，但是需要符合条件2，所以偏移到8
 ```
+
+**Reference**
+
+[C/C++ sizeof函数解析——解决sizeof求结构体大小的问题](https://www.cnblogs.com/0201zcr/p/4789332.html)
 
 ### JSON 格式
 
@@ -209,10 +211,6 @@ python 中可以想access dict一样 access JSON格式
 
 ## UML类图
 
-reference： http://www.uml.org.cn/oobject/201610282.asp
-
-在线画图[processon][https://www.processon.com/]
-
 ![uml](/assets/img/resource/common/uml.png)
 
 ![uml_interface](/assets/img/resource/common/uml_interface.png)
@@ -226,6 +224,12 @@ reference： http://www.uml.org.cn/oobject/201610282.asp
 5. Composition: 整体和部分的关系，且部分不能脱离整体单独存在；带实心菱形的实线，菱形指向整体
 6. Dependency: 依赖关系，表示一个类的实现需要另一个类的协助；带箭头的虚线，指向被使用者
 
-![](/assets/img/resource/common/relations.png)
+![relations](/assets/img/resource/common/relations.png)
 
-类的操作是针对类自身的操作，而不是它去操作人家。比如书这个类有上架下架的操作，是书自己被上架下架，不能因为上架下架是管理员的动作而把它放在管理员的操作里
+类的操作是针对类自身的操作，而不是它去操作人家。比如书这个类有上架下架的操作，是书自己被上架下架，不能因为上架下架是管理员的动作而把它放在管理员的操作里。
+
+**Reference** 
+
+[详解UML图之类图](http://www.uml.org.cn/oobject/201610282.asp)
+
+在线画图[processon][https://www.processon.com/]
