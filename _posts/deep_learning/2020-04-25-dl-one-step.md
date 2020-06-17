@@ -13,6 +13,7 @@ description: basic knowledges among deep learning field
 ### 1.1 常见损失函数
 
 **01损失函数**
+
 $$
 L(Y, f(x)) =
 \begin{cases}
@@ -264,6 +265,7 @@ loss^, = (a-y)a * (1-a)*x
 $$
 
 **这其中(a-y)是损失函数导数，a\*(1-a)是激活函数的导数，x是线性函数的导数**，最大值才0.25,当label = 0 predict 接近1 或者label = 1,predict 接近0 的时候，sigmoid的导数值都很小，导致更新很慢，假设一种情况，初始化的时候很极端，正样本的预测值都很接近0，负样本的预测值都很接近1，这种情况下应该是非常错误的，应该马上大跨步的更新权重，但是如果是均方差loss func 并且采用sigmoid，梯度更新很慢。如果采用交叉熵作为损失函数，上面的loss对w求偏导只需要改一下loss函数的导数即可, 交叉熵的导数是
+
 $$
 crossentropy^, = (a-y)/a(1-a)
 $$
@@ -378,7 +380,15 @@ t 表示样本的原始类别
 
 [感知机](https://www.zybuluo.com/Duanxx/note/425280)
 
+### 2.2 AutoEncoder
 
+autoencoder是前馈神经网络的一种,通常用来降维和特征提取. autoencoder并不关心模型最后输出和真值之间的差距大小，也就是损失函数的大小,重点关注的是hidden layer,这是一个典型的“**Fake Task**”, autoencoder原始结构就是一个只含有一个hidden layer的神经网络，当然隐层的数量可以增加。通常hidden layer的维度要远小于input layer，output layer 是用来还原input layer的，模型训练目标是尽可能的使input layer和output layer差异小。此时我们对输入的一个sample取对应的hidden layer的输出就是该sample降维之后的表达, hidden layer的权重矩阵就是embedding矩阵。
+
+![auto-encoder](/assets/img/deeplearning/one-stop/auto-encoder.png)
+
+**Reference**
+
+[当我们在谈论 Deep Learning：AutoEncoder 及其相关模型](https://zhuanlan.zhihu.com/p/27865705)
 
 ## 3 Time Series Model
 
@@ -498,6 +508,7 @@ score(l|s) = \sum_{j=1}^{m}\sum_{i=1}^{n}\lambda_jf_j(s,i,l_i,l_{i-1})
 $$
 
 外部求和是所有特征函数评分求和，内部求和是句子每个位置的单词特征值求和，然后经过SoftMax激活函数，就可以得到每一种标记的‘概率’
+
 $$
 p(l|s) = \frac{e^{score(l|s)}}{\sum_{\hat{l}}e^{score(\hat{l}|s)}}
 $$
@@ -508,3 +519,120 @@ $$
 **Reference**
 
 [如何轻松愉快地理解条件随机场（CRF）？](https://blog.csdn.net/dcx_abc/article/details/78319246)
+
+### 4.4 N-Gram
+
+N-gram 是一种基于统计学的自然语言模型算法，对于一个字符串，它的n-gram就是按照长度N 滑动切割字符串得到的词段 。
+
+**N-gram的主要应用**
+
+**模糊匹配**
+
+两个字符串，计算他们的n-gram词段，从共有词段的角度去考虑他们的距离。以 N = 2 为例对字符串Gorbachev和Gorbechyov进行分段，可得如下结果
+
+<u>Go</u>, <u>or</u>, <u>rb</u>, ba, ac, <u>ch</u>, he, ev 
+
+<u>Go</u>, <u>or</u>, <u>rb</u>, be, ec, <u>ch</u>, hy, yo, ov
+
+两个字符串的距离 8(第一个字符串的词段数)+9(第二个字符串的词段数)-2*4(共有词段数) = 9
+
+**评估句子是否合理**
+
+假设一个句子有m个词组成，则这个句子出现的概率为
+
+$$
+p(w_1,w_2,w_3,...w_m) = p(w_1)*p(w_2|w_1)*p(w_3|w_1,w_2)...p(w_m|w_1,w_2...w_{m-1})
+$$
+
+如果m很大，概率会非常的稀疏，且参数空间过于庞大，显然不好计算，于是利用马尔科夫假设，先验的认为一个词出现的概率只和前面的N个单词有关，即N-gram，和其他无关。
+
+当N=1
+
+$$
+p(w_1,w_2,w_3...w_m) = \prod_{i=1}^{m}{p(w_i)}
+$$
+
+当N=2
+
+$$
+p(w_1,w_2, w_3...w_m) = \prod_{i=1}^{m}p(w_i|w_{i-1})
+$$
+
+当N=n
+
+$$
+p(w_1,w_2,w_3...w_n) = \prod_{i=1}^{m}{p(w_i|w_{i-1},w_{i-2}...w_{i-n})}
+$$
+
+计算一个句子出现的概率可以用句子的词段出现频率相乘去逼近，其中$p(w_i|w_{i-1},w_{i-2}...w_{i-n}) =count(w_{i-1},w_{i-2}...w_{i-n},w_{i})/count(w_{i-1},w_{i-2}...w_{i-n})$, 计数值从熟料库中统计即可得。
+
+当N更大时约束力更强，辨识力更强，更加稀疏，因为N越大，语料库中出现该词段的概率越低； 并且n-gram词段总数随N指数增加，$V^n$ v是词汇总数。
+
+**Reference**
+
+[自然语言处理中n-gram语言介绍](https://zhuanlan.zhihu.com/p/32829048)
+
+[自然语言处理中的N-Gram模型详解](https://blog.csdn.net/qq_21161087/article/details/78401469)
+
+### 4.5 Word Embedding
+
+自然语言中的单词计算机并不能理解它的意思，它只对应内存空间中的一串二进制码，所以在训练之前我们需要单词的‘另一种表达’，或者说一种编码，把单词映射到另一个容易被理解，容易后续处理的空间。那么人们自然就需要设计一个满足要求的映射关系来完成这个任务。
+
+最简单的word embedding 方法是**基于词袋 (BagOfWords, BOW)**的one-hot表达方法，步骤如下：
+
+1. 把语料中的单词去重整理并排序，排序方式自定义，称为词汇表
+2. 对于一个句子中的单词，它的embedding结果就是一个和词汇表一样长的一个向量，向量中单词在词汇表中对应的index位置为1，其他为0
+3. 句子中的每个单词按照步骤2的方法embedding之后，可以把所有单词的向量相加，构成句子或者文档的向量
+
+基于词袋的方法主要有两个问题，第一个它仅仅考虑词是否出现，而不考虑前后顺序；第二个词袋可能十分的长，词向量极度稀疏
+
+为了考虑词前后的约束性，一个优化方法是**共现矩阵(cocurrence matrix)**, 其思想和n-gram类似，设定一个滑动窗口，在窗口内，任何两个词之间都属于共现过一次。例如I like machine learning and deep learning.假设滑动窗口为2，即考虑目标词前后两个词。
+
+1. I \[like machine learning\] and math
+
+2. I like \[machine learning and\] math 
+3. I like machine \[learning and math\] 
+
+对于“learning”这个词来说，它与like, machine , and, math 共现过，且和mechine共现过两次，那么我们建立一个M*M的矩阵，即共现矩阵，m是所有词汇的数量，矩阵中的值是两个词共现的数量，很显然这个矩阵是对称的，一列或者一行就是一个词对应的编码向量，这个向量的长度依然等于总的词汇数，而且也极度稀疏，那能不能用一个**连续短稠密向量**去刻画word呢？当然是可以的，这就是大名鼎鼎的word2vec模型，这个稠密向量被称为word的**Distributed Representation**
+
+**Word2Vec**
+
+主要有两个模型，**CBoW(Continuous Bag-of-Words Model)** 和**Skip-gram**，两个模型的结构很相似，主要区别在于CBOW模型输入是context，输出是预测词；skip-gram输入是当前词，输出是预测的context。
+
+**CBOW**模型结构如下	
+
+![cbow](/assets/img/deeplearning/one-stop/cbow.jpg)
+
+1. 输入层，我们不能直接把自然语言的字符/字符串输入模型，需要字符数值型的“原始表达”，于是采用基于词袋的**one-hot encoder**，与N-gram中使用的方式相同
+2. 共享的$W_{V*N}$ embedding矩阵，V是词典的总长度，N为自定义embedding向量的长度
+3. C个词向量乘上共享的embedding矩阵，**相加求平均**得到隐层的向量
+4. 隐层采用的**线性激活函数**，其实相当于没有激活函数
+5. 隐层输出乘上$W_{N*V}$输出权重矩阵，得到$1*V$维度的输出向量，概率最大的index所指的就是预测的目标词
+6. 输出和Truth求交叉熵作为损失函数
+
+这个模型和其他模型的不同点在于，我们根本不关心模型预测的准确率，我们只需要模型训练过程中的副产品，也就是embedding 矩阵，embedding矩阵的大小V\*N，而且输入的词编码只有一个index为1，其他为0，所以词向量乘上embedding矩阵相当于把取值为1的index对应的embedding vector取出来。
+
+**Skip-Gram** 看上去是cbow模型逆转因果的结果，但是细节上又有些让人容易迷惑的地方，首先模型结构是
+
+![skip-gram](/assets/img/deeplearning/one-stop/skip-gram.png)
+
+在模型训练时，我们选择一个词作为输入词，同样的输入的词的one-hot形式的表达，定义skip_window参数，意思是我们取输入词前后各多少个词参与训练，图中我们选love作为中间词，skip_window选2.那我们分别要求出$p(w_{Do}|w_{Love}), p(w_{you}|w_{Love}), p(w_{deep}|w_{Love}), p(w_{learning}|w_{Love})$。 假设我们的语料一共长度为V，skip_window为2，则训练过程一共需要预测V\*4个条件概率(忽略开头和结尾少去的几个)。**需要注意的是这个时候‘Do’，‘you’， ‘deep’， ‘learning’相对于love的顺序已经不重要了，需要预测就是在love出现的情况下，出现其他四个单词的概率，而不是给定love的情况，其他四个单词出现在指定位置上的概率**
+
+![](C:\Users\Jiang\Documents\GitHub\weiqi-jiang.github.io\assets\img\deeplearning\one-stop\skip-gram-sample.png)
+
+所以这就是图上迷惑人的地方，**模型结构图感觉起来像是输入词的embedding向量乘上了很多次输出权重矩阵，实际上只需要乘一次就可以知道所有的条件概率**，给定中间词，生成背景词的条件概率就是$P(w_{do}, w_{you}, w_{deep}, w_{learning}| w_{love}) = p(w_{Do}|w_{Love})*p(w_{you}|w_{Love})*p(w_{deep}|w_{Love})*p(w_{learning}|w_{Love})$ 因为假定了背景词之间是独立的, 训练目标就是最大化该概率。
+
+**Reference**
+
+[超详细总结之Word2Vec（一）原理推导](https://blog.csdn.net/yu5064/article/details/79601683)
+
+[秒懂词向量Word2vec的本质](https://zhuanlan.zhihu.com/p/26306795)
+
+[NLP之——Word2Vec详解](https://www.cnblogs.com/guoyaohua/p/9240336.html)
+
+[一文详解 Word2vec 之 Skip-Gram 模型（结构篇）](https://blog.csdn.net/qq_24003917/article/details/80389976)
+
+[NLP之---word2vec算法skip-gram原理详解](https://blog.csdn.net/weixin_41843918/article/details/90312339)
+
+[Word2Vec介绍：直观理解skip-gram模型](https://zhuanlan.zhihu.com/p/29305464)
+

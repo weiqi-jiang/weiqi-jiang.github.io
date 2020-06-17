@@ -337,6 +337,38 @@ glob('dirpath/*.py')
 
 ## 常用Module
 
+### Sys Module
+
+**指定编码格式**
+
+python2版本默认的编码模式是Ascii，程序中如果出现非ascii编码字符，会报错例如：UnicodeDecodeError: 'ascii' codec can't decode byte 0x??如果想在python2版本中指定编码格式
+
+```python
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+# sys.getdefaultencoding() 返回现在默认的编码格式
+
+'''
+当module 第一次被import的时候会运行模块代码并加载到内存，多次重复import不会重复运行只会把该模块的内存地址引用到本地变量环境, reload 函数强制重新载入之前载入过的module，且module 之前必须被import过。
+'''
+```
+
+而在python3.4以上的版本，reload函数被放在了importlib标准库中
+
+```python
+import importlib
+importlib.reload(sys)
+```
+
+并且在python3版本中，默认的编码方式就是'utf-8', 并且python3没有sys.setdefaultencoding()函数，只有sys.getdefaultencoding()
+
+**Reference**
+
+[Python 解决 ：NameError: name 'reload' is not defined 问题](https://blog.csdn.net/github_35160620/article/details/52206868)
+
+[python为什么需要reload(sys)后设置编码](https://www.cnblogs.com/fengff/p/8857360.html)
+
 ### Logging Module
 
 ```
@@ -364,7 +396,7 @@ parser.parse_args() # or parser.parse_known_args()
 
 ### Numpy Module
 
-#### reshape(-1,1); reshape(1,-1)
+**reshape(-1,1)和reshape(1,-1)**
 
 ```python
 >>> a = np.array([[1],[2],[3]])
@@ -375,8 +407,6 @@ array([[1],
 >>> a.reshape(1,-1)
 array([[1, 2, 3]])
 ```
-
-
 
 
 
