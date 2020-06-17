@@ -48,9 +48,7 @@ $$
 L(Y, f(x)) = |Y-f(x)|
 $$
 
-绝对损失函数即平均绝对误差(MAE)又叫做L1损失，导数可能不连续。
-
-基于上面两个损失函数各自的优缺点，有人提出改进的huber loss function
+绝对损失函数即平均绝对误差(MAE)又叫做L1损失，导数可能不连续,基于上面两个损失函数各自的优缺点，有人提出改进的huber loss function
 
 **Huber Loss Function**
 
@@ -72,17 +70,16 @@ $$
 H(x,y) = -P(x,y)logP(x,y)
 $$
 
-在x发生的条件下，y带来的新的熵称为x的条件熵H(Y|X) 衡量已知随机变量x的情况，y的不确定性H(Y|X) = H(X, Y) - H(X)
+在x发生的条件下，$y$带来的新的熵称为$x$的条件熵$H(Y|X)$ 衡量已知随机变量$x$的情况，$y$的不确定性$H(Y|X) = H(X,Y) - H(X)$
 
 ![img](https://uploadfiles.nowcoder.com/images/20190315/311436_1552628862555_DBA6F761056A8FA361E96F7E44D51F7B)
 
 **互信息**
 
 $$
-I(x,y) = \sum p(x,y)log^{\frac {p(x,y)}{p(x)p(y)}}
+I(x,y) = \sum p(x,y)log^{\frac {p(x,y)}{p(x)p(y)}}\\
+I(x,y) = D(p(x,y)||p(x)p(y))
 $$
-
-I(X,Y)=D(P(X,Y)||P(X)P(Y))
 
 **交叉熵**
 
@@ -121,13 +118,10 @@ $$
 相对熵又称KL散度,如果我们对于同一个随机变量 x 有两个单独的概率分布 P(x) 和 Q(x)，我们可以使用 KL 散度（Kullback-Leibler (KL) divergence）来衡量这两个分布的差异，然后就自然的发现交叉熵其实就是KL散度的第二部分，以为KL散度表征是两个概率分布的差异，所以越小越好，自然的KL散度第一部分固定，那么最小化交叉熵就好
 
 ![kl1](/assets/img/deeplearning/one-stop/KL.png)
-
 ![WeChat Screenshot_20190812224516](/assets/img/deeplearning/one-stop/KL2.png)
 
 **Reference**
-
 [简单的交叉熵损失函数，你真的懂了吗？](https://zhuanlan.zhihu.com/p/38241764)
-
 [一文搞懂交叉熵在机器学习中的使用，透彻理解交叉熵背后的直觉](https://blog.csdn.net/tsyccnh/article/details/79163834)
 
 ### 1.2 常见激活函数
@@ -137,15 +131,11 @@ $$
 **sigmoid** 
 
 函数图和导数图
-
 ![sigmoid](/assets/img/deeplearning/one-stop/sigma-sigma-prime.jpg)
 
 **tanh**
 
 函数图和导数图
-
-tanh‘ = 1-tanh^2
-
 ![tanh](/assets/img/deeplearning/one-stop/tanh-tanh-prime.jpg)
 
 **sigmoid和tanh的区别/联系**
@@ -172,11 +162,9 @@ Sigmoid 和 tanh 两个函数非常相似，具有不少相同的性质。简单
 
 对比sigmoid类函数主要变化是：
 
-1）单侧抑制；
-
-2）相对宽阔的兴奋边界；
-
-3）稀疏激活性。
+1）单侧抑制
+2）相对宽阔的兴奋边界
+3）稀疏激活性
 
 存在问题：
 
@@ -206,9 +194,7 @@ $$
 S_i = \frac{e^i}{\sum_{j}e^j}
 $$
 
-原理很简单，重点在于softmax如何进行梯度更新
-
-损失函数一般采用交叉熵
+原理很简单，重点在于softmax如何进行梯度更新, 损失函数一般采用交叉熵
 
 $$
 Loss = -\sum_iy_ilna_i
@@ -222,12 +208,10 @@ $$
 
 上面两个图片中有一个问题，为什么节点4要对w5i w6i 求偏导，他们又没有直接连接，因为softmax把节点456连接了起来，所以需要考虑节点4对56的影响；不然网络一次只更新一部分权重
 
-从上面的推导可以看出，对于label为1节点相连的权重求偏导的时候g = (a-1)*o; 对于其他权重g = a*o
+从上面的推导可以看出，对于label为1节点相连的权重求偏导的时候g = (a-1)\*o; 对于其他权重g = a\*o
 
 **Reference**
-
 [常见激活函数的比较](https://zhuanlan.zhihu.com/p/32610035)
-
 [详解softmax函数以及相关求导过程](https://zhuanlan.zhihu.com/p/25723112)
 
 ### 1.3 梯度爆炸/消失
@@ -236,11 +220,11 @@ $$
 
 解决梯度消失的两个办法
 
-1）、使用 ReLU、LReLU、ELU、maxout 等激活函数
+1: 使用 ReLU、LReLU、ELU、maxout 等激活函数
 
 sigmoid函数的梯度随着x的增大或减小和消失，而ReLU不会。
 
-2）、使用批规范化
+2: 使用批规范化
 
 通过规范化操作将输出信号x规范化到均值为0，方差为1保证网络的稳定性。从上述分析分可以看到，反向传播式子中有w的存在，所以w的大小影响了梯度的消失和爆炸，Batch Normalization 就是通过对每一层的输出规范为均值和方差一致的方法，消除了w带来的放大缩小的影响，进而解决梯度消失和爆炸的问题。
 
@@ -289,15 +273,12 @@ $$
 $$
 
 **Reference**
-
 [使用神经网络解决分类问题时，为什么交叉熵误差更好](http://heloowird.com/2017/03/08/diff_errors_of_neural_network/)
 
 ### 1.5 输出层的损失函数和激活函数选择
 
 二分类： sigmoid+交叉熵
-
 多分类：softmax+交叉熵
-
 回归：线性激活函数+均方误差
 
 **输出层的激活函数是按照任务来定的，二分类就是sigmoid，多分类是softmax，回归是线性激活函数**，但是在hidden layer中，为了抑制梯度消失，一般采用Relu。当sigmoid/softmax作为最后一层激活函数的时候为了让最后一层也可以加速梯度更新，抑制梯度消失，一般使用交叉熵作为损失函数。
@@ -310,17 +291,14 @@ $$
 
 解决梯度饱和问题的思路有两种
 
-1：更换激活函数-Relu，Leaky Relu
-
-2：从激活函数的输入分布入手，修正输入分布，使之落在饱和激活函数的敏感区（0值区附近）
+1. 更换激活函数-Relu，Leaky Relu
+2. 从激活函数的输入分布入手，修正输入分布，使之落在饱和激活函数的敏感区（0值区附近）
 
 BN层就是从第二个角度出发的。
 
 **算法思路**
 
-首先要说的是Batch Normalization是基于Mini Batch的，并且作用于激活函数之前
-
-对于每一个mini-batch的中的数据的每一个特征，基于特征粒度的z-score normalization，除数+一个基数是为了避免方差为0；
+首先要说的是Batch Normalization是基于Mini Batch的，并且作用于激活函数之前, 对于每一个mini-batch的中的数据的每一个特征，基于特征粒度的z-score normalization，除数+一个基数是为了避免方差为0；
 
 $$
 \hat{Z_j} = \frac{Z_j - \mu_j}{\sqrt{\sigma_j^2 + \epsilon}}
@@ -344,9 +322,7 @@ $$
 4. **BN层有一定的正则化效果，抑制过拟合**；对于任意一个样本，和不同的其他样本组合成mini-batch，它自己变化后的值都是不同的，相当于给模型添加了噪声，抑制过拟合
 
 **Reference**
-
 [详解softmax函数以及相关求导过程](https://zhuanlan.zhihu.com/p/25723112)
-
 [Batch Normalization原理与实战](https://zhuanlan.zhihu.com/p/34879333)
 
 ## 2 DNN
@@ -357,23 +333,13 @@ $$
 
 ![perceptron](/assets/img/ML/one-stop-machine-learning/perceptron.png)
 
-原始perceptron采用的激活函数是单位阶跃函数，value set {+1，-1}
-
-由于感知机模型的输出是0和1两个离散的值，如果使用基于分类错误的平方误差，会使得损失函数不连续，更别说是否可导了。所以这里使用下面这个损失函数； 该函数在SVM模型中被称为函数间隔 margin
+原始perceptron采用的激活函数是单位阶跃函数，value set {+1，-1}, 由于感知机模型的输出是0和1两个离散的值，如果使用基于分类错误的平方误差，会使得损失函数不连续，更别说是否可导了。所以这里使用下面这个损失函数,该函数在SVM模型中被称为函数间隔 margin
 
 $$
 E= -\sum_{n\in M}w^T\phi(x_n)t_n
 $$
 
-其中
-
-M 表示被分类错的样本集
-
-t 表示样本的原始类别
-
-∅(x) 表示经过处理后的输入，w\*∅(x) 表示在经过activation function之前的矩阵点乘结果  由于M 是分错类的样本集，w*∅(x) 和 t 始终异号，结果始终大于零
-
-所以损失函数就是\|w*∅(x)\| 求和，是一个连续值， 且是凸函数，凸函数可以利用梯度下降法求解，需要求解什么，就对什么求梯度。
+其中，M 表示被分类错的样本集，t 表示样本的原始类别，∅(x) 表示经过处理后的输入，w\*∅(x) 表示在经过activation function之前的矩阵点乘结果  由于M 是分错类的样本集，w\*∅(x) 和 t 始终异号，结果始终大于零，所以损失函数就是\|w*∅(x)\| 求和，是一个连续值， 且是凸函数，凸函数可以利用梯度下降法求解，需要求解什么，就对什么求梯度。
 
 ![perceptron-gradient](/assets/img/ML/one-stop-machine-learning/perceptron-gradient.png)
 ![perceptron-gradient1](/assets/img/ML/one-stop-machine-learning/perceptron-gradient1.png)
@@ -389,7 +355,6 @@ t 表示样本的原始类别
 感知机一旦训练到没有分类错误点就停止了，也就是即是刚刚移动到一个满足全部分类正确的位置，就停止了，没有进行最优化判断，不同的初值会影响最后的分类面。
 
 **Reference**
-
 [感知机](https://www.zybuluo.com/Duanxx/note/425280)
 
 ### 2.2 AutoEncoder
@@ -399,7 +364,6 @@ autoencoder是前馈神经网络的一种,通常用来降维和特征提取. aut
 ![auto-encoder](/assets/img/deeplearning/one-stop/auto-encoder.png)
 
 **Reference**
-
 [当我们在谈论 Deep Learning：AutoEncoder 及其相关模型](https://zhuanlan.zhihu.com/p/27865705)
 
 ## 3 Time Series Model
@@ -421,14 +385,10 @@ RNN则是在前馈神经网络上添加一个传递先前信息的循环，把�
 ### 4.1 TF-IDF
 
 TF(term frequency) = 词在文章中出现的次数/文章的总词数
-
 IDF(Inverse Document Frequency) = log(语料库总文章数/包含该词的文章数+1)
-
 TF-IDF = TF*IDF
 
-于是一个词的TF-IDF和词出现次数正比，和词出现的文章数反比，因为如果一个词在较少的文章中出现，那么这个词就更有区分度
-
-注意TF计算是针对这一篇文章，而IDF是针对整个语料库
+于是一个词的TF-IDF和词出现次数正比，和词出现的文章数反比，因为如果一个词在较少的文章中出现，那么这个词就更有区分度；注意**TF计算是针对这一篇文章，而IDF是针对整个语料库**
 
 ### 4.2 HMM
 
@@ -493,10 +453,7 @@ step 3 当前观测序列是‘1->2->6’，继续。
 step 4 以此类推计算到最后一个节点上的total值。
 
 **Reference**
-
 [一文搞懂HMM（隐马尔可夫模型）](https://www.cnblogs.com/skyme/p/4651331.html)
-
-
 
 ### 4.3 CRF
 
@@ -525,11 +482,7 @@ $$
 p(l|s) = \frac{e^{score(l|s)}}{\sum_{\hat{l}}e^{score(\hat{l}|s)}}
 $$
 
-
-
-
 **Reference**
-
 [如何轻松愉快地理解条件随机场（CRF）？](https://blog.csdn.net/dcx_abc/article/details/78319246)
 
 ### 4.4 N-Gram
@@ -537,19 +490,15 @@ $$
 N-gram 是一种基于统计学的自然语言模型算法，对于一个字符串，它的n-gram就是按照长度N 滑动切割字符串得到的词段 。
 
 **N-gram的主要应用**
-
 **模糊匹配**
-
 两个字符串，计算他们的n-gram词段，从共有词段的角度去考虑他们的距离。以 N = 2 为例对字符串Gorbachev和Gorbechyov进行分段，可得如下结果
 
 <u>Go</u>, <u>or</u>, <u>rb</u>, ba, ac, <u>ch</u>, he, ev 
-
 <u>Go</u>, <u>or</u>, <u>rb</u>, be, ec, <u>ch</u>, hy, yo, ov
 
 两个字符串的距离 8(第一个字符串的词段数)+9(第二个字符串的词段数)-2*4(共有词段数) = 9
 
 **评估句子是否合理**
-
 假设一个句子有m个词组成，则这个句子出现的概率为
 
 $$
@@ -576,14 +525,16 @@ $$
 p(w_1,w_2,w_3...w_n) = \prod_{i=1}^{m}{p(w_i|w_{i-1},w_{i-2}...w_{i-n})}
 $$
 
-计算一个句子出现的概率可以用句子的词段出现频率相乘去逼近，其中$p(w_i|w_{i-1},w_{i-2}...w_{i-n}) =count(w_{i-1},w_{i-2}...w_{i-n},w_{i})/count(w_{i-1},w_{i-2}...w_{i-n})$, 计数值从熟料库中统计即可得。
+计算一个句子出现的概率可以用句子的词段出现频率相乘去逼近, 计数值从熟料库中统计即可得。
+
+$$
+p(w_i|w_{i-1},w_{i-2}...w_{i-n}) =count(w_{i-1},w_{i-2}...w_{i-n},w_{i})/count(w_{i-1},w_{i-2}...w_{i-n})
+$$
 
 当N更大时约束力更强，辨识力更强，更加稀疏，因为N越大，语料库中出现该词段的概率越低； 并且n-gram词段总数随N指数增加，$V^n$ v是词汇总数。
 
 **Reference**
-
 [自然语言处理中n-gram语言介绍](https://zhuanlan.zhihu.com/p/32829048)
-
 [自然语言处理中的N-Gram模型详解](https://blog.csdn.net/qq_21161087/article/details/78401469)
 
 ### 4.5 Word Embedding
@@ -596,12 +547,9 @@ $$
 2. 对于一个句子中的单词，它的embedding结果就是一个和词汇表一样长的一个向量，向量中单词在词汇表中对应的index位置为1，其他为0
 3. 句子中的每个单词按照步骤2的方法embedding之后，可以把所有单词的向量相加，构成句子或者文档的向量
 
-基于词袋的方法主要有两个问题，第一个它仅仅考虑词是否出现，而不考虑前后顺序；第二个词袋可能十分的长，词向量极度稀疏
-
-为了考虑词前后的约束性，一个优化方法是**共现矩阵(cocurrence matrix)**, 其思想和n-gram类似，设定一个滑动窗口，在窗口内，任何两个词之间都属于共现过一次。例如I like machine learning and deep learning.假设滑动窗口为2，即考虑目标词前后两个词。
+基于词袋的方法主要有两个问题，第一个它仅仅考虑词是否出现，而不考虑前后顺序；第二个词袋可能十分的长，词向量极度稀疏。为了解决第一个问题，一个优化方法是**共现矩阵(cocurrence matrix)**, 其思想和n-gram类似，设定一个滑动窗口，在窗口内，任何两个词之间都属于共现过一次。例如I like machine learning and deep learning.假设滑动窗口为2，即考虑目标词前后两个词。
 
 1. I \[like machine learning\] and math
-
 2. I like \[machine learning and\] math 
 3. I like machine \[learning and math\] 
 
@@ -622,31 +570,33 @@ $$
 5. 隐层输出乘上$W_{N*V}$输出权重矩阵，得到$1*V$维度的输出向量，概率最大的index所指的就是预测的目标词
 6. 输出和Truth求交叉熵作为损失函数
 
-这个模型和其他模型的不同点在于，我们根本不关心模型预测的准确率，我们只需要模型训练过程中的副产品，也就是embedding 矩阵，embedding矩阵的大小V\*N，而且输入的词编码只有一个index为1，其他为0，所以词向量乘上embedding矩阵相当于把取值为1的index对应的embedding vector取出来。
-
-但是该神经网络的问题也很明显，参数量太大，embedding矩阵大小是V\*N, 通常来说词典的长度都是百万级以上，那么该矩阵参数轻轻松松上千万甚至亿级别，训练起来会是一场灾难。
+这个模型和其他模型的不同点在于，我们根本不关心模型预测的准确率，我们只需要模型训练过程中的副产品，也就是embedding 矩阵，embedding矩阵的大小V\*N，而且输入的词编码只有一个index为1，其他为0，所以词向量乘上embedding矩阵相当于把取值为1的index对应的embedding vector取出来, 但是该神经网络的问题也很明显，参数量太大，embedding矩阵大小是V\*N, 通常来说词典的长度都是百万级以上，那么该矩阵参数轻轻松松上千万甚至亿级别，训练起来会是一场灾难。
 
 **Skip-Gram** 看上去是cbow模型逆转因果的结果，但是细节上又有些让人容易迷惑的地方，首先模型结构是
-
 ![skip-gram](/assets/img/deeplearning/one-stop/skip-gram.png)
+在模型训练时，我们选择一个词作为输入词，同样的输入的词的one-hot形式的表达，定义skip_window参数，意思是我们取输入词前后各多少个词参与训练，图中我们选love作为中间词，skip_window选2.那我们分别要求出
 
-在模型训练时，我们选择一个词作为输入词，同样的输入的词的one-hot形式的表达，定义skip_window参数，意思是我们取输入词前后各多少个词参与训练，图中我们选love作为中间词，skip_window选2.那我们分别要求出$p(w_{Do}|w_{Love}), p(w_{you}|w_{Love}), p(w_{deep}|w_{Love}), p(w_{learning}|w_{Love})$。 假设我们的语料一共长度为V，skip_window为2，则训练过程一共需要预测V\*4个条件概率(忽略开头和结尾少去的几个)。**需要注意的是这个时候‘Do’，‘you’， ‘deep’， ‘learning’相对于love的顺序已经不重要了，需要预测就是在love出现的情况下，出现其他四个单词的概率，而不是给定love的情况，其他四个单词出现在指定位置上的概率**
+$$
+p(w_{Do}|w_{Love}), p(w_{you}|w_{Love}), p(w_{deep}|w_{Love}), p(w_{learning}|w_{Love})
+$$
+
+假设我们的语料一共长度为V，skip_window为2，则训练过程一共需要预测V\*4个条件概率(忽略开头和结尾少去的几个)。**需要注意的是这个时候‘Do’，‘you’， ‘deep’， ‘learning’相对于love的顺序已经不重要了，需要预测就是在love出现的情况下，出现其他四个单词的概率，而不是给定love的情况，其他四个单词出现在指定位置上的概率**
 
 ![](C:\Users\Jiang\Documents\GitHub\weiqi-jiang.github.io\assets\img\deeplearning\one-stop\skip-gram-sample.png)
 
-所以这就是图上迷惑人的地方，**模型结构图感觉起来像是输入词的embedding向量乘上了很多次输出权重矩阵，实际上只需要乘一次就可以知道所有的条件概率**，给定中间词，生成背景词的条件概率就是$P(w_{do}, w_{you}, w_{deep}, w_{learning}| w_{love}) = p(w_{Do}|w_{Love})*p(w_{you}|w_{Love})*p(w_{deep}|w_{Love})*p(w_{learning}|w_{Love})$ 因为假定了背景词之间是独立的, 训练目标就是最大化该概率。
+所以这就是图上迷惑人的地方，**模型结构图感觉起来像是输入词的embedding向量乘上了很多次输出权重矩阵，实际上只需要乘一次就可以知道所有的条件概率**，给定中间词，生成背景词的条件概率就是
+
+$$
+P(w_{do}, w_{you}, w_{deep}, w_{learning}| w_{love}) = p(w_{Do}|w_{Love})*p(w_{you}|w_{Love})*p(w_{deep}|w_{Love})*p(w_{learning}|w_{Love})
+$$
+
+ 因为假定了背景词之间是**独立的**, 训练目标就是最大化该概率。
 
 **Reference**
-
 [超详细总结之Word2Vec（一）原理推导](https://blog.csdn.net/yu5064/article/details/79601683)
-
 [秒懂词向量Word2vec的本质](https://zhuanlan.zhihu.com/p/26306795)
-
 [NLP之——Word2Vec详解](https://www.cnblogs.com/guoyaohua/p/9240336.html)
-
 [一文详解 Word2vec 之 Skip-Gram 模型（结构篇）](https://blog.csdn.net/qq_24003917/article/details/80389976)
-
 [NLP之---word2vec算法skip-gram原理详解](https://blog.csdn.net/weixin_41843918/article/details/90312339)
-
 [Word2Vec介绍：直观理解skip-gram模型](https://zhuanlan.zhihu.com/p/29305464)
 
