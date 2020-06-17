@@ -612,6 +612,8 @@ $$
 
 这个模型和其他模型的不同点在于，我们根本不关心模型预测的准确率，我们只需要模型训练过程中的副产品，也就是embedding 矩阵，embedding矩阵的大小V\*N，而且输入的词编码只有一个index为1，其他为0，所以词向量乘上embedding矩阵相当于把取值为1的index对应的embedding vector取出来。
 
+但是该神经网络的问题也很明显，参数量太大，embedding矩阵大小是V\*N, 通常来说词典的长度都是百万级以上，那么该矩阵参数轻轻松松上千万甚至亿级别，训练起来会是一场灾难。
+
 **Skip-Gram** 看上去是cbow模型逆转因果的结果，但是细节上又有些让人容易迷惑的地方，首先模型结构是
 
 ![skip-gram](/assets/img/deeplearning/one-stop/skip-gram.png)
