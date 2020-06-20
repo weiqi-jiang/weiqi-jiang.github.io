@@ -311,6 +311,12 @@ import os
 os.getcwd()
 #改变工作目录,支持相对于当前工作路径的相对路径
 os.chdir(path)
+# 展示路径下所有文件名
+os.listdir(path)
+# 遍历路径下所有文件
+for file in os.listdir(path):
+    filepath = "{0}/{1}".format(path, file)
+# 判断文件是否存在或路径是否存在
 
 # 路径拼接
 os.path.join(path1, path2)
