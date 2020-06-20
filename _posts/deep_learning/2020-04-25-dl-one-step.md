@@ -557,7 +557,7 @@ $$
 
 **Word2Vec**
 
-主要有两个模型，**CBoW(Continuous Bag-of-Words Model)** 和**Skip-gram**，两个模型的结构很相似，主要区别在于CBOW模型输入是context，输出是预测词；skip-gram输入是当前词，输出是预测的context。
+从大量语料中以**无监督学习**的方法学习语义的模型，有别于传统的基于词袋的one-hot 编码()主要有两个模型，**CBoW(Continuous Bag-of-Words Model)** 和**Skip-gram**，两个模型的结构很相似，主要区别在于CBOW模型输入是context，输出是预测词；skip-gram输入是当前词，输出是预测的context。
 
 **CBOW**模型结构如下	
 
@@ -567,10 +567,14 @@ $$
 - 共享的embedding矩阵大小是V\*N，V是词典的总长度，N为自定义embedding向量的长度
 - C个词向量乘上共享的embedding矩阵，**相加求平均**得到隐层的向量
 - 隐层采用的**线性激活函数**，其实相当于没有激活函数
-- 隐层输出乘上输出权重矩阵，得到1\*V 维度的输出向量，概率最大的index所指的就是预测的目标词
+- 隐层输出乘上输出权重矩阵，得到1\*V 维度的输出向量，经过softmax层，概率最大的index所指的就是预测的目标词
 - 输出和Truth求交叉熵作为损失函数
 
-这个模型和其他模型的不同点在于，我们根本不关心模型预测的准确率，我们只需要模型训练过程中的副产品，也就是embedding 矩阵，embedding矩阵的大小V\*N，而且输入的词编码只有一个index为1，其他为0，所以词向量乘上embedding矩阵相当于把取值为1的index对应的embedding vector取出来, 但是该神经网络的问题也很明显，参数量太大，embedding矩阵大小是V\*N, 通常来说词典的长度都是百万级以上，那么该矩阵参数轻轻松松上千万甚至亿级别，训练起来会是一场灾难。
+这个模型和其他模型的不同点在于，我们根本不关心模型预测的准确率，我们只需要模型训练过程中的副产品，副产品有两个，一个是输入层到隐层的embedding矩阵，一个是隐层输出到输出层的输出层矩阵，两个矩阵转置之后维度一样，一般我们取embedding 矩阵作为**词向量**，embedding矩阵的大小V\*N，而且输入的词编码只有一个index为1，其他为0，所以词向量乘上embedding矩阵相当于把取值为1的index对应的embedding vector取出来, 但是该神经网络的问题也很明显，参数量太大，embedding矩阵大小是V\*N, 通常来说词典的长度都是百万级以上，那么该矩阵参数轻轻松松上千万甚至亿级别，训练起来会是一场灾难。有负采样和层级softmax可以缓解这个问题，负采样是指梯度更新的时候只更新一部分参数，例如只更新当前context出现的词对应的词向量，但是输出层计算softmax时需要对所有词典都计算概率值，计算量非常大。层级softmax占坑\# to be completed，后面再更。
+
+**为什么以条件概率为优化目标最后训练出的embedding 矩阵就能代表词向量呢？**
+
+这个问题其实很重要，但是网上绝大多数博客都没有提到过，大多只是介绍了CBOW和skip-gram而从来没有考虑模型训练结果的有效性。以下是个人理解，比如现在句子是I like deep learning， 目标词是deep，context是I, like, learning，为什么I, like, learning的词向量取平均训练出的embedding matrix就能给出合理的deep的词向量，那是因为训练有很多个sample，在其他sample中，deep作为context输入去预测其他词，这个时候模型会拟合出它觉得“合适”的deep的词向量。也就是说deep的词向量主要是当deep为context的时候学习到的，而不是作为目标词的时候学习到的。
 
 **Skip-Gram** 看上去是cbow模型逆转因果的结果，但是细节上又有些让人容易迷惑的地方，首先模型结构是
 
@@ -600,5 +604,6 @@ $$
 [NLP之——Word2Vec详解](https://www.cnblogs.com/guoyaohua/p/9240336.html)<br>
 [一文详解 Word2vec 之 Skip-Gram 模型（结构篇）](https://blog.csdn.net/qq_24003917/article/details/80389976)<br>
 [NLP之---word2vec算法skip-gram原理详解](https://blog.csdn.net/weixin_41843918/article/details/90312339)<br>
-[Word2Vec介绍：直观理解skip-gram模型](https://zhuanlan.zhihu.com/p/29305464)
+[Word2Vec介绍：直观理解skip-gram模型](https://zhuanlan.zhihu.com/p/29305464)<br>
+[CBOW模型](https://www.jianshu.com/p/d2f0759d053c)<br>
 
