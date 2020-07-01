@@ -260,13 +260,9 @@ finally:
 	do sth3
 ```
 
-在没有return 的情况下：try首先执行，如有异常跳到except，如果没有执行else，finally是一直要执行的
+在没有return 的情况下：try首先执行，如有异常跳到except，如果没有执行else，finally是一直要执行的有return的情况下： 不管怎样，finally部分的代码是一定执行的，所以finally中有return的话，就按照finally 执行后的结果return 即使try部分，except，else 部分有return ，也是要先执行finally，finally没有return 就返回去return； 如果有就在finally 处return 了，不会回到原来的地方。所以结果可能和预计的不太一样。
 
-有return的情况下： 不管怎样，finally部分的代码是一定执行的，所以finally中有return的话，就按照finally 执行后的结果return 即使try部分，except，else 部分有return ，也是要先执行finally，finally没有return 就返回去return； 如果有就在finally 处return 了，不会回到原来的地方。所以结果可能和预计的不太一样
-
-手动抛出异常raise ExceptionType('description')
-
-常用的ExceptionType
+手动抛出异常raise ExceptionType('description')，常用的ExceptionType
 
 - AssertionError
 - AttributeError
@@ -338,6 +334,34 @@ glob('dirpath/*.py')
 1. int(x); 直接抛去小数部分，保留整数部分，正负数皆如此
 2. round(x); 四舍五入
 3. math.ceil(x) 上取整
+
+### 文件
+
+```python
+# 输出会在test.txt原来文本的基础上多一个空行，因为read()在文件结尾处返回一个空字符串显示出来就是空行。可以使用rstrip删除掉
+with open('test.txt') as file:
+    text = file.read()
+    print(text)
+    
+# 各行内容列表
+with open('test.txt') as file:
+    lines = file.readlines()
+for line in lines:
+    print(line)
+
+# 分行读取
+with open('test.txt') as file:
+    for line in file:
+        print(line)
+
+# 和input一样，读取文件也会把所有文本都解读为字符串，所以数字需要类型转换
+
+# 写入, 可选模式有‘r’, 'w', 'a', 'r+', 'w+'，‘a+’
+# r只读， w新建只写，w+新建读写 都会把原来的文本清空， r+读写不新建，a附加写，不可读，a+附加读写 
+# 写入只能写入字符串，需要提前转换， write不会自动添加换行符，所以多个write之间会连在一起
+with open('test.txt', 'w') as file:
+    file.write('xxxxxx')
+```
 
 
 
@@ -412,6 +436,21 @@ array([[1],
        [3]])
 >>> a.reshape(1,-1)
 array([[1, 2, 3]])
+```
+
+### JSON Module
+
+```python
+import json
+# json dump 接受两个实参，数据和可存储数据的文件对象
+with open('test.json', 'w') as file:
+    data = [1,2,3]
+	json.dump(data, file)
+    # 当然这里存储的数据不是正规的json格式，但是不影响存储，依然可存可读
+
+# json load
+with open('test.json', 'r') as file:
+    data = json.load(file)
 ```
 
 
@@ -579,7 +618,9 @@ sys.path.append('..')
 - python2 math.floor(5.5) 返回5.0 python3 math.floor(5.5) 返回5
 - python 实现地址连接 os.path.join(addr1, addr2)
 
+### import的顺序
 
+先import标准库模块，再添加一个空行，再import自己编写的模块
 
  
 
