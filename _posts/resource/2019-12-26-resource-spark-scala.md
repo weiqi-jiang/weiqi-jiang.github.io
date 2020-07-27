@@ -74,6 +74,34 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
 
 [官方文档](https://docs.scala-lang.org/zh-cn/)
 
+### Base
+
+1. val, var 初始化
+
+```scala
+//al，var都必须要定义时赋值，var可以使用默认初始化,但是必须指定数据类型，否则报错
+var a:String = _  //初始为null
+var a:Int = _ // 初始为0 
+
+```
+
+2. print和println的区别在于print 不会再内容后追加换行符，println会追加换行符
+3. 标准输入
+
+```scala
+import scala.io
+// readLine 可以接受一个参数作为提示字符串
+val name = StdIn.readLine("your name is : ")
+//当然也可以指定数据类型，不接受提示字符串
+val t1 = StdIn.readInt()
+val t2 = StdIn.readChar()
+val t3 = StdIn.readBoolean()
+val t4 = StdIn.readDouble()
+val t5 = StdIn.readLong()
+```
+
+
+
 ### Run
 
 ```shell
@@ -86,6 +114,29 @@ scala -cp . xxx
 ```
 
 Reference<br>[Can compile scala programs but cannot run them](https://stackoverflow.com/questions/27998824/can-compile-scala-programs-but-cant-run-them)
+
+### Operator
+
+scala中有一个特殊的点在于**操作符实际上是方法**，a 方法 b  是a.方法(b)的简写形式。一个重要规则是，**如果一个无参方法并不修改对象，调用时不用写扣号**
+
+```scala
+val a = 4 
+val b = a + 3 // b = 7
+val c = a.+(3) // b= 7 使用方法和使用操作符的结果一致 
+```
+
+### String
+
+字符串元素访问使用“()” 并不是“[]”, 索引的过程可以看成一个根据index拿到字符的过程，这个过程是通过一个“映射函数”来完成的，所以使用“()”。
+
+```scala
+val a = "hello world"
+a(3) // "l"
+a.apply(3) // 等价于a(3)
+
+```
+
+
 
 ### Function
 
@@ -184,6 +235,53 @@ def add[a,b](x: a, y: b) = {
 
 Reference<br>[scala泛型](https://fangjian0423.github.io/2015/06/07/scala-generic/)
 
+### Control Structure
+
+**if...else...** 
+
+```scala
+// 三元表达式
+val a = if (b>1) 1 else 0
+// 返回空值
+val a = if(x>0) 1 else ()
+```
+
+**while loop**
+
+```scala
+val n = 10
+var r = 0
+while(n>0) {
+    r = r * n
+    n -= 1
+}
+```
+
+**for loop**
+
+```scala
+/*
+
+如果循环中出现全局变量相同的变量，局部变量遮挡全局变量
+i前面不需要用val var修饰，类型取决于 后面集合/迭代器的类型
+
+*/
+for (i <- 1 to 10){
+    print(i)
+}
+
+// 嵌套for loop 多个生成器用分号隔开
+for(i <- 1 to 3; j <- 1 to 4){print(i*10+j)}
+// 嵌套for loop 条件过滤
+for(i <- 1 to 3; j <- 1 to 4 if i != j){print(i*10+j)}
+// 可以添加任意多的变量
+for(i <- 1 to 3; from = 4-i; j <- from to 3){print(i*10+j)}
+// 返回一个vector 称为for comprehension
+for(i <- 1 to 10) yield i%3
+```
+
+
+
 ### Class
 
 ```scala
@@ -279,6 +377,21 @@ case class Bookinfo(id:String)
 val t = Bookinfo("123456")
 t.id
 ```
+
+**特殊的apply方法，当一个对象以方法的形式被调用时，scala底层隐式的转换成在该对象上调用apply方法**，因此apply常被称为“注入方法”
+
+```scala
+class Foo {}
+object FooMaker{
+    def apply() = new Foo
+}
+val a = FooMaker()
+//不需要写new 关键词
+
+// # todo
+```
+
+
 
 **Reference**<br>[scala构造函数](https://www.jianshu.com/p/bb756fd1d2e6)<br>[To trait, or not to trait?](https://www.artima.com/pins1ed/traits.html#12.7)<br>[What is the advantage of using abstract classes instead of traits?](https://stackoverflow.com/questions/1991042/what-is-the-advantage-of-using-abstract-classes-instead-of-traits)
 
