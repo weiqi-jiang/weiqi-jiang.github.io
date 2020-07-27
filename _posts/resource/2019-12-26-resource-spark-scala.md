@@ -8,25 +8,23 @@ description:
 
 
 
-## 什么是spark
+## Spark
 
-Hadoop 和 Spark的关系：
+### 什么是spark
 
-hadoop的大致框架：由HDFS负责静态数据的存储，通过MapReduce将计算逻辑分发到数据节点进行数据计算和价值发现。
+Hadoop 和 Spark的关系：hadoop的大致框架是由HDFS负责静态数据的存储，通过MapReduce将计算逻辑分发到数据节点进行数据计算和价值发现，Spark用于大数据量下的迭代式计算，Spark的出现是为了配合Hadoop而不是取代Hadoop；Spark比Hadoop更快的原因是Hadoop把计算中间结果从内存写入硬盘，然后下次迭代之前从硬盘读入, Spark全程的计算数据都存在内存，内存不足时溢出到硬盘中，直到计算出最终结果，然后把结果写入磁盘。
 
-Spark用于大数据量下的迭代式计算，Spark的出现是为了配合Hadoop而不是取代Hadoop；Spark比Hadoop更快的原因是Hadoop把计算中间结果从内存写入硬盘，然后下次迭代之前从硬盘读入, Spark全程的计算数据都存在内存，内存不足时溢出到硬盘中，直到计算出最终结果，然后把结果写入磁盘。
-
-## Spark系统架构
+### Spark系统架构
 
 用户发起一个application，经过master节点，master节点上常驻master守护进程和driver进程，driver负责执行application中的main函数，并且创建SparkContext；master节点负责将串行任务变成可并行执行的任务集tasks，同时负责处理error。master节点将tasks分发到不同的worker nodes，worker nodes 存在一个或者多个executor进程，每个executor进程还有一个线程池，每个线程负责一个task，根据worker node的CPU 核数，可以最多并行等于CPU核数的task。
 
-![img](/assets/img/resource/sparks/spark-arch.jpg)
+![img](/assets/img/resource/spark/spark-arch.jpg)
 
-## RDD（Resilent Distributed Datasets）
+### RDD（Resilent Distributed Datasets）
 
 spark API 的所有操作都是基于RDD的；数据不止存储在一台机器上，而是分布在多台机器上。RDD是一种“只读”的数据块，任何对RDD的操作都会产生一个新的RDD；RDD之间的transformation和action都会被记录成lineage，lineage形成一个有向无环图（DAG），计算过程不需要将中间结果放入磁盘保证容错，如果某个节点的数据丢失，按照DAG关系重新计算即可。
 
-![img](/assets/img/resource/sparks/rdd-backup.png)
+![img](/assets/img/resource/spark/rdd-backup.png)
 
 如图所示：RDD1的partition2 是根据RDD0的partition2计算而来，如果RDD1的partition2丢失，其他partition不需要重新计算，只需要从RDD0的partition2 重新计算一遍即可。
 
@@ -50,13 +48,13 @@ RDD在lineage有两种依赖方式：
 
 driver根据是否有shuffle（类似reduceByKey，join）操作将作业分为不同的stage，stage的边缘就是shuffle操作发生的地方。每个stage执行一部分代码片段，并为每个stage创建一批task，这些task分配到各个executor进程中执行，每个task执行同样的处理逻辑，只是处理数据块不同的部分罢了。一个stage的所有task执行完之后，将中间结果写入到磁盘，下个stage的输入就是上一个stage的输出，此处有大量的IO消耗，所以应该尽量减少shuffle操作。
 
-## SPARK缓存机制
+### Spark缓存机制
 
 每次对一个RDD进行操作的时候，都是按照lineage从头开始计算的，这一点和TF有点像，为了得到一个op的结果，每次sess.run(op)都是从头计算。那么如果一个RDD需要被经常使用，就需要使用缓存机制rdd.cache()默认是内存中缓存，cache内部调用默认的persist操作。cache的RDD 会一直占用内存，需要使用unpersist释放掉
 
-![img](/assets/img/resource/sparks/spark-buffer.jpg)
+![img](/assets/img/resource/spark/spark-buffer.jpg)
 
-## Spark 作业调度：
+### Spark 作业调度
 
 spark目前的资源分配有三种：
 
@@ -72,20 +70,631 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
 
 后续spark版本支持公平策略调度，采用round robin方式为每个job分配执行的tasks。sparks支持将不同的jobs划分到不同的调度池中，可以为每个调度池设置不同的属性调度池共享集群的资源，每个调度池内部，job是默认FIFO的方式运行的。
 
+## Scala
 
-## Syntax
+[官方文档](https://docs.scala-lang.org/zh-cn/)
 
-- val 用于定义常量 val x : int = 5 等价与 val x = 5，var用于定义变量, **值得注意的是使用val定的变量如果在后续程序中不小心进行了修改操作，那么这些操作会丢失，原常量的值不变**。
-- scala 的数据类型的关键词首字母大写如 Int, Short...
-- **anonymous function** “=>” 表示，符号左边代表参数列表，符号右边表示函数体
-- **零参方法和无参方法**： 在定义函数时，例如定义def test() {...} 这是零参方法，在调用时还是需要加上括号 value = test(), 如果想省略括号就需要在定义方法的时候显式的表明方法是无参方法。 test = {...}, 之后调用test方法时候不需要加上括号
+### Base
+
+1. val, var 初始化
+
+```scala
+//al，var都必须要定义时赋值，var可以使用默认初始化,但是必须指定数据类型，否则报错
+var a:String = _  //初始为null
+var a:Int = _ // 初始为0 
+
+```
+
+2. print和println的区别在于print 不会再内容后追加换行符，println会追加换行符
+3. 标准输入
+
+```scala
+import scala.io
+// readLine 可以接受一个参数作为提示字符串
+val name = StdIn.readLine("your name is : ")
+//当然也可以指定数据类型，不接受提示字符串
+val t1 = StdIn.readInt()
+val t2 = StdIn.readChar()
+val t3 = StdIn.readBoolean()
+val t4 = StdIn.readDouble()
+val t5 = StdIn.readLong()
+```
+
+
+
+### Run
+
+```shell
+# 编译, 生成xxx.class文件
+scalac xxx.scala 
+#运行
+scala xxx
+# 可能会存在不能运行的情况，因为当前路径不在CLASSPATH下，需要显式添加进去，也可以在环境变量中添加当前路径
+scala -cp . xxx
+```
+
+Reference<br>[Can compile scala programs but cannot run them](https://stackoverflow.com/questions/27998824/can-compile-scala-programs-but-cant-run-them)
+
+### Operator
+
+scala中有一个特殊的点在于**操作符实际上是方法**，a 方法 b  是a.方法(b)的简写形式。一个重要规则是，**如果一个无参方法并不修改对象，调用时不用写扣号**
+
+```scala
+val a = 4 
+val b = a + 3 // b = 7
+val c = a.+(3) // b= 7 使用方法和使用操作符的结果一致 
+```
+
+### String
+
+字符串元素访问使用“()” 并不是“[]”, 索引的过程可以看成一个根据index拿到字符的过程，这个过程是通过一个“映射函数”来完成的，所以使用“()”。
+
+```scala
+val a = "hello world"
+a(3) // "l"
+a.apply(3) // 等价于a(3)
+
+```
+
+
+
+### Function
+
+**返回值**，普通函数不明显使用return指明返回值，如果有返回值，最后一行就是返回值
+
+```scala
+// 显式指明返回值类型
+def test(x: Int, y: Int): Int  = {
+  x + y
+}
+// 不指明返回值类型，则没有返回值，相当于返回值类型为Unit
+def test1(x: Int, y: Int){
+    println(x+y)
+}
+// 带默认值的函数
+def test2(x: Int, y:Int=10): Int = {
+    x+y
+}
+
+```
+
+**零参方法和无参方法**
+
+```scala
+// 零参方法
+def foo1() = {
+	println("hello scala")
+}
+foo1()
+// 无参方法，调用的时候不需要加括号
+def foo2 = {
+    println("hello scala")
+}
+foo2
+```
+
+**匿名函数**，可以简化写函数的过程，类似于lambda 表达式
+
+```scala
+// 最简单的形式
+(x:Int,y:Int) => x+y
+//可以赋值并指明函数数据类型，写出来是为了一眼看出输入和输出的类型
+val test:(Int, Int)=>Int = (x:Int, y:Int) =>x+y
+// 当然也可以不写数据类型
+val test1 = (x:Int, y:Int) => x+y
+
+```
+
+**部分引用**，使用下划线‘—’部分应用一个函数，返回值为另一个函数，例子中定量add2相当于x固定为2的adder函数
+
+```scala
+def adder(x:Int,y:Int): Int = {
+    x+y
+}
+val add2 = adder(2, _:Int)
+add2(5)
+```
+
+**柯里化函数**,  把原来接受两个参数的函数变成接受一个参数的函数的过程，新函数返回值是以原有第二个参数为参数的函数
+
+```scala
+def add1(x:Int, y:Int): Int = {
+	x+y
+}
+add1(1, 2)
+//柯里化
+def add2(x:Int)(y:Int): Int = {
+    x+y
+}
+add2(1)(2)
+//相当于
+def add3(x:Int, y:Int): Int = {
+    (y:Int) => x +y
+}
+```
+
+**类型参数化(泛型)**
+
+```scala
+// 整数加法
+def add(x: Int, y: Int): Int = {
+    x + y
+}
+// 字符型加法 
+def add(x: String, y: String): String = {
+    x + y
+}
+// 可以看出来上面的写法很麻烦，如果要实现int和string 需要再写定义新的函数，我们可以把数据类型参数化
+def add[a](x: a, y: a): a = {
+    x+y
+}
+def add[a,b](x: a, y: b) = {
+    x+y
+}
+```
+
+Reference<br>[scala泛型](https://fangjian0423.github.io/2015/06/07/scala-generic/)
+
+### Control Structure
+
+**if...else...** 
+
+```scala
+// 三元表达式
+val a = if (b>1) 1 else 0
+// 返回空值
+val a = if(x>0) 1 else ()
+```
+
+**while loop**
+
+```scala
+val n = 10
+var r = 0
+while(n>0) {
+    r = r * n
+    n -= 1
+}
+```
+
+**for loop**
+
+```scala
+/*
+
+如果循环中出现全局变量相同的变量，局部变量遮挡全局变量
+i前面不需要用val var修饰，类型取决于 后面集合/迭代器的类型
+
+*/
+for (i <- 1 to 10){
+    print(i)
+}
+
+// 嵌套for loop 多个生成器用分号隔开
+for(i <- 1 to 3; j <- 1 to 4){print(i*10+j)}
+// 嵌套for loop 条件过滤
+for(i <- 1 to 3; j <- 1 to 4 if i != j){print(i*10+j)}
+// 可以添加任意多的变量
+for(i <- 1 to 3; from = 4-i; j <- from to 3){print(i*10+j)}
+// 返回一个vector 称为for comprehension
+for(i <- 1 to 10) yield i%3
+```
+
+
+
+### Class
+
+```scala
+// 基本定义
+class TestClass(x:Int, y:Int){
+	val z: Int = 0
+    
+    def add(x:Int,y:Int): Int = {
+        x + y
+    }
+}
+```
+
+scala的构造函数分为两个部分，一个是**主构造函数**，一个是**辅助构造函数**。主构造函数是“隐性的”，它是类的方法定义之外的所有代码，也就是“类内能执行的代码”都是主构造函数
+
+```scala
+/*
+主构造函数主要包含三个部分：
+-构造函数参数
+-类内被调用的函数
+-类内执行的语句和表达式
+*/
+
+/* 
+主构造函数说明，当new一个testclass实例时，执行了成员变量z的定义，println函数，这些都是主构造函数
+主构造函数参数如果没有用val,var修饰，则只是类内不可变参数，不能用class.variable访问
+如果用var/val修饰，则是类的成员变量，就和python中的self.variable 一样
+*/ 
+class TestClass(x:Int, y:Int){
+	val z: Int = 0
+    
+    def add(x:Int,y:Int): Int = {
+        x + y
+    }
+    
+    println("hello constructor")
+}
+val t = new TestClass(1, 2)
+
+
+/*
+辅助构造函数说明，必须以调用先前定义的构造函数或者是主构造函数开始
+*/
+class TestClass(val x:Int, val y:Int){
+	val z: Int = 0
+    
+    def this(x:Int, y:Int, z:Int): Int = {
+        this(x, y)
+        val z = z
+    }    
+}
+
+```
+
+**抽象类** 用**abstract** 关键词修饰，定义了一些方法但是没有实现，且不可被实例化,**抽象类的作用**(个人理解)： 1. 规范化，继承抽象类的子类拥有共同的方法名，不同的开发人员参考同一个规范。2.统一数据类型，比如在简单工厂模式中根据输入实例化不同的类，这些不同的类具有公共的数据类型, 继承抽象类的**子类必须实现抽象类的所有方法**
+
+```scala
+abstract class Car {
+    def Run():Unit
+}
+```
+
+**特质(Trait)** 一些共同的字段和行为的组合,和抽象类很像，大多数时候起到相同的功能；**特质和抽象类的区别**在于抽象类可以有构造函数参数，特质没有；抽象类和java代码完全兼容，特质兼容性不佳；特质可以混入不同的类层级，一些与类解耦的常用行为都可以写进特质，比如展示品牌行为，汽车类可以有，冰箱类可以有，卫生纸类也可以有，该行为和类解耦，适合单独提出来写入特质。详情参见Ref2,Ref3.
+
+```scala
+abstract class Car {
+    def run():Unit
+}
+
+trait luxurycar {
+    def showoff():Unit
+}
+
+class Benz extends Car{
+    override def run() = {
+        println("run")
+    }
+}
+class Benz2 extends Car with luxurycar {
+    override def run() = {
+        println("run")
+    }
+    override def showoff = {
+        println("showoff")
+    }
+}
+```
+
+**样本类(Case Classes)**，就是用case 关键词声明的类，**非常适合不可变的数据**，也常用于模式匹配中, 实例化样例类时不需要new关键词，因为有默认的apply方法。样本类的参数是**公开的不可变的**，可以class.variable形式访问. 这其实也体现了“面向对象”的思想，**一些固定的参数组合用一个类去包装**，**可以使用var 但是不推荐**
+
+```scala
+case class Bookinfo(id:String)
+val t = Bookinfo("123456")
+t.id
+```
+
+**特殊的apply方法，当一个对象以方法的形式被调用时，scala底层隐式的转换成在该对象上调用apply方法**，因此apply常被称为“注入方法”
+
+```scala
+class Foo {}
+object FooMaker{
+    def apply() = new Foo
+}
+val a = FooMaker()
+//不需要写new 关键词
+
+// # todo
+```
+
+
+
+**Reference**<br>[scala构造函数](https://www.jianshu.com/p/bb756fd1d2e6)<br>[To trait, or not to trait?](https://www.artima.com/pins1ed/traits.html#12.7)<br>[What is the advantage of using abstract classes instead of traits?](https://stackoverflow.com/questions/1991042/what-is-the-advantage-of-using-abstract-classes-instead-of-traits)
+
+### Data Structure
+
+**Array** 有序，可变，包含重复项
+
+```scala
+// array声明
+val numbers = Array(1,2,3,4,5)
+// array 元素访问
+val n3 = numbers(3)
+// 修改元素值
+numbers(2) = 1
+// map 
+val biggernum = numbers.map(_ * 2)
+// array 合并
+val number2 = Array(6,7,8,9)
+val numberall = number ++ number2
+// count 
+numberall.count(_ > 3)
+```
+
+**List** 有序，不可变，可包含重复项
+
+```scala
+// 声明 
+val numbers = List(1,2,3,4,5)
+```
+
+**Set** 无序，不可变，不包含重复项
+
+```scala
+// 声明
+val numbers = Set(1,2,3,4,5)
+```
+
+**Tuple** 不可变
+
+```scala
+/*
+在不使用类的情况下把元素简单组合，和case classes实现的功能类似，只是样本类可以通过名称来获得字段
+tuple只能通过下标来访问，且以1为base
+*/
+val t = ("hello","world")
+t._1 // hello
+```
+
+**Map** 不可变
+
+```scala
+// 声明
+val m1 = Map("k1" -> "v1","k2" -> "v2","k3" -> "v3")
+val m2 = Map(("k1","v1"),("k2","v2"),("k3","v3"))
+```
+
+
+
+### Pattern Matching
+
+```scala
+// 匹配值
+val times = "WED"
+val time = times match {
+    case "MON"|"TUE"|"WED"|"THU"|"FRI" => "WEEKDAY"
+    case "SAT"|"SUN" => "WEEKEND"
+    case _ => "Other"
+}
+//或者是
+val times = "WED"
+val time = times match {
+    case i if i == "MON"|"TUE"|"WED"|"THU"|"FRI" => "WEEKDAY"
+    case i if i == "SAT"|"SUN" => "WEEKEND"
+    case _ => "Other"
+}
+
+
+//匹配类型
+def testmatch(o: Any): Any = {
+    o match {
+        case i: Int => i+1
+        case d: Double => d+0.1
+        case text: String => text+'s'
+    }
+}
+```
+
+样本类用于模式匹配
+
+```scala
+/*
+首先定义一个虚基类是为了后面函数定义时有统一的类型
+根据输入具体子类的不同，得到不同的结果
+*/
+abstract class Notification
+case class Email(sender: String, title: String, body: String) extends Notification
+case class SMS(caller: String, message: String) extends Notification
+case class VoiceRecording(contactName: String, link: String) extends Notification
+
+def showNotification(notification: Notification): String = {
+  notification match {
+    case Email(sender, title, _) =>
+      s"You got an email from $sender with title: $title"
+    case SMS(number, message) =>
+      s"You got an SMS from $number! Message: $message"
+    case VoiceRecording(name, link) =>
+      s"you received a Voice Recording from $name! Click the link to hear it: $link"
+  }
+}
+val someSms = SMS("12345", "Are you there?")
+val someVoiceRecording = VoiceRecording("Tom", "voicerecording.org/id/123")
+
+println(showNotification(someSms))
+println(showNotification(someVoiceRecording))  
+
+```
+
+**Reference**<br>[官方文档：模式匹配](https://docs.scala-lang.org/zh-cn/tour/pattern-matching.html)
+
+### Design Pattern
+
+**Singleton pattern** 单例对象只有一个实例，用object 关键词修饰，和惰性变量一样，延迟创建，即第一次被使用时创建。如下，test方法在任何地方都可以引用，**创建功能性方法是单例对象的常见用法**, 而且单例对象是**组织静态函数(static function)的有效工具**，单例对象也常常用在工厂模式设计中，详情见后文。
+
+```scala
+package pack
+object foo {
+    def test() = {
+        println("hello")
+    }
+}
+// 程序其他地方可以import 单例对象的foo方法
+// 体现了面向对象的思想，用一个对象的方法来实现一个通用的函数
+import pack.foo.test
+
+// 单例对象可以在类内定义，而且可以和类具有相同的名称，此时，该对象称为“伴生对象”
+class Bar(foo: String){
+    object Bar {
+        def apply(foo:String) = new Bar(foo)
+    }
+}
+```
+
+**Factory pattern** 按照对类的抽象程度可以划分为三个类型：**简单工厂模式(Single Factory)，工厂方法模式(Factory Method)，抽象工厂模式(Abstract Factory)**， 简单工厂模式让对象调用者和对象创建过程分离，用工厂类解耦，在工厂类负责逻辑判断，提高可维护性，可扩展性。但是当要修改产品是，需要修改工厂类，违反开闭原则(对于扩展是开放的，对于修改是封闭的)；工厂方法模式，不在工厂类中进行逻辑判断，同时抽象工厂和产品，不同的工厂负责不同的产品，新增产品时，新建并继承抽象产品类，新建并继承抽象工厂类即可，不需要修改现有的类； 抽象工厂模式更加复杂，下文单独说明。
+
+```scala
+/*
+简单工厂模式，抽象具体产品，在单例工厂类中进行逻辑判断
+*/
+// 抽象产品角色，所有产品对象的父类
+trait Car{
+    def brand()
+}
+// 具体产品角色，工厂所创建的具体实例对象，预先定义宝马类
+class BMW extends Car{
+    override def brand() = {
+        println("BMW")
+    }
+}
+// 预先定义奔驰类
+class Benz extends Car{
+    override def brand() = {
+        println("Benz")
+    }
+}
+// 单例汽车工厂类
+object CarFactory {
+    def CreateCar(brand: String) =  brand match {
+        case "Benz" => new Benz
+        case "BMW" => new BMW
+    }
+}
+// 根据不同的要求实例化不同的类
+val car1 = CarFactory.CreateCar("BMW")
+val car2 = CarFactory.CreateCar("Benz")
+car1.brand()
+car2.brand()
+
+/*
+工厂方法模式, 同时抽象具体产品和工厂，每个产品由对应的工厂负责实例化
+*/
+trait CarFactory  {
+    val createcar
+}
+object BMWFactory extends CarFactory {
+    override val createcar = new BMW
+}
+object BenzFactory extends CarFactory {
+    override val createcar = new Benz
+}
+BMWFactory.createcar.brand()
+BenzFactory.createcar.brand()
+
+```
+
+抽象工厂模式涉及到产品族的概念，假设我们现在有三个不同品牌的三个不同的车型，三个品牌的sport型汽车属于一个产品族，同一个品牌下的三个不同车型属于一个等级结构。抽象工厂一次只消费其中一族产品，同属于一个产品族的产品一起使用。
+
+![absclass](/assets/img/resource/spark/abstractclass.png)
+
+抽象工厂模式的实现流程是，首先建立抽象产品和抽象工厂类，分别实现9个具体产品类，再分别实现三个sportFactory, busFactory, luxuryFactory 三个工厂类
+
+```scala
+/*
+抽象工厂模式
+*/
+trait Car {
+    def brand(): Unit
+}
+// sport具体产品类
+class BMWSportCar extends Car {
+    override def brand() = {
+        println("BMW Sport")
+    }
+}
+class BenzSportCar extends Car {
+    override def brand() = {
+        println("Benz Sport")
+    }
+}
+class AudiSportCar extends Car {
+    override def brand() = {
+        println("Audi Sport")
+    }
+}
+// bus具体产品类
+class BMWBusCar extends Car {
+    override def brand = {
+        println("BMW Bus")
+    }
+}
+class BenzBusCar extends Car {
+    override def brand = {
+        println("Benz Bus")
+    }
+}
+class AudiBusCar extends Car {
+    override def brand = {
+        println("Audi Bus")
+    }
+}
+// luxury 具体产品类
+class BMWLuxuryCar extends Car {
+    override def brand = {
+        println("BMW Luxury")
+    }
+}
+class BenzLuxuryCar extends Car {
+    override def brand = {
+        println("Benz Luxury")
+    }
+}
+class AudiLuxuryCar extends Car {
+    override def brand = {
+        println("Audi Luxury")
+    }
+}
+//抽象工厂类
+trait carFactory {
+    def createcar(): Array[Car]
+}
+// 具体工厂类
+object SportFactory extends carFactory {
+    override def createcar:Array[Car] = {
+        val bmw = new BMWSportCar
+        val audi = new AudiSportCar
+        val benz = new BenzSportCar
+        val result = Array(bmw,audi,benz)
+        result
+    }
+}
+object LuxuryFactory extends carFactory {
+    override def createcar: Array[Car] = {
+        val bmw = new BMWLuxuryCar
+        val audi = new AudiLuxuryCar
+        val benz = new BenzLuxuryCar
+        val result = Array(bmw,audi,benz)
+        result
+    }
+}
+object BusFactory extends carFactory {
+    override def createcar: Array[Car] = {
+        val bmw = new BMWBusCar
+        val audi = new AudiBusCar
+        val benz = new BenzBusCar
+        val result = Array(bmw,audi,benz)
+        result
+    }
+}
+// 调用
+val luxurycars = LuxuryFactory.createcar()
+for (x <- luxurycars){
+    x.brand()
+}
+
+```
+
+### syntax
+
 - **方法覆盖的时候必须显式的写上override修饰符**，避免accidental overriding
--  **string interpolation**： method1: "lambda equals to" + lambda + "."; method2: s"lambda equals to $（lambda）." “s” 开头，$表示后面的refer to external data.
+-  **string interpolation**： val name="Tom"; val s = s" Hello ,$name"。在字符串前面加上“s”，就可以直接使用常量或者变量的值。
 - **() is the fine representation of not having a value**. e.g. val x = ()
 - **Tuple**: definition: ordered container of two or more values,there is not way to iterate through and change element in a tuple. elements in a tuple may have different data types. **访问tuple element 通过 t._index， index 从1 开始**
 - 定义或者修改val，var的时候可以用multiple expression e.g. val test = { val x = 6; x +10}
 - if-else 用于赋值 val x = if(a>b) a else b
-- **match 表达式** val max = x>y match{case true =>x ; case false => y}
 - pattern alternative 可以共享case block。 e.g. val day = days match{case "MON"|"TUE"|"WED"|"THU"|"FRI" => "weekday" ; case "SAT"|"SUN" => "weekend"; case other => "other"} ， other 可以用 _ 替代
 - iterator 通过to， until 关键词创建 **"to"创建一个inclusive list "until" 创建一个exclusive list**， by关键词指定间隔
 - **value binding** 有的时候一些for循环内的变量在每次循环是的都要更新，scala提供一种新的方式在完成更新，与其放在函数内 不如放在for循环语句内 e.g. for( x <- 1 to 10; pow = x^2){ println(pow)}
@@ -98,9 +707,9 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
 - 和c++ ， java一样 整形之间的除法是取整的，scala的类型转换不是(double) [这是java的写法] 而是  intNum.toDouble. 
 - **to,until** : for(i< 1 to 10){println} 会打印1到10（包含10）for(i<-1 until 10){} 打印1 到9 
 
-## Immutable Collection
+### Immutable Collection
 
-### List
+List
 
 - **Immutable single linked list**
 - val test = List(v1,v2,v3,v4...) elements 的type可以不同， list元素不可变
@@ -111,16 +720,16 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
 - **List:+ value** append操作， 由于list 是immutable的，所以不能直接用list + value 实现append， 必须需要“：”符号
 - distinct 去重， filter 过滤， partition 按照规则把list分为两个tuple， reverse 反转；sortBy 按照规则排序 List.sortBy(_.size)
 
-### Set
+Set
 
 - **immutable, unordered , a collection of unique elements**
 
-### Map
+Map
 
 - val M: Map[keytype1 , valuetype] = Map()
 - 使用“+ （key->value）" 来添加键值对，“- key” 来去掉键值对
 
-## Mutable Collection
+### Mutable Collection
 
 > 需要Import 下列package
 >
@@ -132,9 +741,9 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
 >
 > val test = collection.mutable.Buffer(); test += value 就可以实现append操作
 
-## Collection Function
+### Collection Function
 
-### map
+**map**
 
   : 对RDD集合中的每个元素应用指定的function，一般来说，如果想实现一个for循环对一个iterable结构进行遍历执行某个操作，都可以用map代替。执行结果替代元素值, 
 
@@ -147,7 +756,7 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
   // => 符号表示映射
   out=List(2,4,6)
   ```
-### foreach
+**foreach**
 
   : 主要用来遍历集合元素输出
 
@@ -160,10 +769,11 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
   4
   ```
 
-### **collectAsMap**
+**collectAsMap**
+
 把[K,V]类型的RDD转换为Map格式，注意，**如果该RDD太大，会出现Java heap memory超的情况**
 
-### flatten
+**flatten**
 
   对象是集合的集合， 把2层嵌套结构展平，超过两层就需要多调用几次，但是不如flatMap常用， stack overflow上说比flatMap more efficient （?）
 
@@ -173,7 +783,7 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
   out: List(2,4,6)
   ```
 
-### flatMap
+**flatMap**
 
  和flatten差不多
 
@@ -183,7 +793,7 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
   out: List(2,4,6,8,10,12)
   ```
 
-### Join, leftOuterJoin, rightOuterJoin
+**Join, leftOuterJoin, rightOuterJoin**
 
   ```
   #基本语法
@@ -194,8 +804,7 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
   (v1,((v2,v3,v4),(v5,v6)))
   ```
 
-
-### reduce/reduceByKey
+**reduce/reduceByKey**
 
 ```
   //reduce把RDD 的两两元素传递给操作函数，返回一个和元素同类型的值，然后和下一个element进行同样的操作，直到最后一个值。
@@ -212,8 +821,7 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
   .reduceByKey(_+_)
 ```
 
-
-## Rules
+### Rules
 
 - object 定义的class 下如果包含main函数，则该object为singleton object，只有一个instance，且instance的名字和class的名字一样
 - scala不存在静态成员（no matter methods or fields）scala使用Singleton中的成员来代替静态成员
@@ -225,8 +833,7 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
 - 尽管var 定义的变量值可以reassign at anytime。 但是var的类型是不能变的
 - statement vs expression expression 有返回值， statement 没有返回值unit类型
 
-
-## Option
+### Option
 
 option类通常作为scala集合类型（List，Map）的返回类型，option类型有两个子类，None和Some。当函数成功返回一个string的时候，回传some（string），如果程序返回为None，则没有得到想要的字符串，例如Map.get(key) key不在map中的时候返回None. 集合.get方法返回值不是具体的数值，或字符串，而是一个option结构，通过option.get方法获得具体的值.
 
@@ -239,9 +846,7 @@ Map.get(key).get
 Map(key)
 ```
 
- 
-
-## Spark中的DataFrame
+### SparkDataFrame
 
 spark 中的dataframe 和RDD一样也是一个分布式的存储结构，并不是pandas中dataframe in memory 的数据结构
 
@@ -263,7 +868,123 @@ debug:
 在pandas.dataframe 转成spark.dataframe 的时候可能会有‘Can not merge type <xxxxx>’
 解决方法： df中存在空值，需要先处理空值，处理完可能还是不行，这个时候就需要强制类型转换，强制保证一个字段下数据的类型一致
 
+**Reference**<br>[scala 课堂](https://twitter.github.io/scala_school/zh_cn/index.html)<br>[Scala 函数柯里化(Currying)](https://www.runoob.com/scala/currying-functions.html)
 
+## Scala 写SparkSQL
+
+不多说，直接上代码
+
+```scala
+package  com.pack.path
+
+import org.apache.spark.SparkConf
+import org.apache.spark.sql.SparkSession
+
+object scala_test {
+  def main(args: Array[String]): Unit = {
+    val sparkConf = new SparkConf().setAppName("data").setMaster("local[*]")
+    val sparkSession = 		SparkSession.builder().config(sparkConf).enableHiveSupport().getOrCreate()
+    val rdd = sparkSession.sql("select * from tableA")
+    rdd.show()
+  }
+
+```
+
+pom文件要添加相应的依赖, 并且用mvn clean package指令打包，如果不使用插件，java -jar xxx.jar 并不能直接运行，因为在jar包META-INF/MANIFEST.MF文件中不存在main-class属性，程序不知道入口在哪里。插件的作用就是在打包的时候把我们指定的如果写入META-INF/MANIFEST.MF文件，这样jar包就可以直接用运行。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <!-- 项目名-->
+    <artifactId>project_name</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <!-- 安装的scala的版本-->
+        <scala-maven-plugin.version>3.1.3</scala-maven-plugin.version>
+        <scala.version>2.13.3</scala.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <!-- spark的版本，需要和线上对齐 -->
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.11</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_2.11</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <!--插件，实现自定义打包，生成可直接执行的jar包-->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.5</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!-- main-class的名字package.classname -->
+                            <mainClass>
+                              com.pack.path.scala_test
+                            </mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <!-- 文件后缀，打包后jar包名字会添加上这个字符串 -->
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <version>2.15.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+```
+
+如果一切顺利，现在已经在target文件夹下生成了相应的jar包了，对照spark-submit的参数把jar包提交spark环境运行即可
+
+**Reference**<br>[Maven生成可以直接运行的jar包的多种方式](https://blog.csdn.net/xiao__gui/article/details/47341385)<br>[spark作业配置及spark-submit参数说明](https://blog.csdn.net/feng12345zi/article/details/80100317)
 
 ## Others
 
@@ -278,3 +999,4 @@ debug:
   ```
 
   上述代码为.conf文件示例代码， 值得注意一点是 **字段前不要加 val 关键字**
+
