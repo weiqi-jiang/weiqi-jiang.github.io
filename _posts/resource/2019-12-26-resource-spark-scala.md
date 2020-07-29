@@ -100,7 +100,13 @@ val t4 = StdIn.readDouble()
 val t5 = StdIn.readLong()
 ```
 
+4. 当val 用**lazy** 修饰时，初始化被推迟直到第一次取值
 
+```scala
+lazy val a = 0
+```
+
+5. **val 不可变指的是不能改变初始化指向的类的实例对象，但是对象的值可以变；var可变指的是可以改变初始化指向的类的实例对象，而且实例对象自己也可以变**
 
 ### Run
 
@@ -147,7 +153,7 @@ a.apply(3) // 等价于a(3)
 def test(x: Int, y: Int): Int  = {
   x + y
 }
-// 不指明返回值类型，则没有返回值，相当于返回值类型为Unit
+// 不指明返回值类型，则没有返回值，相当于返回值类型为Unit， 可以不写 = 
 def test1(x: Int, y: Int){
     println(x+y)
 }
@@ -158,7 +164,7 @@ def test2(x: Int, y:Int=10): Int = {
 
 ```
 
-**零参方法和无参方法**
+**零参方法/无参方法/变长参数方法**
 
 ```scala
 // 零参方法
@@ -171,6 +177,17 @@ def foo2 = {
     println("hello scala")
 }
 foo2
+// 变长参数方法
+def sum(args: Int*) = {
+    var result = 0
+    for (arg<-args){
+        result += arg
+    }
+    result
+}
+sum(1,2,3,4,5)
+//不能直接传入1 to 5，需要告诉编译器参数被当成序列处理
+sum(1 to 5: _*)
 ```
 
 **匿名函数**，可以简化写函数的过程，类似于lambda 表达式
@@ -261,26 +278,39 @@ while(n>0) {
 
 ```scala
 /*
-
 如果循环中出现全局变量相同的变量，局部变量遮挡全局变量
 i前面不需要用val var修饰，类型取决于 后面集合/迭代器的类型
-
 */
+
 for (i <- 1 to 10){
     print(i)
 }
 
 // 嵌套for loop 多个生成器用分号隔开
 for(i <- 1 to 3; j <- 1 to 4){print(i*10+j)}
+
 // 嵌套for loop 条件过滤
 for(i <- 1 to 3; j <- 1 to 4 if i != j){print(i*10+j)}
+
 // 可以添加任意多的变量
 for(i <- 1 to 3; from = 4-i; j <- from to 3){print(i*10+j)}
-// 返回一个vector 称为for comprehension
-for(i <- 1 to 10) yield i%3
+
+//  称为for comprehension,返回值类型由原始集合相同，c类型Vector，b类型是Array,如果有过滤，加在for括号内
+val c = for(i <- 1 to 10) yield i%3 
+val a = Array(1,2,3,4)
+val b = for(i<-a) yield i*2
+val d = for(i<-a if i%2==0) yield i*2
+
+// until 和 to的区别在于until排除最后一个元素, to 是包含最后一个元素的
+for(i <- 1 until 10){ print(i)}
+
+// 设置遍历的步长
+for(i<-1 to 10 by 2){print(i)}
+
+// 如果遍历一个数组下标可以使用Array.indices
+for(i<-b.indices){print(i)}
+
 ```
-
-
 
 ### Class
 
@@ -292,6 +322,18 @@ class TestClass(x:Int, y:Int){
     def add(x:Int,y:Int): Int = {
         x + y
     }
+}
+
+val c = new TestClass(1, 2)
+// 私有字段, private关键词修饰，该类方法可以访问该类的所有对象的私有字段
+class Counter{
+    private var value = 0
+    def lsLess(other: Counter) = value<other.value
+}
+// 会报错，因为只能访问当前对象的私有字段
+class Counter{
+    private[this] var value = 0
+    def lsLess(other: Counter) = value<other.value
 }
 ```
 
@@ -324,6 +366,8 @@ val t = new TestClass(1, 2)
 
 /*
 辅助构造函数说明，必须以调用先前定义的构造函数或者是主构造函数开始
+可以有任意多的辅助构造函数, 实例化时通过传入不同数量或类型的参数实现不同的实例化效果
+相当于函数overload
 */
 class TestClass(val x:Int, val y:Int){
 	val z: Int = 0
@@ -331,9 +375,54 @@ class TestClass(val x:Int, val y:Int){
     def this(x:Int, y:Int, z:Int): Int = {
         this(x, y)
         val z = z
-    }    
+    }   
+    def this(x:Int,y:Int,z:Int,t:Int):Int={
+        this(x,y,z)
+        val t = t
+    }
+}
+val p1 = new TestClass(1,2,3)
+val p2 = new TestClass(1,2,3,4)
+```
+
+**Singleton pattern** 单例对象只有一个实例，用object 关键词修饰，和惰性变量一样，延迟创建，即第一次被使用时创建,和类的唯一区别在于不能提供构造器参数。如下，test方法在任何地方都可以引用，**创建功能性方法是单例对象的常见用法**, 而且单例对象是**组织静态函数(static function)的有效工具**，单例对象也常常用在工厂模式设计中，详情见后文。
+
+```scala
+package pack
+object foo {
+    def test() = {
+        println("hello")
+    }
+}
+// 程序其他地方可以import 单例对象foo方法的test方法
+// 体现了面向对象的思想，用一个对象的方法来实现一个通用的函数
+import pack.foo.test
+test
+
+/* 
+单例对象可以在类内定义也可以不在，可以和类具有相同的名称，此时，该对象称为“伴生对象”
+类和伴生对象可以相互访问私有特性，必须存在同一个源文件中
+*/ 
+class Bar(foo: String){
+    object Bar {
+        def apply(foo:String) = new Bar(foo)
+    }
 }
 
+object Bar {
+    def apply(foo:String) = new Bar(foo)
+}
+
+
+```
+
+**Apply**方法，当遇到$object(p1,p2,...,pn)$这种形式时，apply方法会被调用，通常返回一个伴生对象
+
+```scala
+// 调用的是Array这个对象的apply方法Array.apply(10) 返回一个只包含一个元素的Array[Int]
+val a = Array(10)
+// 调用的是构造器this(10),返回100个null元素
+val b = new Array(10)
 ```
 
 **抽象类** 用**abstract** 关键词修饰，定义了一些方法但是没有实现，且不可被实例化,**抽象类的作用**(个人理解)： 1. 规范化，继承抽象类的子类拥有共同的方法名，不同的开发人员参考同一个规范。2.统一数据类型，比如在简单工厂模式中根据输入实例化不同的类，这些不同的类具有公共的数据类型, 继承抽象类的**子类必须实现抽象类的所有方法**
@@ -397,11 +486,12 @@ val a = FooMaker()
 
 ### Data Structure
 
-**Array** 有序，可变，包含重复项
+**Array** 有序，可变，包含重复项,**定长**
 
 ```scala
-// array声明
+// array声明, 提供初始值时不要用new关键词，使用new关键词修饰时，初始为null
 val numbers = Array(1,2,3,4,5)
+val numbers = new Array[Int](10)
 // array 元素访问
 val n3 = numbers(3)
 // 修改元素值
@@ -413,6 +503,110 @@ val number2 = Array(6,7,8,9)
 val numberall = number ++ number2
 // count 
 numberall.count(_ > 3)
+```
+
+**ArrayBuffer** 有序，可变，变长，可包含重复项
+
+```scala
+import scala.collection.mutable.ArrayBuffer
+val b = ArrayBuffer[Int]()
+
+// append   b = ArrayBuffer(1, 2)
+b += 1
+b.append(2)
+
+// 一次性添加一个集合,  b = ArrayBuffer(1,2,1,2,3,4)
+b.appendAll(Array(1,2,3,4))
+
+// 移除尾部5个元素 b = ArrayBuffer(1,2,1,2)
+b.tridEnd(2)
+
+// 指定位置插入, insert(index, value)  b=ArrayBuffer(1,6,2,1,2)
+b.insert(1, 6)
+
+//删除， 第二个参数指定删除元素的个数 .remove(index, num) 
+b.remove(1)
+b.remove(1,2)
+
+//Array 和ArrayBuffer的转换
+val c = b.toArray
+val d = c.toBuffer
+```
+
+**Array Transform**
+
+```scala
+val a = Array(1,2,3,4,5,6)
+// 满足filter条件的留下来，然后对剩下的元素做map指定的操作，和for，yield功能相同
+a.filter(_%2==0).map(2*_)
+```
+
+**MultiDim Array**
+
+```scala
+val matrix = Array.ofDim[Int](3,4) // 初始为0
+val elem = matrix(1)(2)
+```
+
+**Map Related**
+
+```scala
+// 声明,要保证key-value 对的类型一致
+val m1 = Map("k1" -> "v1","k2" -> "v2","k3" -> "v3")
+val m2 = Map(("k1","v1"),("k2","v2"),("k3","v3"))
+val m3 = collection.mutable.Map[String, String]()
+// 访问元素，如果不存在会报错，用contains方法判断,或.getOrElse
+val v1 = m1("k1")
+val v2 = if(m1.contains("k2")) m1("k2") else 0
+val v3 = m1.getOrElse("k3", 0)
+
+// get 返回一个option对象，要么是键对应值，要么是None
+val v4 = m2.get("v2")
+
+// 可变映射添加，修改，删除,添加时要保证类型一致
+m3("k4") = "v4" 
+m3("k3") = "v3-new"
+m3.addAll(Array("k5"->"v5","k6"->"v6")))
+m -= "k4"
+
+// 修改不可变map，会创建新的不可变映射, 如果是val定义的m1，则需要赋值新val变量，如果是var，则可以覆盖
+val new_m1 = m1 + ("k4"->"v4")
+val new_m2 = m2 - "k1"
+var m1 = Map("k1" -> "v1","k2" -> "v2","k3" -> "v3")
+m1 = m1 + ("k4"->"v4")
+
+
+// 遍历/翻转 键值对, 访问键，值集合
+val m = Map("k1"->"v1","k2"->"v2")
+for((k,v)<-m){print(v)}
+for((k,v)<-m)yield (v,k)
+for(v<-m.values)print(v)
+for(k<-m.keySet)print(k)
+
+// 排序映射，按插入顺序排序映射
+val sm = scala.collection.mutable.SortedMap("1"->"a","2"->"b")
+val lm = scala.collection.mutable.LinkedHashMap("1"->"a","2"->"b")
+```
+
+**Tuple** 不可变
+
+```scala
+/*
+在不使用类的情况下把不同类型元素简单组合，和case classes实现的功能类似，只是样本类可以通过名称来获得字段
+tuple只能通过下标来访问，且以1为base
+*/
+val t = ("hello","world")
+t._1 // hello
+
+val (word1, word2) = t
+val (word1, _) = t
+
+// ZIP 操作, 转成映射
+val num = Array(1,2,3)
+val char = Array("a","b","c")
+val t = num.zip(char)
+for((n,c)<-t) print(c*n)
+val m = t.toMap
 ```
 
 **List** 有序，不可变，可包含重复项
@@ -427,25 +621,6 @@ val numbers = List(1,2,3,4,5)
 ```scala
 // 声明
 val numbers = Set(1,2,3,4,5)
-```
-
-**Tuple** 不可变
-
-```scala
-/*
-在不使用类的情况下把元素简单组合，和case classes实现的功能类似，只是样本类可以通过名称来获得字段
-tuple只能通过下标来访问，且以1为base
-*/
-val t = ("hello","world")
-t._1 // hello
-```
-
-**Map** 不可变
-
-```scala
-// 声明
-val m1 = Map("k1" -> "v1","k2" -> "v2","k3" -> "v3")
-val m2 = Map(("k1","v1"),("k2","v2"),("k3","v3"))
 ```
 
 
@@ -512,27 +687,6 @@ println(showNotification(someVoiceRecording))
 **Reference**<br>[官方文档：模式匹配](https://docs.scala-lang.org/zh-cn/tour/pattern-matching.html)
 
 ### Design Pattern
-
-**Singleton pattern** 单例对象只有一个实例，用object 关键词修饰，和惰性变量一样，延迟创建，即第一次被使用时创建。如下，test方法在任何地方都可以引用，**创建功能性方法是单例对象的常见用法**, 而且单例对象是**组织静态函数(static function)的有效工具**，单例对象也常常用在工厂模式设计中，详情见后文。
-
-```scala
-package pack
-object foo {
-    def test() = {
-        println("hello")
-    }
-}
-// 程序其他地方可以import 单例对象的foo方法
-// 体现了面向对象的思想，用一个对象的方法来实现一个通用的函数
-import pack.foo.test
-
-// 单例对象可以在类内定义，而且可以和类具有相同的名称，此时，该对象称为“伴生对象”
-class Bar(foo: String){
-    object Bar {
-        def apply(foo:String) = new Bar(foo)
-    }
-}
-```
 
 **Factory pattern** 按照对类的抽象程度可以划分为三个类型：**简单工厂模式(Single Factory)，工厂方法模式(Factory Method)，抽象工厂模式(Abstract Factory)**， 简单工厂模式让对象调用者和对象创建过程分离，用工厂类解耦，在工厂类负责逻辑判断，提高可维护性，可扩展性。但是当要修改产品是，需要修改工厂类，违反开闭原则(对于扩展是开放的，对于修改是封闭的)；工厂方法模式，不在工厂类中进行逻辑判断，同时抽象工厂和产品，不同的工厂负责不同的产品，新增产品时，新建并继承抽象产品类，新建并继承抽象工厂类即可，不需要修改现有的类； 抽象工厂模式更加复杂，下文单独说明。
 
