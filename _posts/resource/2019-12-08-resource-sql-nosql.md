@@ -30,9 +30,7 @@ NoSQL: document based; _key value pairs_; graph database or wide-column store
 SQL: table based; good for multirow transaction application
 
 
-
-
-## **关联性表特征：**
+## **关联性表特征**
 
 1. 行包含实体的示例数据
 2. 列包含实体的属性数据
@@ -40,8 +38,6 @@ SQL: table based; good for multirow transaction application
 4. 每列数据类型相同，每列唯一名称
 5. 行列顺序任意
 6. 任意两行不重复
-
-
 
 
 ## **SQL DML 和DDL** 
@@ -59,8 +55,6 @@ DDL:  创建或删除表格
 -  DROP TABLE
 -  CREATE INDEX
 -  DROP INDEX
-
-
 
 ## DataType/Constraint
 
@@ -84,10 +78,8 @@ DDL:  创建或删除表格
 - reference(must exist in a columns in other table)
 - AUTO_INCREMENT
 
- 
 
-
-## **Primary key 和 Foreign key：**
+## **Primary key 和 Foreign key**
 
 - 理想的primary key 是较短的数字且永远不变
 - 但有时没有理想的主键，生成代理键，如propertyID 对用户来说没有任何意义，通常隐藏
@@ -101,15 +93,11 @@ DDL:  创建或删除表格
 **primary key: Not null , unique**
 
 
-
-
-## **Normalization：**
+## **Normalization**
 
 - 将一个具有多主体的表分割为一组表，使得每个表只有一个主体
 - 设计良好的表 每个决定因子必须是候选键，也就是不允许出现表中局部函数依赖； 函数依赖的意思就是通过一个或者若干复合属性可以决定其他所有属性
 - 非结构良好的表应该被拆分
-
-
 
 
 ## **SQL执行顺序**
@@ -136,30 +124,21 @@ DDL:  创建或删除表格
 
 (10)order by columns
 
-
-
-**sql代码不区分大小写，不过推荐关键词用全大写**
-
-**关于怎么去理解SQL，怎么去理解关联性数据库中table和row，columns的关系**
-
-every table in relational database is an entity, a row is a specific instance of that type, columns represent the common properties shared by the instance of entity
-
-
+**sql代码不区分大小写，不过推荐关键词用全大写, 关于怎么去理解SQL，怎么去理解关联性数据库中table和row，columns的关系**: every table in relational database is an entity, a row is a specific instance of that type, columns represent the common properties shared by the instance of entity
 
 ## **视图**
 
-
-
+```sql
 CREATE VIEW viewName AS SELECT * FROM table_name WHERE condition; 
+DROP VIEW(viewName);
+```
 
-DROP VIEW（viewName）
+作用：
 
 - 隐藏行与列
 - 显示计算结果
 - 隐藏复杂的SQL语法
 - 分层组织内置函数
-
-
 
 ## 索引 
 
@@ -168,8 +147,6 @@ DROP VIEW（viewName）
 聚类索引和非聚类索引的区别可以用字典很好的示例，聚类索引类似拼音排序，字典本身就是按照拼音的顺序排序的，所以查询一个知道拼音的字的时候，只需要翻看拼音首字母所在的区域，不需要翻看整个字典。非聚类索引类似于偏旁部首查询，有一个中间的hash table 每一个字对应一个在字典中的位置，然后根据位置拿到具体内容，查询一个字的速度很快，但是查询大块的连续值表现不如聚类索引。
 
 **每个表只能有一个聚类索引**
-
-
 
 
 ## 4种join详解
@@ -188,23 +165,15 @@ full join: 只要出现过的key都算
 
 hive中没有left outer join，right outer join 语句实现left outer join, right outer join
 
-```
+```sql
 SELECT a.col , b.col FROM a LEFT JOIN b WHERE b.key IS NULL
 SELECT a.col , b.col FROM a RIGHT JOIN b WHERE a.key IS NULL
 ```
-
-
-
-
-
-
 
 ## Syntax 
 **SELECT 语句**
 
 *the order of the rows in the database table is unknown and unpredictable , when using limit clause, always use ORDER BY clause to control the order of rows*
-
-e.g.
 
 1. SELECT A.col1， A.col2 , B.col1, B.col2 ... from A INNER JOIN B on A.premaryKey = B.foreignKey
 2. SELECT A.col1 as c1, A.col2 as c2 from A join B on A.PK = B.FK [**where** A.col3 is NULL or A.col4 is NULL]
@@ -217,8 +186,6 @@ e.g.
 9. SELECT XXX **INTO** new_table from old_table #数据备份
 
 
-
-
 **Aggregate function**
 
 count(*) 返回表所有rows 的个数
@@ -228,13 +195,9 @@ count（col_name）返回列值得个数，忽略null
 HAVING clause 是配合aggregate function 使用的，用来指定聚合之后的结果满足的条件 
 
 
-
-
 **Subquery**
 
 SELECT c1, c2, c3 from table_name where rental_rate> (SELECT AVG(rental_rate) from film)
-
-
 
 
 **IN/Between/LIKE 语句**
@@ -249,8 +212,6 @@ SELECT c1, c2, c3 from table_name where rental_rate> (SELECT AVG(rental_rate) fr
 - <> not equal
 
 
-
-
 **UNION 语句/EXCEPT/INTERSECT**
 
 1.  queries have the same number of columns
@@ -260,8 +221,6 @@ SELECT c1, c2, c3 from table_name where rental_rate> (SELECT AVG(rental_rate) fr
 5. EXCEPT ： in first query not in second query
 6. INTERSECT: only the query that are identical in both result sets are returned
 7. EXCEPT ALL , INTERSECT ALL not remove duplicated rows
-
-
 
 **EXISTS/ANY/ALL 用法/WHERE 和 HAVING 的区别** 
 _EXISTS/ANY/ALL 都是配合where 和 having 使用的_
@@ -284,22 +243,15 @@ select * from student where gender='male' and age> any(select age from student w
 where 针对的是原始数据
 Having 针对where 之后的数据，可以处理aggregate function
 
-
-
 **SELF JOIN**
 
 SELECT employ_name FROM employee AS e1, employee AS e2 where e1.employee_location = e2.employee_location AND e2.employee_name = "Joe"
 
 or
 
-SELECT e1.employ_name FROM employee AS e1,join employee AS e2 on e1.employee_location = e2.employee_location AND e2.employee_name = "Joe"
+SELECT e1.employ_name FROM employee AS e1,join employee AS e2 on e1.employee_location = e2.employee_location AND e2.employee_name = "Joe" 
 
-
-
-
-
-
- **Case When 语句（SWITCH）**
+**Case When 语句（SWITCH）**
 
 CASE
 	WHEN condition1 THEN value1
@@ -312,9 +264,6 @@ ELSE
 END
 
 相当于其他语言中的switch语句，***如果满足第一个条件，则后面的判断不会执行***
-
-
-
 
 **NULL**
 
@@ -334,8 +283,6 @@ update table_name
 
 set col1 = value1, col2 = value2... where condition
 
-
-
 **INSERT**
 
 INSERT into table_name (col1,col2,col3...)
@@ -344,15 +291,11 @@ values (v1,v2,v3...),(v1,v2,v3...)...
 自己指定数据的方式太繁琐，可以通过select 语句批量导入数据
 INSERT INTO table_name SELECT * FROM table_name
 
-
-
 **CRATE TABLE**
 
 - create table table_name [like another_table]
 - create table table_name (col1 dataType constraint, col2 dataType constraint, table constraint, [inherits exist_table_name])
 - create table table_name as select col1,col2 from table2 where conditions
-
-
 
 
  **DELETE**
@@ -361,14 +304,10 @@ INSERT INTO table_name SELECT * FROM table_name
 - DELETE FROM table_name where condition [returning * (col1,col2,...)]
 - DELETE FROM table
 
-
-
 **DROP**
 
 - DROP TABLE[ IF EXIST] table_name [cascade]  (drop dependence together)
 - TRUNCATE TABLE table_name (delete records inside the table, not the table itself)
-
-
 
 
 **Alter Table**
@@ -383,8 +322,6 @@ actions:
 6. alter table table_name drop column col_name
 7. alter table table_name rename col_old_name to new_name
 9. alter table table_name alter col_name type new_type
-
-
 
 **Index**
 
@@ -403,22 +340,21 @@ actions:
 
 - BACKUP DATABASE TO DISK ='filepath' WITH DIFFERENTIAL (only backs up the parts of the database that have changed since the last full backup)
 
-  
 
 ### Advanced Usage
 
 **COUNT conditional filtering**
 
-```
+```sql
+--统计fea >0 的条数
 SELECT COUNT( CASE WHEN fea >0 THEN fea ELSE NULL END) FROM TABLENAME 
-# 统计fea >0 的条数
 ```
 
+## 优化
 
+### 分区/字段
 
-
-
- 
+业务中遇到使用多语言的情况，为了区分多语言数据，有两个选择1. 新增一个language字段2. 新增一个partition字段。partition字段和普通字段的区别在于partition字段不同的数据在HDFS上是分开存储的，假设有两个语言中文和韩文，HDFS上存储路径分别是/HDFS/d='2020-01-01'/ language='cn' 和 /HDFS/ d='2020-01-01' / language='kr'，普通字段存储位置是相同的，字段值不同而已。在使用上partition也更安全，比如现在有两段sql分别处理韩文和中文逻辑，然后各自INSERT INTO到同一个表的同一个时间分区，用language字段作区分，如果其中一个逻辑出错，那另一个逻辑不管出不出错都要重新写入。
 
 
 ## **HIVE**
