@@ -7,7 +7,7 @@ description: basic knowledges among deep learning field
 ---
 
 <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js" type="text/javascript"></script>
     <script type="text/x-mathjax-config">
         MathJax.Hub.Config({
             tex2jax: {
@@ -26,6 +26,7 @@ description: basic knowledges among deep learning field
 ### 1.1 常见损失函数
 
 **01损失函数**
+
 $$
 L(Y, f(x)) =
 \begin{cases}
