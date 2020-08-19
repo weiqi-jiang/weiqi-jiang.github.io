@@ -36,8 +36,10 @@ ga:
 # Build settings
 permalink: /:year/:month/:day/:title.html
 markdown: kramdown
+kramdown: 
+    math_engine: katex
 highlighter: rouge
-mathjax: enabled
+mathjax: disabled
 sass:
   style: compressed
 
