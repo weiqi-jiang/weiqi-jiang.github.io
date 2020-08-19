@@ -7,7 +7,7 @@ description: basic knowledges among deep learning field
 ---
 
 <head>
-    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
     <script type="text/x-mathjax-config">
         MathJax.Hub.Config({
             tex2jax: {
@@ -18,6 +18,7 @@ description: basic knowledges among deep learning field
     </script>
 </head>
 
+
 ## 1 基础知识
 
 此部分涉及到的知识有一定的理解门槛，如果基础知识有遗忘或者掌握不牢，参见一站式机器学习前部背景知识部分，此文不再重复。
@@ -25,7 +26,6 @@ description: basic knowledges among deep learning field
 ### 1.1 常见损失函数
 
 **01损失函数**
-
 $$
 L(Y, f(x)) =
 \begin{cases}

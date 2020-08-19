@@ -91,12 +91,20 @@ assert 1 + 1 ==2, 'error message'
 
 **\_\_new\_\_ /\_\_init\_\_**
 
-- \_\_init\_\_是当实例对象创建完成后被调用的，然后设置对象属性的一些初始值。
-- \_\_new\_\_是在实例创建之前被调用的，因**它的任务就是创建实例然后返回该实例**，是个静态方法。
-
-即，\_\_new\_\_在\_\_init\_\_之前被调用，\_\_new\_\_的返回值（实例）将传递给\_\_init\_\_方法的第一个参数，然后\_\_init\_\_给这个实例设置一些参数。
-
-- \_\_init\_\_ 并不是其他语言中常说的构造函数，而是初始化函数，因为在调用init之前已经由new构造出了一个实例
+```python
+"""
+__init__是当实例对象创建完成后被调用的，然后设置对象属性的一些初始值。
+__new__ 第一个参数是这个类，__init__第一个参数是这个类的实例对象
+__new__是在实例创建之前被调用的，因为它的任务就是创建实例然后返回该实例，是个静态方法。
+即__new__在__init__之前被调用，__new__的返回值（实例）将传递给__init__方法的第一个参数，然后__init__给这个实例设置一些参数。
+__init__ 并不是其他语言中常说的构造函数，而是初始化函数，因为在调用init之前已经由new构造出了一个实例
+"""
+class foo:
+    def __new__(cls,*argv,**kwargv):
+        # 第一个参数是这个类，其余参数在调用成功后传递给__init__方法,默认是调用超类的__new__方法
+        # __new__ 方法的作用是以合适的参数调用超类的 __new__ 方法
+        return super.__new__(cls, *argv,**kwargv)
+```
 
 **\_\_name\_\_**
 
@@ -155,9 +163,7 @@ a()
 # 222
 ```
 
-
-
-**Reference**<br>[Python __call__()方法（详解版）](http://c.biancheng.net/view/2380.html)
+**Reference**<br>[Python \_\_call\_\_()方法（详解版）](http://c.biancheng.net/view/2380.html)<br>[通俗的讲解Python中的\_\_new\_\_()方法](https://blog.csdn.net/sj2050/article/details/81172022)<br>[Python \_\_new\_\_()方法详解](http://c.biancheng.net/view/5484.html)
 
 ### getattr(), setattr(), hasattr()
 
@@ -585,6 +591,21 @@ class foo:
 f1 = foo(1,2)
 f2 = foo(1,2)
 f1==f2
+########### 借助__new__ 方法###########
+# 通过覆写__new__方法，在实例化的时候进行控制来达到单例目的
+# 注意的是__new__方法和__init__ 方法除了第一个参数以外其他参数要一致，原因在上文原生方法中提到
+class singleton():
+    _instance = None
+    def __init__(self, *argv,**kwargvs):
+        pass
+    def __new__(cls, *argv,**kwargvs):
+        if cls._instance is None:
+            cls._instance = object.__new__(cls)
+        return cls._instance
+    
+s1 = singleton(1,2)
+s2 = singleton(1,2)
+s1 == s2
 
 ```
 

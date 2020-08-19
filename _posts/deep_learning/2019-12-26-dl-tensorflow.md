@@ -153,7 +153,7 @@ features： 一个map 把featurename map to FixedLenFeatures/VarLenFeatures/Spar
 
 ## 入门
 
-### 计算图
+### graph
 
 > tensorflow每一个计算都是都是计算图上的一个节点，而节点之间的边描述了计算之间的依赖关系
 
@@ -178,7 +178,29 @@ result = string_join(tf.constant("hello"),tf.constant("world"))
 
 ```
 
-### 张量
+### session
+
+**tensorflow会自动生成默认的计算图，但是不会生成默认的session**，如果没有指定模型session，with sess.as_default(),  tf.Tensor.eval()需要指定session才能得到tensor的值
+
+config = tf.ConfigProto() 来配合生成的会话，最常用allow_soft_placement=True,这个参数允许GPU在特定情况下可以在CPU上运行，而不是报错。
+
+### collection
+
+```python
+tf.GraphKeys.VARIABLES   #所有变量
+#通过tf.global_varibles() 获取
+
+tf.GraphKeys.TRAINABLE_VARIABLES  #可学习的变量
+#通过tf.trainable_variables() 获得
+
+tf.GraphKeys.SUMMARIES  #日志生成相关的张量
+
+tf.GraphKeys.QUEUE_RUNNERS #处理输入的QueueRunner
+
+tf.GraphKeys.MOVING_AVERAGE_VARIABLES  #所有计算了滑动平均的变量
+```
+
+### tensor
 
 > 张量在功能上相当于多维数组，但是实现并不是直接采用多维数组的形式，只是对tensorflow中运算结果的引用，并没有保存真正的数字
 
@@ -313,7 +335,7 @@ tf.split(c,[1,2,3], axis=0) # 指定每份分割的数量，第一part1个sample
 
 **Reference**<br>[TensorFlow 文档v2.3.0](https://www.tensorflow.org/api_docs/python/tf/random/normal)
 
-### 运算
+### operator
 
 **数值运算**
 
@@ -461,42 +483,186 @@ b = tf.constant([10,10])
 a+b  # [[11,12],[13,14]]
 ```
 
-### 数据管道
+### dataset
 
 ```python
-# 从tensor，numpy，dataframe
+""" 通常流程
+数据管道本质是一个ETL过程Extract,Transform, Load
+1. 首先提取数据Extract，可以从from_tensor_slice, from_generator, TextLineDataset
+2. 再Transform, 通常预先定义预处理函数，调用dataset.map对每个元素应用预处理函数
+3. 最后调用repeat,batch,prefetch几个常用的方法完成最后的“load”
+
+"""
+
+
+############ 从tensor，numpy，dataframe ###############
 dataset1 = tf.data.Dataset.from_tensor_slices(data)
 dataset2 = tf.data.Dataset.from_tensors(data) # 生成只有一个元素的dataset
 
-# 重复3次，每次取10个数据
-dataset1.repeat(3).batch(10)
+############# 从文件 ###################
+BATCH_SIZE = 64
+
+# 返回一个由文件名字符串构成的dataset
+file_dataset = tf.data.Dataset.list_files("/path/*.csv")
+
+# 多进程把不同来源的数据交错在一起，其中interleave的第一个参数是map_func。
+dataset = file_dataset.interleave(
+	lambda file: tf.data.TextLineDataset(file).skip(1)
+	)
+
+# 读取出来的数据经过预处理，第二个参数表示并行处理的元素个数
+dataset.map(preprocess_func, num_parallel_calls=10)
+
+# 打乱,buffer_size需要大于等于dataset数据量,详情见文档
+dataset.shuffle(buffer_size=len(dataset))
+
+# 重复，如果不指定repeat参数，则无限重复
+dataset = dataset.repeat()
+
+# 设置batch 大小
+dataset = dataset.batch(BATCH_SIZE)
+
+# prefetch,文档中提到绝大多数dataset应该以prefetch方法调用结尾，使得当前元素在处理时，下一个元素能同时被准备，空间换时间
+dataset = dataset.prefetch(buffer_size=5)
+
+# 当然可以把prefetch，batch，repeat一起写
+ds = dataset.repeat().bacth(64).prefetch(5)
 ```
 
-### 会话
+**Reference**<br>[tf.data.Dataset.shuffle(buffer_size)中buffer_size的理解](https://juejin.im/post/6844903666378342407)<br>[一文上手最新Tensorflow2.0系列(三)  “tf.data”API 使用](https://www.jianshu.com/p/e8ae78bef371)
 
-**tensorflow会自动生成默认的计算图，但是不会生成默认的session**，如果没有指定模型session，with sess.as_default(),  tf.Tensor.eval()需要指定session才能得到tensor的值
+### feature_column
 
-config = tf.ConfigProto() 来配合生成的会话，最常用allow_soft_placement=True,这个参数允许GPU在特定情况下可以在CPU上运行，而不是报错。
-
-### Collection
+常常用于对结构化数据进行特征工程，将常用的连续值分桶，类别特征one-hot编码等封装起来，直接指明某某字段是什么类型的特征，不用显式写特征工程代码，Tensorflow自动完成，并喂给模型。
 
 ```python
-tf.GraphKeys.VARIABLES   #所有变量
-#通过tf.global_varibles() 获取
+import numpy as np 
+import pandas as pd
+import tensorflow as tf	
+from tensorflow import feature_column
+from tensorflow.keras import layers
 
-tf.GraphKeys.TRAINABLE_VARIABLES  #可学习的变量
-#通过tf.trainable_variables() 获得
+############# numerical feature ###################
+# numerical columns，这一步仅仅是指定了age特征是一个数值特征，并没有传具体的data进去
+# 方法返回feature_column类型对象
+age = feature_column.numeric_column("age")
 
-tf.GraphKeys.SUMMARIES  #日志生成相关的张量
+# bucketized columns, 输入是一个numeric_column,左闭右开，输出的特征数=len(boundaries)+1
+age = feature_column.bucketized_column(age,boundaries=[30,50,80])
 
-tf.GraphKeys.QUEUE_RUNNERS #处理输入的QueueRunner
+############# categorical feature #################
+# 所有categorical feature 最后都要经过indicator column转成Dense column才能喂给模型/除了embedding column
+# categorical column with vocabulary list, 本质就是one-hot编码
+grade = feature_column.categorical_column_with_vocabulary_list(
+      'grade', vocabulary_list=['poor', 'average', 'good'])
+grade = feature_column.indicator_column(grade)
 
-tf.GraphKeys.MOVING_AVERAGE_VARIABLES  #所有计算了滑动平均的变量
+# embedding column 如果类型太多，onehot编码后会过于稀疏，而且维度过大，可以用embedding column降维
+# embedding 维度是个超参，embedding之后数值是浮点数不是0,1 boolean,lookup table 其实在训练的时候同步更新的，而不是提前就知道的
+movie_cate = feature_column.categorical_column_with_vocabulary_list("point",df['point'].unique())
+movie_embedding = feature_column.embedding_column(movie_cate, dimensions=4)
+
+# hash bucket,适合类别过多的特征，对输入计算hash值，hash值除hash_bucket_size_取余，余数one-hot编码。缺点是不同的输入可能落到相同的桶
+movie_hash = feature_column.categorical_column_with_hash_bucket('point', hash_bucket_size=4)
+movie_hash = feature_column.indicator_column(movie_hash)
+
+# crossed_column 输入可以任意categorical column,除了hash_bucket
+# 不会生成full table of all possible combination，因为有可能很大，hash_bucket_size设定大小
+gender_cate = tf.feature_column.categorical_column_with_vocabulary_list(
+          key='gender',vocabulary_list=["male","female"])
+
+crossed_feature = tf.feature_column.indicator_column(
+    tf.feature_column.crossed_column([gender_cate, grade],hash_bucket_size=15))
+
+feature_columns.append(crossed_feature)
 ```
 
+上面代码基本涵盖了常用的几种特征列, 但是没有提到特征列处理好之后怎么喂给模型
 
+```python
+feature_columns = []
 
-### 持久化
+feature_columns.extend([age, grade, movie_embedding, movie_hash, gender_cate])
+
+model = tf.keras.Sequential([
+  # 需要把特征列放在DenseFeature中,相当于feature_column和keras模型之间的桥梁
+  layers.DenseFeatures(feature_columns),
+  layers.Dense(64, activation='relu'),
+  layers.Dense(64, activation='relu'),
+  layers.Dense(1, activation='sigmoid')
+])
+
+```
+
+**Reference**<br>[Demonstration of TensorFlow Feature Columns (tf.feature_column)](https://medium.com/ml-book/demonstration-of-tensorflow-feature-columns-tf-feature-column-3bfcca4ca5c4)<br>[Train tf.keras model in TensorFlow 2.0 using feature coulmn](https://medium.com/ml-book/train-tf-keras-model-using-feature-coulmn-8de12e65ddec)
+
+### Activation
+
+```python
+tf.nn.sigmoid
+tf.nn.softmax
+tf.nn.tanh
+tf.nn.relu
+tf.nn.leaky_relu
+tf.nn.elu
+tf.nn.selu
+tf.nn.swish
+
+# 使用激活函数
+model = models.Sequential()
+# 第一种方式, 也可以写成activation='relu'
+model.add(layers.Dense(32, input_shape=(None,16),activation=tf.nn.relu ))
+# 第二种方式
+model.add(layer.Dense(32))
+model.add(layers.Activation(tf.nn.softmax))
+```
+
+### Layers
+
+```python
+# 常用
+layers.Dense # 全连接层
+layers.Activation
+layers.Dropout
+layers.BatchNormalization
+layers.Input
+layers.DenseFeature
+layers.Embedding
+layers.LSTM
+layers.RNN
+layers.Attention
+```
+
+### Loss&Metrics&Optimizer
+
+```python
+######### loss func 常用############
+mean_squared_error #回归
+mean_absolute_error
+Huber
+binary_crossentropy # 二分类
+categorical_crossentropy # 多分类
+hinge # svm
+cosine_similarity # 余弦相似度
+
+############ metrics 常用 ############
+MeanSquaredError
+MeanAbsoluteError
+RootMeanSquaredError
+Accuracy
+Recall
+AUC
+
+############# optimizer 常用 ############
+SGD
+Adam
+Nadam
+Adadelta
+Adagrad
+RMSprop
+```
+
+### persistence
 
 ```
 # 保存模型
