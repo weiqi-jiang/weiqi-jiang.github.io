@@ -8,8 +8,6 @@ description: 主要是记录一些平时不经常用，但是偶尔还挺有用�
 
 > python作为一个有点“骚”的语言, 是值得多学习的~
 
-
-
 ## 基础
 
 ### Encoding&Decoding
@@ -89,20 +87,26 @@ assert 1 + 1 ==2, 'error message'
 
 
 
+### 一些原生方法
 
+**\_\_new\_\_ /\_\_init\_\_**
 
-### \_\_new\_\_ 和\_\_init\_\_的关系
+```python
+"""
+__init__是当实例对象创建完成后被调用的，然后设置对象属性的一些初始值。
+__new__ 第一个参数是这个类，__init__第一个参数是这个类的实例对象
+__new__是在实例创建之前被调用的，因为它的任务就是创建实例然后返回该实例，是个静态方法。
+即__new__在__init__之前被调用，__new__的返回值（实例）将传递给__init__方法的第一个参数，然后__init__给这个实例设置一些参数。
+__init__ 并不是其他语言中常说的构造函数，而是初始化函数，因为在调用init之前已经由new构造出了一个实例
+"""
+class foo:
+    def __new__(cls,*argv,**kwargv):
+        # 第一个参数是这个类，其余参数在调用成功后传递给__init__方法,默认是调用超类的__new__方法
+        # __new__ 方法的作用是以合适的参数调用超类的 __new__ 方法
+        return super.__new__(cls, *argv,**kwargv)
+```
 
-- \_\_init\_\_是当实例对象创建完成后被调用的，然后设置对象属性的一些初始值。
-- \_\_new\_\_是在实例创建之前被调用的，因**它的任务就是创建实例然后返回该实例**，是个静态方法。
-
-即，\_\_new\_\_在\_\_init\_\_之前被调用，\_\_new\_\_的返回值（实例）将传递给\_\_init\_\_方法的第一个参数，然后\_\_init\_\_给这个实例设置一些参数。
-
-- \_\_init\_\_ 并不是其他语言中常说的构造函数，而是初始化函数，因为在调用init之前已经由new构造出了一个实例
-
-
-
-###  \_\_name\_\_
+**\_\_name\_\_**
 
 模块也是一个对象，该对象有\_\_name\_\_ 属性
 
@@ -115,7 +119,7 @@ xxx_module.__name__
 
 ```
 
-### \_\_repr\_\_
+**\_\_repr\_\_**
 
 ```python
 #每个类都有一个__repr__方法，自定义print 实例化对象时的返回值，默认的输出是类名+object at + 内存地址
@@ -127,7 +131,7 @@ class test:
 print(test()) # 输出xxx
 ```
 
-### \_\_del\_\_
+**\_\_del\_\_**
 
 ```python
 #手动或者自动释放空间的时候，会调用__del__()方法,但是要注意不要随意重载，确保资源能够正确释放
@@ -138,13 +142,28 @@ class test:
     	return 'xxx'
 ```
 
-
-
-### \_\_dir\_\_  / \_\_dict\_\_
+**\_\_dir\_\_  / \_\_dict\_\_**
 
 dir 返回对象拥有的所有方法和属性, dict 查看属性名和属性值组成的字典
 
+**\_\_call\_\_**
 
+相当于在类中重载‘()’运算符，使得**类实例**对象变成可调用对象。python中可以将“()”应用到本身执行，都称为“可调用对象”, 一般的情况下，新建类实例时，调用\_\_init\_\_方法, 但新建的实例本身并不能直接调用，如果执行，或报错说“xxx object is not callable”。但是如果在类定义中实现了\_\_call\_\_方法，则可以把类实例变成可调用对象。
+
+```python
+class foo:
+    def __init__(self)：
+    	print("111")
+    def __call__(self):
+        print("222")
+        
+a = foo()
+# 111 
+a()
+# 222
+```
+
+**Reference**<br>[Python \_\_call\_\_()方法（详解版）](http://c.biancheng.net/view/2380.html)<br>[通俗的讲解Python中的\_\_new\_\_()方法](https://blog.csdn.net/sj2050/article/details/81172022)<br>[Python \_\_new\_\_()方法详解](http://c.biancheng.net/view/5484.html)
 
 ### getattr(), setattr(), hasattr()
 
@@ -363,7 +382,232 @@ with open('test.txt', 'w') as file:
     file.write('xxxxxx')
 ```
 
+## 进阶
 
+### 抽象类
+
+抽象类的个人理解一部分作用是函数名规范化，例如很多个线性模型，都有fit方法和predict方法，如果模型不继承抽象类，fit方法可能因为不同的程序员开发变成不同的名字，比如fit_data之类，可能会导致各种事先没有考虑到的错误。如果提取出抽象类，各个线性模型都继承抽象类，则必须实现抽象类中的fit和predict方法，相当于规范了函数名。python中没有接口，但是python支持多继承，所以在需要多继承场景下，直接继承多个抽象类即可。
+
+```python
+from abc import abstractmethod, ABCMeta
+
+
+class LinearModel(metaclass=ABCMeta):
+    @abstractmethod
+    def fit(self):
+        pass 
+    
+    @abstractmethod
+    def predict(self):
+        pass 
+   	#非抽象方法
+	def print(self):
+        print('hello world')
+```
+
+### 装饰器
+
+装饰器的本质还是函数或者类，它的作用是在其他python函数外套上一个“壳”，在保留原来功能的基础上，添加新的功能，比如写日志，性能测试, 甚至只是为了“装饰”...
+
+```python
+##########被装饰函数无参 #################
+def logging(func):
+    def wrapper():
+        print("this is wrapper function")
+        return func()
+    return wrapper 
+
+# 不使用@语法糖,看起来更明了，相当于用新函数覆盖了原来的函数名
+def foo():
+	print("hello world")
+foo = logging(foo)
+
+# 使用@语法糖
+@logging
+def foo():
+    print("hello world")
+ 
+foo() # 打印this is wrapper function 然后打印hello world
+
+############ 被装饰函数有参 ################
+def logging1(func):
+    """一个参数"""
+	def wrapper(param):
+        print("this is wrapper function")
+        return func(param)
+    return wrapper
+
+def logging2(func):
+    """适配所有情况"""
+    def wrapper(*args, **kwargs):
+        print("this is wrapper function")
+       	return func(*args, **kwargs)
+   	return wrapper
+
+@logging2
+def foo(a1,a2,a3=0,a4=0):
+    print("hello world")
+    
+foo(1,2,a3=1,a4=2)
+
+############ 装饰器带参数 ################
+#看起来很复杂，套了3层函数，其实很简单就是在原来无参装饰器的基础上再套一层方便传level参数而已
+# 所以写法可以先按正常不带参数装饰器写，最后再套一层加个参数。
+def logging(level):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            if level=='1':
+            	print("Decorator with parameters level-1")
+            elif level=='2':
+                print("Decorator with parameters level-2")
+            else:
+                print("Decorator with parameters level-3")
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+@logging(level='1')
+def foo(a):
+	print("hello world")
+
+foo(1)
+# Decorator with parameters level-1
+# hello world
+
+############# 其他 #####################
+def logging(func):
+    print("Testing")
+    def wrapper():
+        print("this is wrapper function")
+        return func()
+    return wrapper 
+
+@logging
+def foo():
+    print("hello world")
+
+"""
+输出： 
+Testing
+为什么？看起来没有调用函数却有打印：@logging -> foo = logging(foo) 这个时候已经调用了logging函数
+"""
+
+foo()
+foo()
+"""
+输出：
+this is wrapper function
+hello world
+this is wrapper function
+hello world
+为什么又没有Testing输出了呢：因为之前有过foo = logging(foo)，所以foo()已经相当于调用wrapper()
+print("Testing") 语句在wrapper定义外，当然不会打印，那随之引出一个问题，如果我调用两次@logging呢？
+会不会打印两次Testing，会！
+"""
+@logging
+@logging
+def foo():
+    print("hello world")
+"""
+直接运行 输出两次“Testing”，接着又引出另一个问题，我如果调用foo(),会打印什么？
+"""
+foo()
+""" 输出：
+this is wrapper function
+this is wrapper function
+hello world
+此时相当于 foo = logging(logging(foo)) 调用顺序是从内到外
+"""
+
+##################类装饰器#################
+# step 1
+class decorator:
+    def __init__(self, func):
+        self._func = func 
+        print('in initilizer')
+        
+    def __call__(self):
+        print("in decorator")
+        self._func()
+# step 2
+@decorator  
+# step 3
+def foo():
+    print("111")
+"""
+在step2时，已经打印出了in initilizer, 说明类装饰器是先初始类实例， 相当于foo = decorator(foo)
+此时foo已经是decorator类的实例，调用foo变成了调用类实例，所以一定要定义__call__方法，且__call__方法中一定要调用self._func
+"""
+```
+
+**Reference**<br>[理解python装饰器看这一篇就够了](https://foofish.net/python-decorator.html)
+
+### 单例模式
+
+```python
+########### 函数装饰器方法 ###########
+"""
+为什么可行？
+@singleton -> foo = singleton(foo),此时foo() 相当于inner()
+_instance中如果有类地址的键（注意！类地址是不会变的！），返回之前创建的实例，如果没有，创建实例
+问题？
+_instance 的作用域是多大？ foo._instance报错，说明不是类变量，但是inner() 函数又可以访问
+"""
+def singleton(cls):
+    """singleton decorator"""
+    _instance = {}
+    def inner():
+        if cls not in _instance:
+            _instance[cls] = cls()
+        return _instance[cls]
+    return inner
+
+
+@singleton
+class foo:
+    def __init__(self):
+        pass 
+
+c1 = foo()
+c2 = foo()
+c1==c2 #True
+
+######### 类装饰器方法 #############
+# 如果理解类装饰器的原理很好理解为什么这个方法是有效的，因为此时foo已经是singleton类的一个实例
+# foo(*args, **kwargs) 其实相当于s = singleton();s(*args, **kwargs)
+class singleton:
+    def __init__(self, cls):
+        self._cls = cls
+        self._instance = {}
+    def __call__(self, *args, **kwargs):
+        if self._cls not in self._instance:
+            self._instance[self._cls] = self._cls(*args, **kwargs)
+        return self._instance[self._cls]
+    
+@singleton
+class foo:
+    def __init__(self,*args, **kwargs):
+        pass 
+f1 = foo(1,2)
+f2 = foo(1,2)
+f1==f2
+########### 借助__new__ 方法###########
+# 通过覆写__new__方法，在实例化的时候进行控制来达到单例目的
+# 注意的是__new__方法和__init__ 方法除了第一个参数以外其他参数要一致，原因在上文原生方法中提到
+class singleton():
+    _instance = None
+    def __init__(self, *argv,**kwargvs):
+        pass
+    def __new__(cls, *argv,**kwargvs):
+        if cls._instance is None:
+            cls._instance = object.__new__(cls)
+        return cls._instance
+    
+s1 = singleton(1,2)
+s2 = singleton(1,2)
+s1 == s2
+
+```
 
 ## 常用Module
 

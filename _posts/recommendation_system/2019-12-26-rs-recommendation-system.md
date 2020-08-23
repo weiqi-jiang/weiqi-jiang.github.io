@@ -6,6 +6,12 @@ tags: recommendation system
 description: 推荐系统模型，算法，框架，相关论文
 ---
 
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+</head>
+
 ## 推荐系统基础知识
 
 ### **推荐系统主要有两个目的**
@@ -156,24 +162,32 @@ Latent Factor Model隐性因子模型，意在找出用户的兴趣因子。LFM�
 
 ![lfm](/assets/img/recommendation_system/lfm.jpg)
 
-R：用户对物品的偏好信息，$R_{ij}$表示用户$i$对物品$j$的偏好程度。P：表示用户对物品类别的偏好矩阵。Q：表示物品属于个类别的比例。从上述图中可以看出用户对物品的兴趣度可以用如下公式表示，推荐兴趣度top N的物品给用户即可。
+R：用户对物品的偏好信息，$R$ 表示用户$i$对物品$j$的偏好程度。P：表示用户对物品类别的偏好矩阵。Q：表示物品属于个类别的比例。从上述图中可以看出用户对物品的兴趣度可以用如下公式表示，推荐兴趣度top N的物品给用户即可。
+
 $$
 R(u,i) = \sum_{k=1}^{K}P_{u,k}Q_{i,k}
 $$
+
 那么问题来了，class类别数怎么分，P和Q矩阵如何确定。首先class类别数是一个hyper parameter，由先验确定，或者根据推荐结果，进行实验修改。P,Q矩阵参数首先是随机初始化，通过梯度下降方法进行优化迭代，模型学习出来的。那label又是哪里来的呢？R矩阵中如果用户对某个物品有过行为则为1，否则为0，如果推荐场景中能很好的收集**用户负反馈信息**(通常很难获取)，则行为可以为负数。损失函数顺理成章的是
+
 $$
 cost = \sum_{(u,i)\in S}(R_{ui}-\hat{R_{ui}})^2 +\lambda||P_u||^2 +\lambda||Q_i||^2
 $$
+
 对两个未知参数求梯度
+
 $$
 \frac{\partial c}{\partial P_{uk}} = -2\sum_{(u,i)\in S}(R_{ui}-\sum_{k=1}^{K}P_{u,k}Q_{k,i})Q_{ki}+2\lambda P_{uk} \\
 \frac{\partial c}{\partial Q_{ki}} = -2\sum_{(u,i)\in S}(R_{ui}-\sum_{k=1}^{K}P_{u,k}Q_{k,i})P_{uk}+2\lambda Q_{ki}
 $$
+
 参数更新
+
 $$
 P_{uk} = P_{uk} +\alpha(\frac{\partial c}{\partial P_{uk}})\\
 Q_{ki} = Q_{ki} +\frac{\partial c}{\partial Q_{ki}}
 $$
+
 从整个训练过程中可以看出，我们最终是想要矩阵R，也就是用户对于每个item的兴趣值，在这个过程中，我们得到中间结果矩阵R，也就是用户对于类别的喜好，以及矩阵Q，item属于类别的概率，这里相当于完成了item的自动“聚类”，我们不关心“聚类”的维度划分过程，只需要提供超参也就是类别个数。实际应用中，LFM通常是天级别更新。
 
 **Reference**<br>[使用LFM（Latent factor model）隐语义模型进行Top-N推荐](https://blog.csdn.net/HarryHuang1990/article/details/9924377)
