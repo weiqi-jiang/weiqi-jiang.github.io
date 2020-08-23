@@ -69,13 +69,7 @@ which pip
 where pip
 ```
 
-
-
-**Reference**
-
-[tensorflow，keras，python版本对照表](https://docs.floydhub.com/guides/environments/)
-
-
+**Reference**<br>[tensorflow，keras，python版本对照表](https://docs.floydhub.com/guides/environments/)
 
 ## 背景知识
 
@@ -131,9 +125,29 @@ Feature{
 key-value 都是列表形式
 ```
 
-下图是Example 的一个示例，把一张图片分为“image”“label”两个维度来存储
+下文是Example 的一个示例，把一张图片分为“image”“label”两个维度来存储
 
-![img](/assets/img/deeplearning/tensorflow/tfrecord-example.png)
+```
+Example:
+	feature {
+		feature{
+			key:"image"
+			value{
+				bytes_list {
+					value:"\377\374\372..."
+				}
+			}
+		}
+		feature{
+			key:"label"
+			value{
+				int64_list{
+					value: 9 
+				}
+			}
+		}
+	}
+```
 
 生成TFRecord之后使用tf.parse_single_example() 或者parse_example() API 去读取TFRecord
 
@@ -144,16 +158,13 @@ tf.parse_single_example{
   name = None;
   examplename = None
 }
-
 serialized: 序列化之后的tensor
 features： 一个map 把featurename map to FixedLenFeatures/VarLenFeatures/SparseTensor 类型中的一个
 ```
 
- 
-
 ## 入门
 
-### graph
+### Graph
 
 > tensorflow每一个计算都是都是计算图上的一个节点，而节点之间的边描述了计算之间的依赖关系
 
@@ -178,20 +189,16 @@ result = string_join(tf.constant("hello"),tf.constant("world"))
 
 ```
 
-### session
+### Session
 
-**tensorflow会自动生成默认的计算图，但是不会生成默认的session**，如果没有指定模型session，with sess.as_default(),  tf.Tensor.eval()需要指定session才能得到tensor的值
+**tensorflow会自动生成默认的计算图，但是不会生成默认的session**，如果没有指定模型session，with sess.as_default(),  tf.Tensor.eval()需要指定session才能得到tensor的值。config = tf.ConfigProto() 来配合生成的会话，最常用allow_soft_placement=True,这个参数允许GPU在特定情况下可以在CPU上运行，而不是报错。
 
-config = tf.ConfigProto() 来配合生成的会话，最常用allow_soft_placement=True,这个参数允许GPU在特定情况下可以在CPU上运行，而不是报错。
-
-### collection
+### Collection
 
 ```python
-tf.GraphKeys.VARIABLES   #所有变量
-#通过tf.global_varibles() 获取
+tf.GraphKeys.VARIABLES   #所有变量，通过tf.global_varibles() 获取
 
-tf.GraphKeys.TRAINABLE_VARIABLES  #可学习的变量
-#通过tf.trainable_variables() 获得
+tf.GraphKeys.TRAINABLE_VARIABLES  #可学习的变量，通过tf.trainable_variables() 获得
 
 tf.GraphKeys.SUMMARIES  #日志生成相关的张量
 
@@ -200,7 +207,7 @@ tf.GraphKeys.QUEUE_RUNNERS #处理输入的QueueRunner
 tf.GraphKeys.MOVING_AVERAGE_VARIABLES  #所有计算了滑动平均的变量
 ```
 
-### tensor
+### Tensor
 
 > 张量在功能上相当于多维数组，但是实现并不是直接采用多维数组的形式，只是对tensorflow中运算结果的引用，并没有保存真正的数字
 
@@ -335,7 +342,7 @@ tf.split(c,[1,2,3], axis=0) # 指定每份分割的数量，第一part1个sample
 
 **Reference**<br>[TensorFlow 文档v2.3.0](https://www.tensorflow.org/api_docs/python/tf/random/normal)
 
-### operator
+### Operator
 
 **数值运算**
 
@@ -483,7 +490,7 @@ b = tf.constant([10,10])
 a+b  # [[11,12],[13,14]]
 ```
 
-### dataset
+### Dataset
 
 ```python
 """ 通常流程
@@ -493,8 +500,6 @@ a+b  # [[11,12],[13,14]]
 3. 最后调用repeat,batch,prefetch几个常用的方法完成最后的“load”
 
 """
-
-
 ############ 从tensor，numpy，dataframe ###############
 dataset1 = tf.data.Dataset.from_tensor_slices(data)
 dataset2 = tf.data.Dataset.from_tensors(data) # 生成只有一个元素的dataset
@@ -510,8 +515,20 @@ dataset = file_dataset.interleave(
 	lambda file: tf.data.TextLineDataset(file).skip(1)
 	)
 
+# 还有一种是tf.data.CsvDataset()
+dataset = tf.data.CsvDataset(filenames, record_defaults, header = ...)
+
+# 从tfrecord 文件构建dataset, filename 可以是string 也可以是list of string
+dataset = tf.data.TFRecordDataset(filename)
+
+# 从文本文件构建dataset, filename 可以是string 也可以是list of string， 默认每次读取每个文件的一行
+dataset = tf.data.TextLineDataset(filename).skip(1).filter(lambda line: conditions...)
+
 # 读取出来的数据经过预处理，第二个参数表示并行处理的元素个数
 dataset.map(preprocess_func, num_parallel_calls=10)
+dataset1 = dataset1.map(lambda x: ...)
+dataset2 = dataset2.flat_map(lambda x,y: ...)
+dataset3 = dataset3.filter(lambda x,(y,z): ...)
 
 # 打乱,buffer_size需要大于等于dataset数据量,详情见文档
 dataset.shuffle(buffer_size=len(dataset))
@@ -531,7 +548,7 @@ ds = dataset.repeat().bacth(64).prefetch(5)
 
 **Reference**<br>[tf.data.Dataset.shuffle(buffer_size)中buffer_size的理解](https://juejin.im/post/6844903666378342407)<br>[一文上手最新Tensorflow2.0系列(三)  “tf.data”API 使用](https://www.jianshu.com/p/e8ae78bef371)
 
-### feature_column
+### Feature_column
 
 常常用于对结构化数据进行特征工程，将常用的连续值分桶，类别特征one-hot编码等封装起来，直接指明某某字段是什么类型的特征，不用显式写特征工程代码，Tensorflow自动完成，并喂给模型。
 
@@ -581,7 +598,6 @@ feature_columns.append(crossed_feature)
 
 ```python
 feature_columns = []
-
 feature_columns.extend([age, grade, movie_embedding, movie_hash, gender_cate])
 
 model = tf.keras.Sequential([
@@ -662,9 +678,32 @@ Adagrad
 RMSprop
 ```
 
-### persistence
+### Build
 
+```python
+import tensorflow as tf
+from tensorflow.keras import models, Layers
+
+model.add(layers.Embedding(MAX_WORDS,7,input_length=MAX_LEN))
+model.add(layers.Conv1D(filters = 64,kernel_size = 5,activation = "relu"))
+model.add(layers.MaxPool1D(2))
+model.add(layers.Conv1D(filters = 32,kernel_size = 3,activation = "relu"))
+model.add(layers.MaxPool1D(2))
+model.add(layers.Flatten())
+model.add(layers.Dense(1,activation = "sigmoid"))
+
+model.compile(optimizer='Nadam',
+            loss='binary_crossentropy',
+            metrics=['accuracy',"AUC"])
+
+model.summary()
 ```
+
+
+
+### Persistence
+
+```python
 # 保存模型
 # 模型保存有三个文件
 # 后缀是.meta 保存计算图的结构
@@ -686,74 +725,6 @@ with tf.Session() as sess:
   sess.run(tf.get_default_graph().get_tensor_by_name('add:0'))
 ```
 
-### IO stream
-
-使用queue 读取硬盘中的数据
-
-```
-def read_and_decode(filename):
-    #根据文件名生成一个队列
-    filename_queue = tf.train.string_input_producer([filename])
-    # 初始化一个reader
-    reader = tf.TFRecordReader()
-    _, serialized_example = reader.read(filename_queue)   #返回文件名和文件
-    features = tf.parse_single_example(serialized_example,
-                                       features={
-                                           'label': tf.FixedLenFeature([], tf.int64),
-                                           'img_raw' : tf.FixedLenFeature([], tf.string),
-                                       }) #解析数据
-```
-
-使用Dataset API(目前基于queue的方法在新版中已经移除，推荐使用dataset api)
-
-[tf.data.Dataset 文档](https://www.tensorflow.org/api_docs/python/tf/data/Dataset)
-
-```python
-import tensorflow as tf
-from tf.data.Dataset import *
-
-# 数据集放在内存中 使用tf.data.Dataset.from_tensor_slices or tf.data.Dataset.from_tensors()
-dataset = tf.data.Dataset.from_tensor_slices(np.array([1,2,3,4,5,6]))
-iterator = dataset.make_one_shot_iterator()
-one_element = iterator.get_next()
-with tf.Session() as sess:
-  try:
-    while True:
-      print(sess.run(one_element)) # 打印1 到6
-  except tf.errors.OutOfRangeError:
-    print('end!')
-
-# 从csv 文件中读取数据生成dataset,第一种方法是data.experimental.make_csv_dataset()函数，
-# 返回一个dict结构的dataset元素列表，一个feature_name对应一个tensor
-# 所以可以用dict访问方式 访问指定feature 或者label对应的tensor
-def read_dataset_from_csv(filename):
-    dataset = tf.data.experimental.make_csv_dataset(
-        filename, batch_size = BATCH_SIZE, column_defaults=[0.0]*10, num_epochs=20, shuffle=True)
-    iterator = dataset.maek_one_shot_iterator()
-    return iterator.get_next()
-
-# 还有一种是tf.data.CsvDataset()
-dataset = tf.data.CsvDataset(filenames, record_defaults, header = ...)
-
-# 从tfrecord 文件构建dataset, filename 可以是string 也可以是list of string
-dataset = tf.data.TFRecordDataset(filename)
-
-# 从文本文件构建dataset, filename 可以是string 也可以是list of string， 默认每次读取每个文件的一行
-dataset = tf.data.TextLineDataset(filename).skip(1).filter(lambda line: conditions...)
-
-# dataset 元素变换
-dataset1 = dataset1.map(lambda x: ...)
-dataset2 = dataset2.flat_map(lambda x,y: ...)
-dataset3 = dataset3.filter(lambda x,(y,z): ...)
-
-# dataset 聚合, 重复， 打乱
-batch = dataset.batch(BATCH_SIZE)
-dataset = dataset.repeat(n) # 如果不指定n 无限重复
-dataset = dataset.shuffle(buffer_size = bs)
-```
-
-Dataset 类是***相同元素的有序列表\*，**元素类型很多，可以是字符串，图片，tuple，或是dict， 一个元素有多个tf.Tensor对象，对象被称为组件，可以为元素中各个组件命名，形式为dict， {‘name1’: tensor1, 'name2': tensor2} 。从dataset中把元素取出来的方法是通过迭代Iterator。iterator.get_next()返回的只是一个tensor并不是真实的值，只有通过sess.run() 才能真正的得到一个值, 每次eval tensor之后 迭代器才会进入下一个状态。如果dataset 元素读取完毕，再尝试sess.run(), 会抛出tf.error.OutOfRangeError错误。try, except机制去判断是否读取结束。
-
 ### SparseTensor Class
 
 ```
@@ -766,7 +737,7 @@ Dataset 类是***相同元素的有序列表\*，**元素类型很多，可以�
 
 sparse_reorder 接受一个SparseTensor 类 返回一个维度不变的类 但是index和value 重新按照row-major规则排序好。
 
-```
+```python
 tf.sparse_reorder(
  sp_input,name = None
 )
@@ -776,7 +747,7 @@ tf.nn.embedding_lookup_sparse 计算embedding
 
 按照sp_id 找params对应行，乘上weights ， 按照strategy 进行reduction 最后组成一个tensor返回
 
-```
+```python
 tf.nn.embedding_lookup_sparse(
     params,
     sp_ids,
@@ -793,12 +764,6 @@ tf.nn.embedding_lookup_sparse(
 # partition_strategy 指定分割模式，支持div 和mod 默认mod
 # combiner 指定reduction的操作符 目前支持“mean”,“sqrtn”和“sum”.“sum”计算每行的 embedding 结果的加权和.“mean”是加权和除以总 weight.“sqrtn”是加权和除以 weight 平方和的平方根. 
 ```
-
- 
-
- 
-
-
 
 ## 示例
 
@@ -873,58 +838,32 @@ with tf.Session() as sess:
             print('Step %d, Loss %g' %(i,cross_entropy))
 ```
 
- 
-
-
-
 
 ## Distributed TF
 
-### 单机多GPU的工作模式：
+### 单机多GPU的工作模式
 
 由CPU 负责把batch发给多GPU，多个GPU 负责计算梯度更新，等待所有GPU 运算完毕，梯度更新数据发送给CPU，CPU 计算平均更新梯度，进行梯度更新，接着发送新的batch给多个GPU，时间消耗取决于最慢的GPU 和CPU,GPU 通信时间。
 
- 
+### 多机多GPU 模式
 
-### 多机多GPU 模式：
+当数据量急剧增大的时候，参数更新的速度就成了一个大问题，于是单机模式下单CPU 进行参数更新的模式就行不通了，引入Parameter Server (PS)的概念。组成集群进行梯度更新。Tensorflow 分布式给予gRPC通信框架(google Remote Proceduce Call), 简单理解就是把参数进行打包上传给服务器，服务器端进行运算，运算完之后把运行结果打包传回客户端。
 
-当数据量急剧增大的时候，参数更新的速度就成了一个大问题，于是单机模式下单CPU 进行参数更新的模式就行不通了，引入Parameter Server (PS)的概念。组成集群进行梯度更新
+### 分布式并行策略
 
-Tensorflow 分布式给予gRPC通信框架(google Remote Proceduce Call), 简单理解就是把参数进行打包上传给服务器，服务器端进行运算，运算完之后把运行结果打包传回客户端。
-
- 
-
-### 分布式并行策略：
-
-模型并行: 将模型的不同部分并行分发到不同的worker上训练，但是模型层与层之间是存在串行关系的，所以一般只有在不存在串行的部分进行模型并行
-
-数据并行： worker使用的是同一个graph，但是数据是分块发给不同worker的，分别进行计算，参数更新模式有同步和异步之分。
+模型并行: 将模型的不同部分并行分发到不同的worker上训练，但是模型层与层之间是存在串行关系的，所以一般只有在不存在串行的部分进行模型并行。数据并行： worker使用的是同一个graph，但是数据是分块发给不同worker的，分别进行计算，参数更新模式有同步和异步之分。
 
 ### 参数更新
 
 worker和ps之间的通信都由worker发出pull和push请求，什么时候发出请求是由scheduler调度。
 
-**同步参数更新：**
+**同步参数更新**
 
-workers 运算得到梯度更新参数，等到所有worker跑完一个batchsize，把参数更新信息发送给ps，计算平均梯度，ps进行梯度更新，然后把更新后的参数值传回worker，循环进行。
-
-优点： 虽然单个worker计算梯度更新的时候是基于一个batchsize，但是总体参数更新是所有worker的平均结果，相当于基于batchsize*num_worker 大小的梯度更新，更新方向更加接近真实方向，模型收敛平稳。每次梯度更新慢，但是收敛需要的更新次数少。
-
-缺点： 通信开销很大，短板效应
-
- 
+workers 运算得到梯度更新参数，等到所有worker跑完一个batchsize，把参数更新信息发送给ps，计算平均梯度，ps进行梯度更新，然后把更新后的参数值传回worker，循环进行。**优点**： 虽然单个worker计算梯度更新的时候是基于一个batchsize，但是总体参数更新是所有worker的平均结果，相当于基于batchsize*num_worker 大小的梯度更新，更新方向更加接近真实方向，模型收敛平稳。每次梯度更新慢，但是收敛需要的更新次数少；**缺点**： 通信开销很大，短板效应
 
 **异步参数更新：**
 
-任何一个worker计算完参数更新就把信息发送给ps，ps立即按照信息进行参数更新，以后worker pull到的参数就是更新后的参数。但是这就产生了过期梯度的问题，假设一个worker的计算速度很慢，拿参数的时候拿的v1版本的参数，在计算期间，ps上的参数已经更新到了v3，那么ps就会根据v1版本参数计算得到的梯度来更新v3版本的梯度，得到v4版本，这就会产生震荡，但是最后一般都还是收敛。过期梯度问题可以设置阈值，如果worker上参数的版本比ps的版本差距若干版本以上，则放弃该次更新，防止某一个worker运行速度慢导致梯度更新收过期梯度影响过大。
-
-优点：异步更新没有短板效应，更新速度快
-
-缺点： 更新速度快不意味着收敛速度快，过期梯度问题
-
-
-
-
+任何一个worker计算完参数更新就把信息发送给ps，ps立即按照信息进行参数更新，以后worker pull到的参数就是更新后的参数。但是这就产生了过期梯度的问题，假设一个worker的计算速度很慢，拿参数的时候拿的v1版本的参数，在计算期间，ps上的参数已经更新到了v3，那么ps就会根据v1版本参数计算得到的梯度来更新v3版本的梯度，得到v4版本，这就会产生震荡，但是最后一般都还是收敛。过期梯度问题可以设置阈值，如果worker上参数的版本比ps的版本差距若干版本以上，则放弃该次更新，防止某一个worker运行速度慢导致梯度更新收过期梯度影响过大。**优点**：异步更新没有短板效应，更新速度快；**缺点**： 更新速度快不意味着收敛速度快，过期梯度问题
 
 ## Others
 

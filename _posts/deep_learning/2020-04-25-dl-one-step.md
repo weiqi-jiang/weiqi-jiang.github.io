@@ -13,14 +13,13 @@ description: basic knowledges among deep learning field
 </head>
 
 
-## 1 基础知识
+## 1 Base Knowledge
 
 此部分涉及到的知识有一定的理解门槛，如果基础知识有遗忘或者掌握不牢，参见一站式机器学习前部背景知识部分，此文不再重复。
 
-### 1.1 常见损失函数
+### 1.1 Loss Func
 
-**01损失函数**
-
+**01 Loss**
 $$
 L(Y, f(x)) =
 \begin{cases}
@@ -120,7 +119,7 @@ $$
 [简单的交叉熵损失函数，你真的懂了吗？](https://zhuanlan.zhihu.com/p/38241764)<br>
 [一文搞懂交叉熵在机器学习中的使用，透彻理解交叉熵背后的直觉](https://blog.csdn.net/tsyccnh/article/details/79163834)
 
-### 1.2 常见激活函数
+### 1.2 Activation Func
 
 激活函数的发展过程：Sigmoid -> Tanh -> ReLU -> Leaky ReLU -> MaxOut
 
@@ -212,7 +211,67 @@ $$
 [常见激活函数的比较](https://zhuanlan.zhihu.com/p/32610035)<br>
 [详解softmax函数以及相关求导过程](https://zhuanlan.zhihu.com/p/25723112)
 
-### 1.3 梯度爆炸/消失
+### 1.3 Optimizer
+
+有大佬总结了不同的优化算法，其实他们都是符合一个框架的，设损失函数是$J(\theta)$,学习率是$\eta$
+
+1. 计算损失函数关于当前参数的梯度 $g_t = \triangledown J(\theta_t)$
+2. 计算一阶二阶动量$m_t$ ,$V_t$，即为一阶/二阶指数加权移动平均值
+3. 计算当前下降梯度 $\triangle\theta_t = -\eta\cdot\frac{m_t}{\sqrt{V_t}}$
+4. 参数更新 $\theta_{t+1} = \theta_t+\triangle\theta_t$
+
+**SGD**(Stochastic Gradient Descent)没有动量的概念，所以一阶动量$m_t = g_t$, 二阶动量为“1”。
+$$
+\triangle\theta_t = -\eta \cdot g_t \\
+\theta_{t+1} = \theta_t -\eta \cdot g_t
+$$
+SGD的缺点很明显，容易陷入局部最优解，因为只考虑当前的梯度，如果遇到局部最优点梯度为0，参数不继续更新，陷入局部最优而找不到全局最优。而且只考虑当前梯度的话，优化的路径方向波动太大，收敛速度慢。
+
+**Momentum**(SGD with Momentum)引入“惯性”的概念，在SGD的基础上加上一阶动量，即考虑之前的优化方向，对当前梯度方向进行一个“修正/约束”。此时二阶动量为“1”，一阶动量是该时刻梯度的指数加权移动平均值.
+$$
+\triangle\theta_t = -\eta\cdot m_t = -(\eta g_t + \beta m_{t-1}) \\
+\theta_{t+1} = \theta_t -(\eta g_t + \beta m_{t-1})
+$$
+**NAG**(Nesterov Accelerated Gradient) momentum算子中当前梯度方法主要由“惯性”决定，有助于帮助跳出局部最优点，NAG在该思想的基础上更加的“极端”,在计算当前梯度的时候，干脆就依照“惯性”方向再“走一步”计算下一步的梯度方向，没有考虑二阶动量为“1”
+$$
+\triangle\theta_t = -\eta\cdot m_t  =  -(\eta \triangledown J(\theta_t-\beta m_{t-1}) + \beta m_{t-1}) \\
+\theta_{t+1} = \theta_t -(\eta \triangledown J(\theta_t-\beta m_{t-1}) + \beta m_{t-1})
+$$
+**AdaGrad** 引入二阶动量，之前的算子学习率都是固定的，二阶动量的引入可以动态改变学习率.没有考虑一阶动量，训练时历史累计梯度平方和$v_{t+1}$会越来越大，分母大，分子不变，学习率越来越小，单调递减。
+$$
+V_t = diag(v_{t,1},v_{t,2},...,v_{t,d}) \in R^{d\times d} \\
+\triangle\theta_t = -\frac{\eta}{\sqrt{V_t + \epsilon}}\cdot g_t \\
+\theta_{t+1} = \theta_t-\frac{\eta}{\sqrt{V_t+\epsilon}}\cdot g_t
+$$
+**RMSProp/AdaDelta** adagrad的缺点很明显，学习率单调递减，不管迭代情况如何，更新速度只会越来越慢。改进不累计全部历史梯度，只关心一个时间窗口,借用Momentum指数加权移动平均的思想
+$$
+v_{t,i} = \beta v_{t-1,i} + (1- \beta)g_{t,i}^2  \\
+V_t = diag(v_{t,1},v_{t,2},...,v_{t,d}) \in R^{d\times d} \\
+\triangle\theta_t = -\frac{\eta}{\sqrt{V_t + \epsilon}}\cdot g_t \\
+\theta_{t+1} = \theta_t-\frac{\eta}{\sqrt{V_t+\epsilon}}\cdot g_t
+$$
+**Adam** 同时考虑一阶动量和二阶动量,观察一下公式就可以知道Adam就是RMSProp加了Momentum
+$$
+m_t = \beta_1m_{t-1} +(1-\beta_1)g_t \\
+v_{t,i} = \beta_2 v_{t-1,i} + (1- \beta_2)g_{t,i}^2  \\
+V_t = diag(v_{t,1},v_{t,2},...,v_{t,d}) \in R^{d\times d} \\
+\hat{m_t} = \frac{m_t}{1-\beta_1^t} \\
+\hat{v_{t,i}} = \frac{v_{t,i}}{1-\beta_2^t} \\
+\theta_{t+1} = \theta_t-\eta\frac{\hat{m_t}}{\sqrt{\hat{v}+\epsilon}}
+$$
+**Nadam** 本质是adam考虑了NAG的思想，考虑未来梯度, Adam公式如下
+$$
+\theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{\hat{V_t}+\epsilon}}\cdot \hat{m}_t \\
+ = \theta_t- \frac{\eta}{\sqrt{\hat{V_t}+\epsilon}}\cdot(\frac{\beta_1m_{t-1}}{1-\beta_1^t} + \frac{(1-\beta_1)g_t}{1-\beta_1^t})
+$$
+计算t时刻的梯度，使用了t-1时刻的动量，如果我们用t时刻的动量近似代替t-1时刻，就引入了“未来因素”
+$$
+\theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{\hat{V_t}+\epsilon}}\cdot \hat{m}_t \\
+ = \theta_t- \frac{\eta}{\sqrt{\hat{V_t}+\epsilon}}\cdot(\frac{\beta_1m_{t}}{1-\beta_1^t} + \frac{(1-\beta_1)g_t}{1-\beta_1^t})
+$$
+**Reference**<br>[深度学习中的优化算法串讲](https://zhuanlan.zhihu.com/p/112381956)<br>[Adam 优化算法详解](https://baijiahao.baidu.com/s?id=1668617930732883837&wfr=spider&for=pc)
+
+### 1.4 梯度爆炸/消失
 
 梯度爆炸和梯度消失在某种程度上其实是一回事，在BP过程中，如果激活函数的梯度大于1，那么经过链式求导法则之后，梯度值会以指数形式增加，发生梯度爆炸，反之会以指数形式缩小，发生梯度消失。
 
@@ -226,13 +285,9 @@ sigmoid函数的梯度随着x的增大或减小和消失，而ReLU不会。
 
 通过规范化操作将输出信号x规范化到均值为0，方差为1保证网络的稳定性。从上述分析分可以看到，反向传播式子中有w的存在，所以w的大小影响了梯度的消失和爆炸，Batch Normalization 就是通过对每一层的输出规范为均值和方差一致的方法，消除了w带来的放大缩小的影响，进而解决梯度消失和爆炸的问题。
 
-### 1.4 为什么神经网络中使用交叉熵作为损失函数？
+### 1.5 为什么使用交叉熵作为损失函数？
 
-**特别注意，这里是说最后输出层的损失函数和激活函数**
-
-***输出层的激活函数，和hidden layer的激活函数是分开设置的***
-
-要说为什么采用交叉熵，就要先看看为什么不用均方误差
+**特别注意，这里是说最后输出层的损失函数和激活函数，输出层的激活函数，和hidden layer的激活函数是分开设置的**要说为什么采用交叉熵，就要先看看为什么不用均方误差
 
 均方误差
 
@@ -272,7 +327,7 @@ $$
 **Reference**<br>
 [使用神经网络解决分类问题时，为什么交叉熵误差更好](http://heloowird.com/2017/03/08/diff_errors_of_neural_network/)
 
-### 1.5 输出层的损失函数和激活函数选择
+### 1.6 输出层损失函数和激活函数选择
 
 二分类： sigmoid+交叉熵<br>
 多分类：softmax+交叉熵<br>
@@ -622,5 +677,7 @@ $$
 2. Expansion 选定节点之后，在该节点基础上，走出一步，创建一个新节点，通常是随机选择。
 3. Simulation 在新创建的节点上进行模拟游戏，直到游戏结束，获得该expansion出的节点的reward。
 4. Backpropagation 把reward更新到所有父节点中，包括quality value 和visit time，用于计算UCB。
+
+参考Ref1知乎大神的代码，大神写的是python代码，本人改写为[scala版本](https://github.com/weiqi-jiang/DataStructure-Algorithm-Model/blob/master/scala/tree/MCTS.scala)，但效果一般，简单的游戏并不能保证每次都得到最优的结果，待优化。
 
 **Reference**<br>[如何学习蒙特卡罗树搜索(MCTS)](https://zhuanlan.zhihu.com/p/30458774)<br>[蒙特卡洛树搜索（新手教程）](https://blog.csdn.net/qq_16137569/article/details/83543641)
