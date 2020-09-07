@@ -8,9 +8,9 @@ description: 主要是记录一些平时不经常用，但是偶尔还挺有用�
 
 > python作为一个有点“骚”的语言, 是值得多学习的~
 
-## 基础
+## 1 基础
 
-### Encoding&Decoding
+### 1.1 编码解码
 
 python3 默认编码模式是utf-8，python2默认编码模式是ASCII，如果想指定编码格式
 
@@ -23,9 +23,7 @@ ord('a')
 chr(97)
 ```
 
-
-
-### 生成器Generator/ 迭代器Iterator
+### 1.2 生成器/迭代器
 
 ```python
 ''' 
@@ -40,15 +38,12 @@ class Fib(object):
 
     def __iter__(self):
         return self # 实例本身就是迭代对象，故返回自己
-
+    
     def next(self):
         self.a, self.b = self.b, self.a + self.b # 计算下一个值
         if self.a > 100000: # 退出循环的条件
             raise StopIteration();
         return self.a # 返回下一个值
-
-
-
 
 # 形成generator最简单的方式是用列表,字典，set生成式，只是需要把[], {} 修改为()
 (i for i in range(10))
@@ -70,9 +65,7 @@ next 返回生成器的下一个输出值，这里有一个点需要注意，第
 '''
 ```
 
-
-
-### assert 语句
+### 1.3 assert 语句
 
 ```python
 '''
@@ -81,13 +74,9 @@ next 返回生成器的下一个输出值，这里有一个点需要注意，第
 
 '''
 assert 1 + 1 ==2, 'error message' 
-
-
 ```
 
-
-
-### 一些原生方法
+### 1.4 原生方法
 
 **\_\_new\_\_ /\_\_init\_\_**
 
@@ -163,9 +152,7 @@ a()
 # 222
 ```
 
-**Reference**<br>[Python \_\_call\_\_()方法（详解版）](http://c.biancheng.net/view/2380.html)<br>[通俗的讲解Python中的\_\_new\_\_()方法](https://blog.csdn.net/sj2050/article/details/81172022)<br>[Python \_\_new\_\_()方法详解](http://c.biancheng.net/view/5484.html)
-
-### getattr(), setattr(), hasattr()
+**getattr(), setattr(), hasattr()**
 
 ```python
 hasattr(obj, name)# 属性和方法都属于attr，返回True false， 无法分清属性还是方法
@@ -173,51 +160,44 @@ getattr(obj, name[, default]) # 返回属性值， 或者方法信息，如果�
 setattr(obj, name, value)
 ```
 
+**Reference**<br>[Python \_\_call\_\_()方法（详解版）](http://c.biancheng.net/view/2380.html)<br>[通俗的讲解Python中的\_\_new\_\_()方法](https://blog.csdn.net/sj2050/article/details/81172022)<br>[Python \_\_new\_\_()方法详解](http://c.biancheng.net/view/5484.html)
 
+### 1.5 命名方式
 
+```python
+object #公用方法
 
+"""
+半保护,被看作是“protect”，意思是只有类对象和子类对象自己能访问到这些变量
+在模块或类外不可以使用，不能用’from module import *’导入。
+"""
+_object 
 
+"""
+全私有，全保护,私有成员“private”，意思是只有类对象自己能访问，
+连子类对象也不能访问到这个数据，不能用’from module import *’导入
+__object 也是为了避免与子类的属性或方法名称冲突， 对于该标识符描述的方法，父类的方法不能轻易地被子类的方法覆盖，他们的名字实际上是_classname__methodname
+"""
+__object
 
+"""
+内建方法，用户不要这样定义
+"""
+__object__ 
 
-### 主要存在四种命名方式：
+"""
+当想要强行使用关键词作为变量名的时候，后面加一个下划线用作区分
+"""
+object_
+```
 
-1、object #公用方法
+### 1.6 转义字符
 
-2、_object #半保护
+python里面%d表数字，%s表示字符串，%%表示一个%；单引号内嵌套单引号需要转义字符/;单引号内嵌套双引号不需要嵌套；双引号内嵌套双引号需要转义字符/；双引号内引用单引号不需要转义字符；
 
-​         \#被看作是“protect”，意思是只有类对象和子类对象自己能访问到这些变量，
+### 1.7 set
 
-​         在模块或类外不可以使用，不能用’from module import *’导入。
-
-​        \#__object 是为了避免与子类的方法名称冲突， 对于该标识符描述的方法，父
-
-​         类的方法不能轻易地被子类的方法覆盖，他们的名字实际上是
-
-​         _classname__methodname。
-
-3、_ _ object #全私有，全保护
-
-​            \#私有成员“private”，意思是只有类对象自己能访问，连子类对象也不能访
-
-​             问到这个数据，不能用’from module import *’导入。
-
-4、_ _ object_ _   #**内建方法，用户不要这样定义**
-
- 
-
-### 转义字符
-
-python里面%d表数字，%s表示字符串，%%表示一个%；
-
-单引号内嵌套单引号需要转义字符/;单引号内嵌套双引号不需要嵌套；
-
-双引号内嵌套双引号需要转义字符/；双引号内引用单引号不需要转义字符；
-
- 
-
-### set的一些操作
-
-相比于list 和tuple， set相对不常用
+相比于list 和tuple，set相对不常用
 
 ```python
 s = set()
@@ -250,11 +230,29 @@ s1.symmetric_diffence(s2)
 s1.issubset(s2)
 # s1是否是s2的父集
 s1.issuperset(s2)
+# 另一种方式判断包含关系
+a = [1,2,3,4]
+b = [1,2,3]
+c = [1,2,3,5] 
+a = set(a)
+b = set(b)
+c = set(c) 
+a>b # True
+a>c # False 
 ```
 
+### 1.8 dict
 
+判断输入是否存在于key set中
 
-### 浮点数精度问题
+```python
+# O(n)
+if key in dict.keys()
+# O(1) 
+if dict.get(key)
+```
+
+### 1.8 浮点数精度
 
 ```
 浮点数的小数部分转换为二进制小数的时候都是不断的*2 取整数部分的值作为一个二进制位0,1然后对剩余的小数部分重复操作
@@ -266,7 +264,7 @@ s1.issuperset(s2)
 重此开始了重复,但是计算中不能无限循环，保存精度有限，所以python默认精度有17位，16位精准，17开始不精准 
 ```
 
-### 异常处理机制
+### 1.9 异常处理
 
 ```
 try:  
@@ -279,9 +277,7 @@ finally:
 	do sth3
 ```
 
-在没有return 的情况下：try首先执行，如有异常跳到except，如果没有执行else，finally是一直要执行的有return的情况下： 不管怎样，finally部分的代码是一定执行的，所以finally中有return的话，就按照finally 执行后的结果return 即使try部分，except，else 部分有return ，也是要先执行finally，finally没有return 就返回去return； 如果有就在finally 处return 了，不会回到原来的地方。所以结果可能和预计的不太一样。
-
-手动抛出异常raise ExceptionType('description')，常用的ExceptionType
+在没有return 的情况下：try首先执行，如有异常跳到except，如果没有执行else，finally是一直要执行的有return的情况下： 不管怎样，finally部分的代码是一定执行的，所以finally中有return的话，就按照finally 执行后的结果return 即使try部分，except，else 部分有return ，也是要先执行finally，finally没有return 就返回去return； 如果有就在finally 处return 了，不会回到原来的地方。所以结果可能和预计的不太一样。手动抛出异常raise ExceptionType('description')，常用的ExceptionType
 
 - AssertionError
 - AttributeError
@@ -295,21 +291,15 @@ finally:
 
 手动抛出异常常常不是用来让程序停下来，而是反过来，让程序能够顺利执行，因为raise经常用在try，exception语法的try语句中，当条件不满足时，例如用户输入类型错误，程序本身不会报错，但是结果会错误，所以故意抛出异常触发exception语句
 
-### self解释
-
-
+### 1.10 self解释
 
 1. self代表是类的实例，而不是类本身，self.__class__ 才是类本身
 2. self只是一个约定俗成的写法，本身就是一个参数，所以是可以更改的，比如写成this
 3. **self是不能不写的**，比如有一个成员函数是Test类的成员函数是test，实例是a，解释器运行的时候是Test.test(a)把实例当成一个参数传入到self的位置，所以self是不能不写的。有一种情况可以不写，那就是类方法，只能通过Test.test()这种方式去调用。
 
-**Reference**
+**Reference**<br>[一篇文章让你彻底搞清楚Python中self的含义](https://www.cnblogs.com/jessonluo/p/4717140.html)
 
-[一篇文章让你彻底搞清楚Python中self的含义](https://www.cnblogs.com/jessonluo/p/4717140.html)
-
-
-
-### Path 相关
+### 1.11 Path相关
 
 首先是从sys.path下搜索
 
@@ -346,15 +336,13 @@ glob('dirpath/*.py')
 
 ```
 
-
-
-### 取整方式
+### 1.12 取整方式
 
 1. int(x); 直接抛去小数部分，保留整数部分，正负数皆如此
 2. round(x); 四舍五入
 3. math.ceil(x) 上取整
 
-### 文件
+### 1.13 文件
 
 ```python
 # 输出会在test.txt原来文本的基础上多一个空行，因为read()在文件结尾处返回一个空字符串显示出来就是空行。可以使用rstrip删除掉
@@ -382,9 +370,17 @@ with open('test.txt', 'w') as file:
     file.write('xxxxxx')
 ```
 
-## 进阶
+### 1.14 编程规范
 
-### 抽象类
+1. 先import标准库模块，再添加一个空行，再import自己编写的模块
+
+### 1.15 py2/py3区别
+
+1. python2 math.floor(5.5) 返回5.0 python3 math.floor(5.5) 返回5
+
+## 2 进阶
+
+### 2.1 抽象类
 
 抽象类的个人理解一部分作用是函数名规范化，例如很多个线性模型，都有fit方法和predict方法，如果模型不继承抽象类，fit方法可能因为不同的程序员开发变成不同的名字，比如fit_data之类，可能会导致各种事先没有考虑到的错误。如果提取出抽象类，各个线性模型都继承抽象类，则必须实现抽象类中的fit和predict方法，相当于规范了函数名。python中没有接口，但是python支持多继承，所以在需要多继承场景下，直接继承多个抽象类即可。
 
@@ -405,7 +401,7 @@ class LinearModel(metaclass=ABCMeta):
         print('hello world')
 ```
 
-### 装饰器
+### 2.2 装饰器
 
 装饰器的本质还是函数或者类，它的作用是在其他python函数外套上一个“壳”，在保留原来功能的基础上，添加新的功能，比如写日志，性能测试, 甚至只是为了“装饰”...
 
@@ -542,7 +538,7 @@ def foo():
 
 **Reference**<br>[理解python装饰器看这一篇就够了](https://foofish.net/python-decorator.html)
 
-### 单例模式
+### 2.3 单例模式
 
 ```python
 ########### 函数装饰器方法 ###########
@@ -609,9 +605,9 @@ s1 == s2
 
 ```
 
-## 常用Module
+## 3 常用Module
 
-### Sys Module
+### 3.1 sys Module
 
 **指定编码格式**
 
@@ -637,15 +633,11 @@ importlib.reload(sys)
 
 并且在python3版本中，默认的编码方式就是'utf-8', 并且python3没有sys.setdefaultencoding()函数，只有sys.getdefaultencoding()
 
-**Reference**
+**Reference**<br>[Python 解决 ：NameError: name 'reload' is not defined 问题](https://blog.csdn.net/github_35160620/article/details/52206868)<br>[python为什么需要reload(sys)后设置编码](https://www.cnblogs.com/fengff/p/8857360.html)
 
-[Python 解决 ：NameError: name 'reload' is not defined 问题](https://blog.csdn.net/github_35160620/article/details/52206868)
+### 3.2 logging Module
 
-[python为什么需要reload(sys)后设置编码](https://www.cnblogs.com/fengff/p/8857360.html)
-
-### Logging Module
-
-```
+```python
 import logging 
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'，filename = "logs")#运行时间，模块名字，级别名字，信息 
 logger = logging.getLogger(__name__) # 传入模块的名字 
@@ -653,9 +645,9 @@ logger.info("xxx") #输出info级别的信息
 logger.debug("xxx") # 文件级别是info的话 debug信息是不会输出的logger.warning("xxx") |
 ```
 
-### ArgumentParser Module
+### 3.3 argumentParser Module
 
-```
+```python
 import argparse 
 parser = argparse.ArgumentParser() #ArgumentParser的参数都是keyword参数
 
@@ -666,9 +658,7 @@ parser.add_argument("-a , --argname")
 parser.parse_args() # or parser.parse_known_args() 
 ```
 
-
-
-### Numpy Module
+### 3.4 numpy Module
 
 **reshape(-1,1)和reshape(1,-1)**
 
@@ -682,7 +672,7 @@ array([[1],
 array([[1, 2, 3]])
 ```
 
-### JSON Module
+### 3.5 JSON Module
 
 ```python
 import json
@@ -697,12 +687,10 @@ with open('test.json', 'r') as file:
     data = json.load(file)
 ```
 
+## 4 杂七杂八
 
-
-## 杂七杂八
-
-### 打包
-```
+### 4.1 打包
+```python
 #在项目文件顶层文件夹下新建setup.py 文件,并且在想打包进package的文件夹下加上名为__init__.py的空文件
 
 # setup文件实例
@@ -720,9 +708,9 @@ python setup.py sdist --formats=gztar
 # 打包成exe, -F 表示打包成单一exe文件， -p表示其他依赖文件
 pyinstaller -F xxxx.py -p xxxx.py
 ```
-### 执行其他脚本或cmd command
+### 4.2 执行脚本
 
-```
+```python
 #pythonfile1.py: 
 from time import sleep 
 sleep(10) 
@@ -742,20 +730,9 @@ if status ==0:
 # 但是也有特殊情况 如果上一个cmd是用于提交cloud的指令，是不会等待cloud 运行完才返回；只要成功提交了cloud任务，cmd就会成功返回。
 ```
 
-### 判断两个列表之间的包含关系
-```
-a = [1,2,3,4]
-b = [1,2,3]
-c = [1,2,3,5] 
-a = set(a)
-b = set(b)
-c = set(c) 
-a>b => True
-a>c => False 
-```
-### 变量赋值引用
+### 4.4 变量赋值引用
 
-```
+```python
 res = []
 
 #不会创建副本
@@ -768,16 +745,8 @@ res+=[num]
 new = res + [nums] 
 ```
 
-### 检查输入是否在dict的key set中
-```
-# O(n)
-if key in dict.keys()
-# O(1) 
-if dict.get(key)
-```
-
-### 自定义排序函数；即自定义“大小”的定义
-```
+### 4.6 自定义排序函数
+```python
 # 第一种方式
 def func(x,y):  
 	if x<y:   
@@ -793,16 +762,9 @@ sorted( unsorted, func)# 第二个参数是类型是func 所以不需要传递fu
 # 第二种方式 lambda expression sorted( unsorted, lambda x: len(x) ) 
 ```
 
-### char转ASCII CODE； ASCII CODE 转字符
-```
-s = 'C'ord(s) # return ASCII 码
-chr(ord(s)) ASCII码转回char 
+### 4.7 datetime&time&string
 
-```
-
-### datetime & time & string 相互转换
-
-```
+```python
 import datetime
 
 # 字符串
@@ -830,9 +792,9 @@ dt.weekday()
 (dt1-dt2).dt.days
 ```
 
-### 与os 的一些交互
+### 4.8 os交互
 
-```
+```python
 import os 
 
 # 访问当前路径下文件名,不包含子目录中的文件; 返回一个文件名列表
@@ -847,7 +809,7 @@ for root, dirs, files in os.walk(file_dir):
 
 ```
 
-### 引用上一级module
+### 4.9 跨级引用
 
 需要把上一级module 的地址加入到系统路径中才能正常引用
 
@@ -855,17 +817,3 @@ for root, dirs, files in os.walk(file_dir):
 import sys
 sys.path.append('..')
 ```
-
-### 杂七杂八中的杂七杂八
-
-- str.endswith(suff, start, end) start 与 end为可选参数，默认为0和str的长度
-- python2 math.floor(5.5) 返回5.0 python3 math.floor(5.5) 返回5
-- python 实现地址连接 os.path.join(addr1, addr2)
-
-### import的顺序
-
-先import标准库模块，再添加一个空行，再import自己编写的模块
-
- 
-
- 

@@ -12,17 +12,8 @@ description:
 
 ### Base
 
-1. val, var 初始化
+1. print和println的区别在于print 不会再内容后追加换行符，println会追加换行符
 
-```scala
-//al，var都必须要定义时赋值，var可以使用默认初始化,但是必须指定数据类型，否则报错, ()表示没有值
-//var 虽然值可以变,但是类型不能变
-var a:String = _  //初始为null
-var a:Int = _ // 初始为0 
-val a = ()
-```
-
-2. print和println的区别在于print 不会再内容后追加换行符，println会追加换行符
 3. 标准输入
 
 ```scala
@@ -37,14 +28,6 @@ val t4 = StdIn.readDouble()
 val t5 = StdIn.readLong()
 ```
 
-4. 当val 用**lazy** 修饰时，初始化被推迟直到第一次取值
-
-```scala
-lazy val a = 0
-```
-
-5. **val 不可变指的是不能改变初始化指向的类的实例对象，但是对象的值可以变；var可变指的是可以改变初始化指向的类的实例对象，而且实例对象自己也可以变**
-
 ### Run
 
 ```shell
@@ -57,6 +40,45 @@ scala -cp . xxx
 ```
 
 Reference<br>[Can compile scala programs but cannot run them](https://stackoverflow.com/questions/27998824/can-compile-scala-programs-but-cant-run-them)
+
+### Var
+
+**val 不可变指的是不能改变初始化指向的类的实例对象，但是对象的值可以变；var可变指的是可以改变初始化指向的类的实例对象，而且实例对象自己也可以变**。关于var变量的赋值有一个和python大不一样的地方，简单理解就是除非新声明变量，否则不能同时给多个变量赋值. 但如果一个函数需要返回不同的数据类型的一组值，推荐新建一个类，类中包含相应的字段(典型的java作风)
+
+```scala
+//al，var都必须要定义时赋值，var可以使用默认初始化,但是必须指定数据类型，否则报错, ()表示没有值
+//var 虽然值可以变,但是类型不能变
+var a:String = _  //初始为null
+var a:Int = _ // 初始为0 
+val a = ()
+
+// 利用tuple同时给多个变量赋值,
+val (a, b) = (1, 2)
+
+//函数返回值赋值，首先定义一个函数返回一个(Int,Int)的tuple
+def t={(1,2)}
+// condition 1 可以成功赋值
+val (a,b) = t
+// condition 2 会报错 error";" expected but "=" found 
+var c = 0
+var d = 0
+(c, d) = t 
+// 会报错
+val(e, f) = (1, 1)
+(c, d) = (e,f)
+//分开赋值就没有问题
+c = e
+d = f
+c=e; d=f;
+```
+
+当val 用**lazy** 修饰时，初始化被推迟直到第一次取值
+
+```scala
+lazy val a = 0
+```
+
+Reference<br>[scala学习手记5 - 元组与多重赋值](https://www.cnblogs.com/amunote/p/5559867.html)
 
 ### Operator
 
@@ -79,9 +101,24 @@ a.apply(3) // 等价于a(3)
 
 ```
 
+字符串变量替换, 在字符串前面加“s”可以使用变量，加“f”可以格式化输出
+
+```scala
+val name = "jack"
+// 加s可以直接使用变量名
+print(s" my name is $name ")
+// 可以在{}中写任何表达式
+print(s" my name is ${name + "xxx" }")
+// printf格式化输出，字符串前面加f
+val score = 0.5
+printf(f"score is $score%.2f")
+```
+
+**Reference**<br>[scala字符串前加s使用$](https://www.cnblogs.com/pursue339/p/10619581.html)
+
 ### Function
 
-**返回值**，普通函数不明显使用return指明返回值，如果有返回值，最后一行就是返回值
+**返回值**，普通函数不明显使用return指明返回值，如果有返回值，最后一行就是返回值，**除了循环没有返回值，其他都有返回值**。**为什么不显式使用return**？，首先因为scala是函数式编程语言，所有东西都是表达式不是语句，一个表达式的最终结果就是想要的值，不需要写return，其次如果显式使用return，程序在执行到return时，强制退出方法，使得返回值类型推演失效，需要手动指定。
 
 ```scala
 // 显式指明返回值类型
@@ -97,6 +134,13 @@ def test2(x: Int, y:Int=10): Int = {
     x+y
 }
 
+// 但是递归函数必须显式指定返回值
+def factorial(n: BigInt): BigInt = {  
+    if (n <= 1)
+    	1
+    else    
+    	n * factorial(n - 1)
+}
 ```
 
 **零参方法/无参方法/变长参数方法**
@@ -185,7 +229,7 @@ def add[a,b](x: a, y: b) = {
 }
 ```
 
-**Reference**<br>[scala泛型](https://fangjian0423.github.io/2015/06/07/scala-generic/)<br>[scala 课堂](https://twitter.github.io/scala_school/zh_cn/index.html)<br>[Scala 函数柯里化(Currying)](https://www.runoob.com/scala/currying-functions.html)
+**Reference**<br>[scala泛型](https://fangjian0423.github.io/2015/06/07/scala-generic/)<br>[scala 课堂](https://twitter.github.io/scala_school/zh_cn/index.html)<br>[Scala 函数柯里化(Currying)](https://www.runoob.com/scala/currying-functions.html)<br>[scala中的函数哪些有返回值,哪些没有返回值??](https://blog.csdn.net/u010916338/article/details/77585213)
 
 ### Control Structure
 
@@ -246,6 +290,21 @@ for(i<-1 to 10 by 2){print(i)}
 for(i<-b.indices){print(i)}
 
 ```
+
+**Break**
+
+```scala
+// 虽然可以实现， 但是不推荐使用，可以用while(flag) loop 修改flag的值来实现break
+import scala.util.control.Breaks._
+breakable{
+    for(i<-Range(0,10)){
+        if(i>5) break
+        println(i)
+    }
+}
+```
+
+
 
 ### Class
 
@@ -515,6 +574,7 @@ m3("k4") = "v4"
 m3("k3") = "v3-new"
 m3.addAll(Array("k5"->"v5","k6"->"v6")))
 m -= "k4"
+m3 += ("k7"->"v7")
 
 // 修改不可变map，会创建新的不可变映射, 如果是val定义的m1，则需要赋值新val变量，如果是var，则可以覆盖
 val new_m1 = m1 + ("k4"->"v4")
