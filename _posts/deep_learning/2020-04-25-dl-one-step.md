@@ -65,11 +65,19 @@ H(x,y) = -P(x,y)logP(x,y)
 $$
 
 在x发生的条件下，y带来的新的熵称为x的条件熵H(Y\|X) 衡量已知随机变量x的情况，y的不确定性H(Y\|X) = H(X,Y) - H(X)​
-
-![img](https://uploadfiles.nowcoder.com/images/20190315/311436_1552628862555_DBA6F761056A8FA361E96F7E44D51F7B)
-
+$$
+\begin{equation}
+\begin{aligned}
+&H(X,Y)-H(X) \\
+&= -\sum_{x,y}p(x,y)logp(x,y)+\sum_{x}p(x)logp(x) \\
+&= -\sum_{x,y}p(x,y)logp(x,y)+\sum_{x}(\sum_{y}p(x,y))logp(x) \\
+&= -\sum_{x,y}p(x,y)logp(x,y)+\sum_{x,y}p(x,y)logp(x) \\
+&= -\sum_{x,y}p(x,y)log\frac{p(x)}{p(x,y)} \\
+&= -\sum_{x,y}p(x,y)logp(y|x)
+\end{aligned}
+\end{equation}
+$$
 **互信息**
-
 $$
 I(x,y) = \sum p(x,y)log^{\frac {p(x,y)}{p(x)p(y)}}\\
 I(x,y) = D(p(x,y)||p(x)p(y))
@@ -107,17 +115,52 @@ $$
 
 取对数之后和交叉熵就差一个负号，我们想最大化这个概率，等价于最小化这个概率的负数于是就得到交叉熵损失函数
 
-2 从KL散度推导到交叉熵损失函数
-
-相对熵又称KL散度,如果我们对于同一个随机变量 x 有两个单独的概率分布 P(x) 和 Q(x)，我们可以使用 KL 散度（Kullback-Leibler (KL) divergence）来衡量这两个分布的差异，然后就自然的发现交叉熵其实就是KL散度的第二部分，以为KL散度表征是两个概率分布的差异，所以越小越好，自然的KL散度第一部分固定，那么最小化交叉熵就好
+2 从KL散度推导到交叉熵损失函数, 相对熵又称KL散度,如果我们对于同一个随机变量 x 有两个单独的概率分布 P(x) 和 Q(x)，我们可以使用 KL 散度（Kullback-Leibler (KL) divergence）来衡量这两个分布的差异，然后就自然的发现交叉熵其实就是KL散度的第二部分，以为KL散度表征是两个概率分布的差异，所以越小越好，自然的KL散度第一部分固定，那么最小化交叉熵就好
 
 ![kl1](/assets/img/deeplearning/one-stop/KL.png)
 
 ![WeChat Screenshot_20190812224516](/assets/img/deeplearning/one-stop/KL2.png)
 
+**为什么使用交叉熵作为损失函数？特别注意，这里是说最后输出层的损失函数和激活函数，输出层的激活函数，和hidden layer的激活函数是分开设置的**要说为什么采用交叉熵，就要先看看为什么不用均方误差
+
+均方误差
+
+$$
+loss = 0.5*(y-a)^2
+$$
+
+a是激活函数的输出结果，如果是sigmoid 
+
+$$
+a = sigmoid(z)
+$$
+
+其中
+
+$$
+z = w*x +b
+$$
+
+loss 对w求偏导,链式求导法则可知。 
+
+$$
+loss^, = (a-y)a * (1-a)*x
+$$
+
+**这其中(a-y)是损失函数导数，a\*(1-a)是激活函数的导数，x是线性函数的导数**，最大值才0.25,当label = 0 predict 接近1 或者label = 1,predict 接近0 的时候，sigmoid的导数值都很小，导致更新很慢，假设一种情况，初始化的时候很极端，正样本的预测值都很接近0，负样本的预测值都很接近1，这种情况下应该是非常错误的，应该马上大跨步的更新权重，但是如果是均方差loss func 并且采用sigmoid，梯度更新很慢。如果采用交叉熵作为损失函数，上面的loss对w求偏导只需要改一下loss函数的导数即可, 交叉熵的导数是
+$$
+crossentropy^, = (a-y)/a(1-a)
+$$
+
+和 sigmoid的导数相乘正好消除掉分母的影响，loss 对w的导数变成，这个时候predict 和label的差越大，梯度更新越快（起码最后一层的梯度更新快）
+
+$$
+(a-y)*x
+$$
+
 **Reference** <br>
 [简单的交叉熵损失函数，你真的懂了吗？](https://zhuanlan.zhihu.com/p/38241764)<br>
-[一文搞懂交叉熵在机器学习中的使用，透彻理解交叉熵背后的直觉](https://blog.csdn.net/tsyccnh/article/details/79163834)
+[一文搞懂交叉熵在机器学习中的使用，透彻理解交叉熵背后的直觉](https://blog.csdn.net/tsyccnh/article/details/79163834)<br>[使用神经网络解决分类问题时，为什么交叉熵误差更好](http://heloowird.com/2017/03/08/diff_errors_of_neural_network/)
 
 ### 1.2 Activation Func
 
@@ -207,6 +250,14 @@ $$
 
 从上面的推导可以看出，对于label为1节点相连的权重求偏导的时候g = (a-1)\*o; 对于其他权重g = a\*o
 
+**输出层损失函数激活函数选择**
+
+二分类： sigmoid+交叉熵<br>
+多分类：softmax+交叉熵<br>
+回归：线性激活函数+均方误差<br>
+
+**输出层的激活函数是按照任务来定的，二分类就是sigmoid，多分类是softmax，回归是线性激活函数**，但是在hidden layer中，为了抑制梯度消失，一般采用Relu。当sigmoid/softmax作为最后一层激活函数的时候为了让最后一层也可以加速梯度更新，抑制梯度消失，一般使用交叉熵作为损失函数。
+
 **Reference**<br>
 [常见激活函数的比较](https://zhuanlan.zhihu.com/p/32610035)<br>
 [详解softmax函数以及相关求导过程](https://zhuanlan.zhihu.com/p/25723112)
@@ -273,9 +324,7 @@ $$
 
 ### 1.4 梯度爆炸/消失
 
-梯度爆炸和梯度消失在某种程度上其实是一回事，在BP过程中，如果激活函数的梯度大于1，那么经过链式求导法则之后，梯度值会以指数形式增加，发生梯度爆炸，反之会以指数形式缩小，发生梯度消失。
-
-解决梯度消失的两个办法
+梯度爆炸和梯度消失在某种程度上其实是一回事，在BP过程中，如果激活函数的梯度大于1，那么经过链式求导法则之后，梯度值会以指数形式增加，发生梯度爆炸，反之会以指数形式缩小，发生梯度消失。解决梯度消失的两个办法
 
 1: 使用 ReLU、LReLU、ELU、maxout 等激活函数
 
@@ -285,57 +334,7 @@ sigmoid函数的梯度随着x的增大或减小和消失，而ReLU不会。
 
 通过规范化操作将输出信号x规范化到均值为0，方差为1保证网络的稳定性。从上述分析分可以看到，反向传播式子中有w的存在，所以w的大小影响了梯度的消失和爆炸，Batch Normalization 就是通过对每一层的输出规范为均值和方差一致的方法，消除了w带来的放大缩小的影响，进而解决梯度消失和爆炸的问题。
 
-### 1.5 为什么使用交叉熵作为损失函数？
-
-**特别注意，这里是说最后输出层的损失函数和激活函数，输出层的激活函数，和hidden layer的激活函数是分开设置的**要说为什么采用交叉熵，就要先看看为什么不用均方误差
-
-均方误差
-
-$$
-loss = 0.5*(y-a)^2
-$$
-
-a是激活函数的输出结果，如果是sigmoid 
-
-$$
-a = sigmoid(z)
-$$
-
-其中
-
-$$
-z = w*x +b
-$$
-
-loss 对w求偏导,链式求导法则可知。 
-
-$$
-loss^, = (a-y)a * (1-a)*x
-$$
-
-**这其中(a-y)是损失函数导数，a\*(1-a)是激活函数的导数，x是线性函数的导数**，最大值才0.25,当label = 0 predict 接近1 或者label = 1,predict 接近0 的时候，sigmoid的导数值都很小，导致更新很慢，假设一种情况，初始化的时候很极端，正样本的预测值都很接近0，负样本的预测值都很接近1，这种情况下应该是非常错误的，应该马上大跨步的更新权重，但是如果是均方差loss func 并且采用sigmoid，梯度更新很慢。如果采用交叉熵作为损失函数，上面的loss对w求偏导只需要改一下loss函数的导数即可, 交叉熵的导数是
-$$
-crossentropy^, = (a-y)/a(1-a)
-$$
-
-和 sigmoid的导数相乘正好消除掉分母的影响，loss 对w的导数变成，这个时候predict 和label的差越大，梯度更新越快（起码最后一层的梯度更新快）
-
-$$
-(a-y)*x
-$$
-
-**Reference**<br>
-[使用神经网络解决分类问题时，为什么交叉熵误差更好](http://heloowird.com/2017/03/08/diff_errors_of_neural_network/)
-
-### 1.6 输出层损失函数和激活函数选择
-
-二分类： sigmoid+交叉熵<br>
-多分类：softmax+交叉熵<br>
-回归：线性激活函数+均方误差<br>
-
-**输出层的激活函数是按照任务来定的，二分类就是sigmoid，多分类是softmax，回归是线性激活函数**，但是在hidden layer中，为了抑制梯度消失，一般采用Relu。当sigmoid/softmax作为最后一层激活函数的时候为了让最后一层也可以加速梯度更新，抑制梯度消失，一般使用交叉熵作为损失函数。
-
-### 1.6 Batch Normalization
+### 1.5 Batch Normalization
 
 **为什么想要去做BN？**
 

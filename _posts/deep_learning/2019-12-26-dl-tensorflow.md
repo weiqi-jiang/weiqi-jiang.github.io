@@ -8,7 +8,7 @@ description: TensorFlow 用法
 
 
 
-## 安装
+## 1. 安装
 
 Tensorflow的安装...一言难尽，坑真的多
 
@@ -16,17 +16,13 @@ Tensorflow的安装...一言难尽，坑真的多
 
 Error:  msvcp140.dll丢失
 
-Solution:  
-
-下载   [Microsoft Visual C++ 2015 Redistributable Package](https://www.microsoft.com/en-us/download/details.aspx?id=48145) ,  本人下载完之后安装报错，原因是有更高级版本，不允许安装低级版本。而且检查了系统路径下是存在目标dll文件的，推测是版本问题。
+Solution: 下载   [Microsoft Visual C++ 2015 Redistributable Package](https://www.microsoft.com/en-us/download/details.aspx?id=48145) ,  本人下载完之后安装报错，原因是有更高级版本，不允许安装低级版本。而且检查了系统路径下是存在目标dll文件的，推测是版本问题。
 
 **情况二：python3.6.8 + tensor2.1.0**(lastest)
 
 Error：如果直接用pip install tensorflow 报错，原因是找不到合适的tensorflow版本
 
-Solution：手动找到[tensorflow2.1.0](https://pypi.org/project/tensorflow/#modal-close) 64位python3.6版本, 安装成功，但是当import tensorflow 的时候会报错
-
-ImportError: DLL load failed: 找不到指定的模块；Failed to load the native TensorFlow runtime.
+Solution：手动找到[tensorflow2.1.0](https://pypi.org/project/tensorflow/#modal-close) 64位python3.6版本, 安装成功，但是当import tensorflow 的时候会报错ImportError: DLL load failed: 找不到指定的模块；Failed to load the native TensorFlow runtime.
 
 **情况三：python3.6.8 + tensor1.4 + keras（latest）**
 
@@ -34,17 +30,13 @@ Error：安装成功，可以正常import，但是在pip install keras之后 如
 
 Solution：tensorflow 和keras的兼容问题，把keras版本降低至2.0.8解决
 
-
-
 ----------------------------------------2020.3.30更新---------------------------------------------
 
 发现新坑，如果本机上有多个python, 例如anaconda一个python，自己另外安装了一个python，pip install xxx的时候容易出错，版本对不上，需要先确定默认的python和pip版本，然后在安装，不容易出错
 
+### 1.1 用到的指令
 
-
-### 可能用到的指令
-
-```
+```shell
 # 卸载tensorflow
 pip uninstall tensorflow
 
@@ -71,19 +63,19 @@ where pip
 
 **Reference**<br>[tensorflow，keras，python版本对照表](https://docs.floydhub.com/guides/environments/)
 
-## 背景知识
+## 2 背景知识
 
-### 理论
+### 2.1 理论
 深度模型强调两个点： ***多层，非线性***
 
-**非线性**：多层线性模型等价于一层线性模型，线性模型解决的问题很有限，所有强调非线性
+**非线性**：多层线性模型等价于一层线性模型，线性模型解决的问题很有限，所以强调非线性
 
 **多层**： 这里的多层并不是指很多个hidden layer，实际上一层hidden layer就足够了，如果没有hidden layer 就是perceptron,  perceptron是不能解决异或问题的
 
-### 底层
+### 2.2 底层
 **Protocol Buffer**
 
-类似于JSON 和XML用于处理结构化数据，但是不同于XML,JSON，Protocol Buffer序列化之后的数据不是可读的字符串而是二进制流，并且**Protocol Buffer需要先定义数据的格式(schema)**。由多个message构成，每个message代表一类结构化的数据类似于编程语言中的class。message 中的变量有optional，repeated，required 三种修饰
+类似于JSON 和XML用于处理结构化数据，但是不同于XML,JSON，Protocol Buffer序列化之后的数据不是可读的字符串而是二进制流，并且**Protocol Buffer需要先定义数据的格式(schema)**。由多个message构成，每个message代表一类结构化的数据类似于编程语言中的class。message 中的变量有optional，repeated，required 三种修饰，其中 变量后面的数字表示编号，在进行编码解码的时候用来保证顺序不会错位。
 
 ```
 message user{
@@ -97,8 +89,6 @@ message item {
  optional string categories = 2;
 }
 ```
-
-其中 变量后面的数字表示编号，在进行编码解码的时候用来保证顺序不会错位。
 
 **TFRecord**
 
@@ -162,9 +152,9 @@ serialized: 序列化之后的tensor
 features： 一个map 把featurename map to FixedLenFeatures/VarLenFeatures/SparseTensor 类型中的一个
 ```
 
-## 入门
+## 3 入门
 
-### Graph
+### 3.1 Graph
 
 > tensorflow每一个计算都是都是计算图上的一个节点，而节点之间的边描述了计算之间的依赖关系
 
@@ -189,11 +179,11 @@ result = string_join(tf.constant("hello"),tf.constant("world"))
 
 ```
 
-### Session
+### 3.2 Session
 
 **tensorflow会自动生成默认的计算图，但是不会生成默认的session**，如果没有指定模型session，with sess.as_default(),  tf.Tensor.eval()需要指定session才能得到tensor的值。config = tf.ConfigProto() 来配合生成的会话，最常用allow_soft_placement=True,这个参数允许GPU在特定情况下可以在CPU上运行，而不是报错。
 
-### Collection
+### 3.3 Collection
 
 ```python
 tf.GraphKeys.VARIABLES   #所有变量，通过tf.global_varibles() 获取
@@ -207,7 +197,7 @@ tf.GraphKeys.QUEUE_RUNNERS #处理输入的QueueRunner
 tf.GraphKeys.MOVING_AVERAGE_VARIABLES  #所有计算了滑动平均的变量
 ```
 
-### Tensor
+### 3.4 Tensor
 
 > 张量在功能上相当于多维数组，但是实现并不是直接采用多维数组的形式，只是对tensorflow中运算结果的引用，并没有保存真正的数字
 
@@ -342,7 +332,7 @@ tf.split(c,[1,2,3], axis=0) # 指定每份分割的数量，第一part1个sample
 
 **Reference**<br>[TensorFlow 文档v2.3.0](https://www.tensorflow.org/api_docs/python/tf/random/normal)
 
-### Operator
+### 3.5 Operator
 
 **数值运算**
 
@@ -490,7 +480,7 @@ b = tf.constant([10,10])
 a+b  # [[11,12],[13,14]]
 ```
 
-### Dataset
+### 3.6 Dataset
 
 ```python
 """ 通常流程
@@ -548,7 +538,7 @@ ds = dataset.repeat().bacth(64).prefetch(5)
 
 **Reference**<br>[tf.data.Dataset.shuffle(buffer_size)中buffer_size的理解](https://juejin.im/post/6844903666378342407)<br>[一文上手最新Tensorflow2.0系列(三)  “tf.data”API 使用](https://www.jianshu.com/p/e8ae78bef371)
 
-### Feature_column
+### 3.7 Feature_column
 
 常常用于对结构化数据进行特征工程，将常用的连续值分桶，类别特征one-hot编码等封装起来，直接指明某某字段是什么类型的特征，不用显式写特征工程代码，Tensorflow自动完成，并喂给模型。
 
@@ -612,7 +602,7 @@ model = tf.keras.Sequential([
 
 **Reference**<br>[Demonstration of TensorFlow Feature Columns (tf.feature_column)](https://medium.com/ml-book/demonstration-of-tensorflow-feature-columns-tf-feature-column-3bfcca4ca5c4)<br>[Train tf.keras model in TensorFlow 2.0 using feature coulmn](https://medium.com/ml-book/train-tf-keras-model-using-feature-coulmn-8de12e65ddec)
 
-### Activation
+### 3.8 Activation
 
 ```python
 tf.nn.sigmoid
@@ -633,7 +623,7 @@ model.add(layer.Dense(32))
 model.add(layers.Activation(tf.nn.softmax))
 ```
 
-### Layers
+### 3.9 Layers
 
 ```python
 # 常用
@@ -649,7 +639,7 @@ layers.RNN
 layers.Attention
 ```
 
-### Loss&Metrics&Optimizer
+### 3.10 Loss&Metrics&Optimizer
 
 ```python
 ######### loss func 常用############
@@ -678,7 +668,7 @@ Adagrad
 RMSprop
 ```
 
-### Build
+### 3.11 Build
 
 ```python
 import tensorflow as tf
@@ -699,9 +689,7 @@ model.compile(optimizer='Nadam',
 model.summary()
 ```
 
-
-
-### Persistence
+### 3.12 Persistence
 
 ```python
 # 保存模型
@@ -725,7 +713,7 @@ with tf.Session() as sess:
   sess.run(tf.get_default_graph().get_tensor_by_name('add:0'))
 ```
 
-### SparseTensor Class
+### 3.13 SparseTensor Class
 
 ```
 # tensorflow 用三个独立的稠密张量来表示SparseTensor
@@ -743,9 +731,7 @@ tf.sparse_reorder(
 )
 ```
 
-tf.nn.embedding_lookup_sparse 计算embedding
-
-按照sp_id 找params对应行，乘上weights ， 按照strategy 进行reduction 最后组成一个tensor返回
+tf.nn.embedding_lookup_sparse 计算embedding，按照sp_id 找params对应行，乘上weights ， 按照strategy 进行reduction 最后组成一个tensor返回
 
 ```python
 tf.nn.embedding_lookup_sparse(
@@ -765,7 +751,7 @@ tf.nn.embedding_lookup_sparse(
 # combiner 指定reduction的操作符 目前支持“mean”,“sqrtn”和“sum”.“sum”计算每行的 embedding 结果的加权和.“mean”是加权和除以总 weight.“sqrtn”是加权和除以 weight 平方和的平方根. 
 ```
 
-## 示例
+## 4 示例
 
 **TF1.0简单实例**
 
@@ -839,21 +825,21 @@ with tf.Session() as sess:
 ```
 
 
-## Distributed TF
+## 5 Distributed TF
 
-### 单机多GPU的工作模式
+### 5.1 单机多GPU的工作模式
 
 由CPU 负责把batch发给多GPU，多个GPU 负责计算梯度更新，等待所有GPU 运算完毕，梯度更新数据发送给CPU，CPU 计算平均更新梯度，进行梯度更新，接着发送新的batch给多个GPU，时间消耗取决于最慢的GPU 和CPU,GPU 通信时间。
 
-### 多机多GPU 模式
+### 5.2 多机多GPU 模式
 
 当数据量急剧增大的时候，参数更新的速度就成了一个大问题，于是单机模式下单CPU 进行参数更新的模式就行不通了，引入Parameter Server (PS)的概念。组成集群进行梯度更新。Tensorflow 分布式给予gRPC通信框架(google Remote Proceduce Call), 简单理解就是把参数进行打包上传给服务器，服务器端进行运算，运算完之后把运行结果打包传回客户端。
 
-### 分布式并行策略
+### 5.3 分布式并行策略
 
 模型并行: 将模型的不同部分并行分发到不同的worker上训练，但是模型层与层之间是存在串行关系的，所以一般只有在不存在串行的部分进行模型并行。数据并行： worker使用的是同一个graph，但是数据是分块发给不同worker的，分别进行计算，参数更新模式有同步和异步之分。
 
-### 参数更新
+### 5.4 参数更新
 
 worker和ps之间的通信都由worker发出pull和push请求，什么时候发出请求是由scheduler调度。
 
@@ -865,7 +851,7 @@ workers 运算得到梯度更新参数，等到所有worker跑完一个batchsize
 
 任何一个worker计算完参数更新就把信息发送给ps，ps立即按照信息进行参数更新，以后worker pull到的参数就是更新后的参数。但是这就产生了过期梯度的问题，假设一个worker的计算速度很慢，拿参数的时候拿的v1版本的参数，在计算期间，ps上的参数已经更新到了v3，那么ps就会根据v1版本参数计算得到的梯度来更新v3版本的梯度，得到v4版本，这就会产生震荡，但是最后一般都还是收敛。过期梯度问题可以设置阈值，如果worker上参数的版本比ps的版本差距若干版本以上，则放弃该次更新，防止某一个worker运行速度慢导致梯度更新收过期梯度影响过大。**优点**：异步更新没有短板效应，更新速度快；**缺点**： 更新速度快不意味着收敛速度快，过期梯度问题
 
-## Others
+## 6 Others
 
 1: **查看tensor的值**，直接键入print(tensorName) 是不行的，这样只会返回tensorname， shape，dtype等信息，不会输出具体数值
 
@@ -910,13 +896,11 @@ feed_dict: 一个key-value结构，为之前占位的tensor临时赋值，占位
 t.eval() is a shortcut for calling tf.get_default_session().run(t)
 ```
 
- 
-
-## DEBUG
+## 7 DEBUG
 
 Bug: TypeError: Can not convert a float32 into a Tensor or Operation
 
-```
+```python
 user_batch, item_batch, label = create_pipeline(input_file,  num_epochs=10)
 with tf.Session() as sess:
     sess.run([init_op, local_init_op])

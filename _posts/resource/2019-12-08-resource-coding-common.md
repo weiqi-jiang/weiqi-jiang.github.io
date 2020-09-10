@@ -267,9 +267,5 @@ if judge() == 2:
 
 ```
 
-**Reference**<br>[知乎：优化代码中大量的if、else,你有什么方案](https://www.zhihu.com/question/344856665)<br>
-
-### 规则引擎
-
-**Reference**<br>[基于条件配置的简单规则引擎实现](https://www.cnblogs.com/Terry-Wu/p/9002138.html)<br>[再见if-else拥抱规则引擎](https://www.jianshu.com/p/9b67ab434795)<br>
+**Reference**<br>[知乎：优化代码中大量的if、else,你有什么方案](https://www.zhihu.com/question/344856665)<br>[基于条件配置的简单规则引擎实现](https://www.cnblogs.com/Terry-Wu/p/9002138.html)<br>[再见if-else拥抱规则引擎](https://www.jianshu.com/p/9b67ab434795)<br>
 

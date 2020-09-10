@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 人类简史(A Brifer History of Humankind)读书笔记
+title: 人类简史读书笔记
 category: Life
 tags: 读书笔记，人类简史
 description: 《人类简史》读书笔记

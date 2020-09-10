@@ -10,8 +10,6 @@ description: 记账系统设计和代码流程
 
 目前主流的记账软件基本都是手动录入，有的时候一些小额的收益支出懒得去详细的记录，而且支出的来源往往很多，支付宝、微信、银行卡、现金、信用卡等等，全部手动录入着实有点麻烦。纯手动记账的话，市面上任何一个记账软件都能满足要求，如果要求一定程度上自动记账， 且严重依赖支付宝的话，支付宝记账单功能就已经够用了。可是如果需要满足多来源自动/半自动记账，目前市场上相关软件很少，且通常需要提供支付宝，微信的授权，实在有点担心。于是就打算自己写一个记账系统，满足日常记账的功能即可。
 
-
-
 ## 设计思路和要求
 
 ### 功能
@@ -30,13 +28,11 @@ description: 记账系统设计和代码流程
 3. 向目标IP发送http请求
 4. 经过3次握手，建立TCP连接
 5. 服务器向浏览器传送HTML,CSS,JS文件
-6. 浏览器根据收到的HTML文件构造DOM Tree
+6. 浏览器根据收到的HTML文件构造DOM Tree，(DOM: Document Object Model 简而言之DOM的作用是把web页面和脚本程序语言联系起来）
 7. 读取css文件，把样式放到对应的节点处，构造带样式的DOM Tree
 8. 把DOM tree 节点按照从上到下，从左到右的顺序压入文档流
 9. 根据文档流输出安排各元素在页面上的位置
 10. 渲染，展示内容
-
-(DOM: Document Object Model 简而言之DOM的作用是把web页面和脚本程序语言联系起来）
 
 ### HTML(Hyper Text Markup Language)
 
@@ -101,18 +97,11 @@ html对于大小写不敏感
 
 常见的events，需要查看完整的events，参见reference 第二条。
 
-**Reference**
-
-[HTML教程](https://www.runoob.com/html/html-tutorial.html)
-
-[HTML EVENTS](https://www.w3schools.com/jsref/dom_obj_event.asp)
+**Reference**<br>[HTML教程](https://www.runoob.com/html/html-tutorial.html)<br>[HTML EVENTS](https://www.w3schools.com/jsref/dom_obj_event.asp)
 
 ### JavaScript
 
-W3CSchool JavaScript tutorial知识点的整理 ，原文中很多编程的基础知识，稍微浏览一遍即可，重点在于JavaScript特有语法。
-
-reference: [javascript w3cschool](https://www.w3schools.com/js/js_intro.asp)
-常识：
+W3CSchool JavaScript tutorial知识点的整理 ，原文中很多编程的基础知识，稍微浏览一遍即可，重点在于JavaScript特有语法。常识：
 
 1. JavaScript同时接受单双引号
 2. JavaScript是用来干什么的？总的来说，JavaScript是用来修改HTML的
@@ -344,27 +333,21 @@ newcar = new car('Ford');
 
 ```
 
-### WSGI(Web Server Gateway Interface)
+**Reference**<br> [javascript w3cschool](https://www.w3schools.com/js/js_intro.asp)<br>
 
-WSGI帮助我们开发人员专心生成HTML文档，不必关注HTTP请求，响应格式，只需要定义一个响应函数，就可以响应HTTP请求
+### WSGI
+
+WSGI(Web Server Gateway Interface)帮助我们开发人员专心生成HTML文档，不必关注HTTP请求，响应格式，只需要定义一个响应函数，就可以响应HTTP请求
 
 遵循WSGI 规范的web后端系统有两个部分组成，wsgi web server, wsgi web application
 
 web server主要负责高效的处理请求，可以是多线程，多进程； web application 负责处理业务逻辑。web server 接受到前端http请求后，调用web application接口处理请求，请求处理完结果返回给web server 然后返回给前端。
 
-Reference
+**Reference**<br>[WSGI接口]( https://www.liaoxuefeng.com/wiki/1016959663602400/1017805733037760)<br>[白月黑羽教python](http://www.python3.vip/doc/tutorial/django/02/)
 
-[WSGI接口]( https://www.liaoxuefeng.com/wiki/1016959663602400/1017805733037760)
+## 整体环境搭建
 
-[白月黑羽教python](http://www.python3.vip/doc/tutorial/django/02/)
-
-
-
-## Django + Vue + Element-UI环境搭建
-
-### Django/Vue/Element-UI安装
-
-
+### 安装
 
 安装django： 参考[django 安装]( https://www.runoob.com/django/django-install.html)
 
@@ -383,9 +366,7 @@ Reference
 npm i element-ui -S
 ```
 
-**Reference**
-
-[Vue框架Element UI 教程-安装环境搭建](https://www.jianshu.com/p/ab3c34a95128)
+**Reference**<br>[Vue框架Element UI 教程-安装环境搭建](https://www.jianshu.com/p/ab3c34a95128)
 
 ### 创建Django 项目/APP
 
@@ -596,9 +577,7 @@ import axios from 'axios'
 Vue.prototype.$axios = axios
 ```
 
-使用示例
-
-在组件中例如加上监听点击行为 @click.native='AddRecordFunc'，注意一定要带.native否则不会触发，然后methods内加上对应方法 
+**使用示例**, 在组件中例如加上监听点击行为 @click.native='AddRecordFunc'，注意一定要带.native否则不会触发，然后methods内加上对应方法 
 
 ```vue
 <template>
@@ -655,7 +634,7 @@ export default {
 
 ```
 
-## 前端VUE + Element-UI
+## VUE+Element-UI
 
 .vue文件的注释
 
@@ -728,7 +707,7 @@ export default {
 </style>
 ```
 
-### 前端请求后端数据并在前端显示
+### 前端显示后端数据
 
 首先要定义好前后端的数据接口格式，后端返回的数据字段和类型，然后在前端vue文件处理后端返回的数据即可，比如我们想要获得所有历史消费记录，展示在表格里：
 
@@ -777,7 +756,7 @@ export default {
 
 **第一个：** 前端请求跨域问题
 
-reference： https://www.jb51.net/article/166134.htm # to be completed
+Reference：[vue使用代理解决请求跨域问题详解](https://www.jb51.net/article/166134.htm) # to be completed
 
 **第二个：**后端返回response的结构是什么样的，需要怎么访问其中的元素？
 
@@ -785,7 +764,7 @@ reference： https://www.jb51.net/article/166134.htm # to be completed
 
 **第三个：**Cannot set property 'tabledata' of undefined at eval
 
-reference：https://blog.csdn.net/u011350541/article/details/80458708
+Reference：[axios请求失败，TypeError: Cannot set property 'article' of undefined vue](https://blog.csdn.net/u011350541/article/details/80458708)
 
 其实就是箭头函数和this的用法， **箭头函数会默认绑定外层的this的值，不会使用自己this的值**，最外层的this就是window对象。 例如这里出错就在于不适用箭头函数的话，this指代getrecord对象，他是没有tabledata这个属性的，但是使用箭头函数的化，this指代window对象（网页打开的窗口对象）
 
@@ -830,19 +809,13 @@ export default {
 </script>
 ```
 
-**Reference**
-
-[vue通过条件获取后台对应数据显示在表格](https://blog.csdn.net/huanxianxianshi/article/details/90479297)
-
-
+**Reference**<br>[vue通过条件获取后台对应数据显示在表格](https://blog.csdn.net/huanxianxianshi/article/details/90479297)
 
 ## 后端Django
 
 ### HTTP请求URL路由
 
-总的来说，app中的view.py 文件用来实现具体的响应函数，并在根文件夹的urls.py文件中调价路由记录
-
-view.py 响应函数必须加上response参数
+总的来说，app中的view.py 文件用来实现具体的响应函数，并在根文件夹的urls.py文件中添加路由记录, view.py 响应函数必须加上response参数
 
 ```python
 from django.shortcuts import render
@@ -943,9 +916,7 @@ class Record(models.Model):
     description = models.CharField(max_length=200)
 ```
 
-数据类型对应表参加[datatype table](https://docs.djangoproject.com/en/2.0/ref/models/fields/#model-field-types)
-
-目前我们只是继承了一个model类，相当于创建了一个表但是django不知道，我们需要在配置文件中加上响应的配置
+数据类型对应表参加[datatype table](https://docs.djangoproject.com/en/2.0/ref/models/fields/#model-field-types)，目前我们只是继承了一个model类，相当于创建了一个表但是django不知道，我们需要在配置文件中加上响应的配置
 
 ```
 INSTALLED_APPS = [
@@ -974,19 +945,15 @@ python manage.py migrate
 
 bug1: 'bytes' object has no attribute 'read'
 
-描述： 
+描述： 出现在添加消费记录按钮被点击后，后端不能正确解析前端的post 请求。
 
-出现在添加消费记录按钮被点击后，后端不能正确解析前端的post 请求。
+原因：在于错误使用了json.load() 函数，应该使用json.loads(); **loads操作对象是字符串**，把符合json格式的字符串转化为dict格式，**load操作对象是文件流**，也就是open('xx.json', 'r')，除此之外两者一样
 
-原因在于错误使用了json.load() 函数，应该使用json.loads(); **loads操作对象是字符串**，把符合json格式的字符串转化为dict格式，**load操作对象是文件流**，也就是open('xx.json', 'r')，除此之外两者一样
-
-reference：[ERROR 程序出错，错误原因：'bytes' object has no attribute 'read'](
-
-
+Reference：[ERROR 程序出错，错误原因：'bytes' object has no attribute 'read'](https://www.cnblogs.com/sanduo1314/p/7668144.html)
 
 ## 接口文档
 
-### 列出所有消费记录
+### 列出消费记录
 
 请求消息
 
@@ -1001,9 +968,7 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 ```
 
-响应体
-
-响应消息body中包含响应内容，数据结构为JSON格式
+响应体,响应消息body中包含响应内容，数据结构为JSON格式
 
 ```
 {
