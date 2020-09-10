@@ -34,9 +34,7 @@ rear = (rear+1)%maxsize
 弹出操作：
 front = (front+1)%maxsize
 
-**Reference**
-
-[深入理解循环队列----循环数组实现ArrayDeque](https://www.jianshu.com/p/6b88855017d5)
+**Reference**<br>[深入理解循环队列----循环数组实现ArrayDeque](https://www.jianshu.com/p/6b88855017d5)
 
 ### Heap(堆)
 - 完全二叉树
@@ -49,8 +47,7 @@ front = (front+1)%maxsize
   **创建堆**：对堆列表(heapList)前半节点进行sink操作(完全二叉树的后半节点都是叶子节点，没必要进行sink操作)
   **出堆：** 把根节点用最后一个叶子节点替代，根节点弹出，对新的根节点sink操作
   **上浮**：将该节点和父节点比较，如果父节点比该节点小，交换两个节点，循环该操作直到寻迹到根节点
-  **下沉**：将该节点和两个子节点进行比较，如果父节点比子节点小，交互两个节点，循环直到到达叶子节点。存在两个叶子的情况下，交换叶子节点中较小的那一个，确保最小堆中某一个节点是以该节点为根节点的子树中最小的
-  (以上详情参见github)
+  **下沉**：将该节点和两个子节点进行比较，如果父节点比子节点小，交互两个节点，循环直到到达叶子节点。存在两个叶子的情况下，交换叶子节点中较小的那一个，确保最小堆中某一个节点是以该节点为根节点的子树中最小的(以上详情参见github)
 
 ### Tree（树）
 - 中序遍历：左根右
@@ -100,7 +97,7 @@ front = (front+1)%maxsize
 adjacent_linked_list = {
     node1: [node2,node3,node4],
     node2: [node1, node5,node6],
-    ...
+    # ...
 }
 ```
 邻接链表的性质：
@@ -111,6 +108,7 @@ adjacent_linked_list = {
 ### 图的遍历和搜索
 [BFS,DFS 代码实现](https://github.com/JIANGWQ2017/DataStructure/blob/master/graph.py)
 **BFS**：常用来寻找最短路径
+
 - queue辅助
 - 一层一层的寻找，可以寻找到最短路径
 - 由于G（V,E）并不是所有节点都连接成一起，为了保证遍历到图中的所有点，所以*需要对所有节点都进行BFS遍历*，维护一个visited list来表示节点是否访问过，不会重复访问
@@ -167,7 +165,7 @@ DFS时间复杂度：
 
 ### BF 算法（Brute Force）
 其实就是暴力解，设str1 是被查找字符串，str2是pattern
-```
+```python
 #初始
 i，j = 0，0
 while i < len(str1) and j<len(str2):
@@ -186,13 +184,11 @@ else:
 
 我个人觉得最好的情况是O（str）也就是一个字符都不匹配
 
-**Reference**
-
-[模式匹配——从BF算法到KMP算法](https://blog.csdn.net/ns_code/article/details/19286279)
+**Reference**<br>[模式匹配——从BF算法到KMP算法](https://blog.csdn.net/ns_code/article/details/19286279)
 
 ## 背包问题
 
-### **基本01背包问题：**
+### **基本01背包问题**
 背包重量最大H，n个物品，有对应的n个价格V，对应的n个重量w
 **状态：**
 	value[i][h] 表示把i个物品放进大小为h的背包能达到的最大价值
@@ -213,7 +209,8 @@ value[i][h] = 0 (if h or i == 0)
 **优化点**
 时间复杂度没有优化的点，但是空间复杂度有可以优化的
 观察value[i][h]当前的状态只和value[i-1][h]的各个状态有关。如果我们只有一个数据value[h]来完成dp呢，我们必须保证在value[h]更新值的时候value[h],value[h-w]保存的是上一轮的值，不是更新后的值。对于给定的h value[h]下一轮的值只可能于value[g]有关 g<h,于是我们只要从H ->0 的方向来更新value[h]就可以了
-```
+
+```python
 for i in range(n):
 	for h in range(H,-1,-1):
 		value[h] = max(value[h], value[h-w]+V[i])
@@ -226,6 +223,4 @@ for i in range(n):
 ### **完全背包问题**
 	todo
 
-**Reference**
-[背包问题九讲](https://www.kancloud.cn/kancloud/pack/70125)
-[DP背包问题的 恰好装满 问题](https://blog.csdn.net/Ratina/article/details/87859525)
+**Reference**<br>[背包问题九讲](https://www.kancloud.cn/kancloud/pack/70125)<br>[DP背包问题的 恰好装满 问题](https://blog.csdn.net/Ratina/article/details/87859525)

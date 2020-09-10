@@ -178,7 +178,10 @@ sum(1 to 5: _*)
 val test:(Int, Int)=>Int = (x:Int, y:Int) =>x+y
 // 当然也可以不写数据类型
 val test1 = (x:Int, y:Int) => x+y
-
+// 无参匿名函数
+val test2 = ()=>{print("hello world")}
+// 调用
+test(1, 2)
 ```
 
 **部分引用**，使用下划线‘—’部分应用一个函数，返回值为另一个函数，例子中定量add2相当于x固定为2的adder函数
@@ -229,7 +232,57 @@ def add[a,b](x: a, y: b) = {
 }
 ```
 
-**Reference**<br>[scala泛型](https://fangjian0423.github.io/2015/06/07/scala-generic/)<br>[scala 课堂](https://twitter.github.io/scala_school/zh_cn/index.html)<br>[Scala 函数柯里化(Currying)](https://www.runoob.com/scala/currying-functions.html)<br>[scala中的函数哪些有返回值,哪些没有返回值??](https://blog.csdn.net/u010916338/article/details/77585213)
+**闭包**
+
+```scala
+/*闭包的本质是函数，返回值依赖于函数外部的一个或多个变量, 此时multiplier为一个闭包
+定义函数的过程是将自有变量捕获而构成一个封闭的函数
+*/ 
+var factor = 3
+val multiplier = (x:Int) => x * factor
+```
+
+**参数传递**
+
+```scala
+/* 
+call by value值传递，参数在传递给函数之前被计算，以值的形式被传入
+例子中会一直输出2，输出10遍，add() 的返回值赋值给t，是一个固定的值
+
+call by name 姑且叫名字传递，使用“=>”显式指明callbyname
+参数保留传递的“原格式”，相当于tensorflow中的计算图
+保留计算方式，不保留具体的计算结果，只有参数被用到的时候才会实际计算并赋值，相当于
+callbyname(t=add()) ，每次用到t的时候，就会算一遍add()把返回值赋值给t
+*/
+object Main{
+    var t = 1
+    
+    def add()={
+        t += 1 
+        t
+    }
+    
+    def callbyvalue(t:Int)={
+        for(i<-1 to 10){
+            println(t)
+        }
+    }
+    def callbyname(t:=> Int)={
+        for(i<-1 to 10){
+            println(t)
+        }
+    }
+    
+    def main(args:Array[String]) = {
+        callbyvalue(add())
+        println("----------------")
+        callbyname(add())
+    }
+    
+}
+```
+
+**Reference**<br>[scala泛型](https://fangjian0423.github.io/2015/06/07/scala-generic/)<br>[scala 课堂](https://twitter.github.io/scala_school/zh_cn/index.html)<br>[Scala 函数柯里化(Currying)](https://www.runoob.com/scala/currying-functions.html)<br>[scala中的函数哪些有返回值,哪些没有返回值??](https://blog.csdn.net/u010916338/article/details/77585213)<br>[scala 闭包](https://www.runoob.com/scala/scala-closures.html)<br>[scala中call by name 和call by value的区别](http://blog.sina.com.cn/s/blog_6d27562901019oxw.html)<br>[scala函数式编程](https://zhuanlan.zhihu.com/p/25484213)
 
 ### Control Structure
 
@@ -897,6 +950,8 @@ for (x <- luxurycars){
 }
 
 ```
+
+**Reference**<br>[工厂模式|菜鸟教程](https://www.runoob.com/design-pattern/factory-pattern.html)<br>[scala Factory工厂模式](https://scala.cool/2017/08/scala-design-patterns-4-factory/)<br>[工厂方法设计模式](https://zhan-ge.gitbooks.io/scala/content/creational-design-patterns/factory-method.html)<br>[scala 设计模式，工厂模式](https://blog.csdn.net/laopif/article/details/85109428)
 
 ### Option
 

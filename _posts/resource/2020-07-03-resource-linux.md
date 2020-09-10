@@ -8,7 +8,7 @@ description:
 
 ## yum
 
-```
+```shell
 # 安装package，-y参数遇到选项自动选择yes
 yum install packagename 
 yum -y install packagename
@@ -34,7 +34,7 @@ python /root/xxx.py;
 
 同时在terminal中输入crontab -e 编辑脚本，crontab -l显示当前调度的脚本，编辑脚本如下
 
-```
+```shell
 # 每分钟执行一次shell脚本，输出重定向到/root/log文件
 * * * * * source /root/path_to_shell/xx.sh >> /root/log
 ```
@@ -43,7 +43,7 @@ python /root/xxx.py;
 
 ## Shell
 
-```
+```shell
 # 记录日志
 cmd > logfile  # 以覆盖的方式把正确输出重定向到文件
 cmd >> logfile # 以追加的方式把正确的输出重定向到文件
@@ -58,9 +58,15 @@ cmd1 || cmd2  # cmd1不正确执行，cmd2才执行
  
 ```
 
-### source; bash; sh; . 的区别
+**source; bash; sh; . 的区别**
 
 **source a.sh** 在当前shell去读取执行a.sh, a.sh不需要有执行权限，在a.sh中设置的变量，改变的环境都会作用于当前的process，例如在a.sh中使用source语句激活conda环境，那么a.sh中的剩余代码执行的python环境为conda环境，不是仅仅局限于child process； **bash/sh a.sh** 打开一个subshell执行sh文件，不需要有执行权限，a.sh设置的变量也不会影响到父shell；**./a.sh** 需要有执行权限，可通过chmod +777赋予所有权限，且打开subshell执行。
 
 **Reference**<br>[Linux之shell详解](https://www.cnblogs.com/wuwuyong/p/11868651.html)<br>[知乎：怎么用shell脚本激活conda虚拟环境？](https://www.zhihu.com/question/322406344)<br>[linux里source、sh、bash、./有什么区别](https://www.cnblogs.com/pcat/p/5467188.html)
+
+## docker
+
+安装流程参见Ref.1
+
+**Reference**<br>[centos8安装Docker](https://blog.csdn.net/l1028386804/article/details/105480007)<br>[理解docker： docker安装和基础用法](https://www.cnblogs.com/sammyliu/p/5875470.html)<br>[理解Docker（2）：Docker 镜像](https://www.cnblogs.com/sammyliu/p/5877964.html)
 

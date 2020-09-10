@@ -10,20 +10,73 @@ description: 主要是记录一些平时不经常用，但是偶尔还挺有用�
 
 ## 1 基础
 
-### 1.1 编码解码
+### 1.1 import
 
-python3 默认编码模式是utf-8，python2默认编码模式是ASCII，如果想指定编码格式
+**跨级引用**需要把上一级module 的地址加入到系统路径中才能正常引用
 
 ```python
-# -*- coding: windows-1252 _*_
-
-# ord 返回string 对应的unicode code
-ord('a')
-# chr返回unicode code对应的string
-chr(97)
+import sys
+sys.path.append('..')
 ```
 
-### 1.2 生成器/迭代器
+### 1.2 var
+
+**变量赋值引用**
+
+```python
+res = []
+
+#不会创建副本
+res.append(num) 
+
+#如果res是可变的 不会创建副本，如果是不可变的，会创建新的变量
+res+=[num] 
+
+#会创建副本
+new = res + [nums] 
+```
+
+### 1.3 num
+
+**浮点数精度问题**
+
+```
+浮点数的小数部分转换为二进制小数的时候都是不断的*2 取整数部分的值作为一个二进制位0,1然后对剩余的小数部分重复操作
+0.1*2 = 0.2  整数0，小数0.2
+0.2*2 = 0.4 整数0，小数0.4
+0.4*2 = 0.8 整数0，小数0.8
+0.8*2 = 1.6 整数1 小数0.6
+0.6*2 = 1.2 整数2 小数0.2
+重此开始了重复,但是计算中不能无限循环，保存精度有限，所以python默认精度有17位，16位精准，17开始不精准 
+```
+
+**取整方式**
+
+1. int(x); 直接抛去小数部分，保留整数部分，正负数皆如此
+2. round(x); 四舍五入
+3. math.ceil(x) 上取整
+
+### 1.4 list
+
+**自定义排序函数**
+
+```python
+# 第一种方式
+def func(x,y):  
+	if x<y:   
+		return -1  
+	if x==y:    
+		return 0 
+	if x>y:    
+		return 1 
+
+unsorted = [3,6,2,8,4]
+sorted( unsorted, func)# 第二个参数是类型是func 所以不需要传递func（x，y） 
+
+# 第二种方式 lambda expression sorted( unsorted, lambda x: len(x) ) 
+```
+
+**生成器/迭代器**
 
 ```python
 ''' 
@@ -65,137 +118,11 @@ next 返回生成器的下一个输出值，这里有一个点需要注意，第
 '''
 ```
 
-### 1.3 assert 语句
+### 1.5 string
 
-```python
-'''
-如果assert 后面合法的python语句是True, assert do nothing 
-如果assert 不成立，抛出AssertionError Exception ，可以自定义错误信息
+**转义字符** python里面%d表数字，%s表示字符串，%%表示一个%；单引号内嵌套单引号需要转义字符/;单引号内嵌套双引号不需要嵌套；双引号内嵌套双引号需要转义字符/；双引号内引用单引号不需要转义字符；
 
-'''
-assert 1 + 1 ==2, 'error message' 
-```
-
-### 1.4 原生方法
-
-**\_\_new\_\_ /\_\_init\_\_**
-
-```python
-"""
-__init__是当实例对象创建完成后被调用的，然后设置对象属性的一些初始值。
-__new__ 第一个参数是这个类，__init__第一个参数是这个类的实例对象
-__new__是在实例创建之前被调用的，因为它的任务就是创建实例然后返回该实例，是个静态方法。
-即__new__在__init__之前被调用，__new__的返回值（实例）将传递给__init__方法的第一个参数，然后__init__给这个实例设置一些参数。
-__init__ 并不是其他语言中常说的构造函数，而是初始化函数，因为在调用init之前已经由new构造出了一个实例
-"""
-class foo:
-    def __new__(cls,*argv,**kwargv):
-        # 第一个参数是这个类，其余参数在调用成功后传递给__init__方法,默认是调用超类的__new__方法
-        # __new__ 方法的作用是以合适的参数调用超类的 __new__ 方法
-        return super.__new__(cls, *argv,**kwargv)
-```
-
-**\_\_name\_\_**
-
-模块也是一个对象，该对象有\_\_name\_\_ 属性
-
-```python
-import xxx_module
-# 输出结果是模块文件名，没有路径和文件名
-xxx_module.__name__
-
-# python xxx_module.py 如果直接运行模块，__name__ 是默认值__main__
-
-```
-
-**\_\_repr\_\_**
-
-```python
-#每个类都有一个__repr__方法，自定义print 实例化对象时的返回值，默认的输出是类名+object at + 内存地址
-class test:
-    def __init__(self):
-        pass
-	def __repr__(self):
-    	return 'xxx'
-print(test()) # 输出xxx
-```
-
-**\_\_del\_\_**
-
-```python
-#手动或者自动释放空间的时候，会调用__del__()方法,但是要注意不要随意重载，确保资源能够正确释放
-class test:
-    def __init__(self):
-        pass
-	def __del__(self):
-    	return 'xxx'
-```
-
-**\_\_dir\_\_  / \_\_dict\_\_**
-
-dir 返回对象拥有的所有方法和属性, dict 查看属性名和属性值组成的字典
-
-**\_\_call\_\_**
-
-相当于在类中重载‘()’运算符，使得**类实例**对象变成可调用对象。python中可以将“()”应用到本身执行，都称为“可调用对象”, 一般的情况下，新建类实例时，调用\_\_init\_\_方法, 但新建的实例本身并不能直接调用，如果执行，或报错说“xxx object is not callable”。但是如果在类定义中实现了\_\_call\_\_方法，则可以把类实例变成可调用对象。
-
-```python
-class foo:
-    def __init__(self)：
-    	print("111")
-    def __call__(self):
-        print("222")
-        
-a = foo()
-# 111 
-a()
-# 222
-```
-
-**getattr(), setattr(), hasattr()**
-
-```python
-hasattr(obj, name)# 属性和方法都属于attr，返回True false， 无法分清属性还是方法
-getattr(obj, name[, default]) # 返回属性值， 或者方法信息，如果属性或方法不存在对象中，返回default，如果没有指定默认值，抛出AttributeError
-setattr(obj, name, value)
-```
-
-**Reference**<br>[Python \_\_call\_\_()方法（详解版）](http://c.biancheng.net/view/2380.html)<br>[通俗的讲解Python中的\_\_new\_\_()方法](https://blog.csdn.net/sj2050/article/details/81172022)<br>[Python \_\_new\_\_()方法详解](http://c.biancheng.net/view/5484.html)
-
-### 1.5 命名方式
-
-```python
-object #公用方法
-
-"""
-半保护,被看作是“protect”，意思是只有类对象和子类对象自己能访问到这些变量
-在模块或类外不可以使用，不能用’from module import *’导入。
-"""
-_object 
-
-"""
-全私有，全保护,私有成员“private”，意思是只有类对象自己能访问，
-连子类对象也不能访问到这个数据，不能用’from module import *’导入
-__object 也是为了避免与子类的属性或方法名称冲突， 对于该标识符描述的方法，父类的方法不能轻易地被子类的方法覆盖，他们的名字实际上是_classname__methodname
-"""
-__object
-
-"""
-内建方法，用户不要这样定义
-"""
-__object__ 
-
-"""
-当想要强行使用关键词作为变量名的时候，后面加一个下划线用作区分
-"""
-object_
-```
-
-### 1.6 转义字符
-
-python里面%d表数字，%s表示字符串，%%表示一个%；单引号内嵌套单引号需要转义字符/;单引号内嵌套双引号不需要嵌套；双引号内嵌套双引号需要转义字符/；双引号内引用单引号不需要转义字符；
-
-### 1.7 set
+### 1.6 set
 
 相比于list 和tuple，set相对不常用
 
@@ -241,7 +168,7 @@ a>b # True
 a>c # False 
 ```
 
-### 1.8 dict
+### 1.7 dict
 
 判断输入是否存在于key set中
 
@@ -252,29 +179,181 @@ if key in dict.keys()
 if dict.get(key)
 ```
 
-### 1.8 浮点数精度
+### 1.8 class
 
-```
-浮点数的小数部分转换为二进制小数的时候都是不断的*2 取整数部分的值作为一个二进制位0,1然后对剩余的小数部分重复操作
-0.1*2 = 0.2  整数0，小数0.2
-0.2*2 = 0.4 整数0，小数0.4
-0.4*2 = 0.8 整数0，小数0.8
-0.8*2 = 1.6 整数1 小数0.6
-0.6*2 = 1.2 整数2 小数0.2
-重此开始了重复,但是计算中不能无限循环，保存精度有限，所以python默认精度有17位，16位精准，17开始不精准 
+**继承**
+
+```python
+""" 第一种情况，子类不重写__init__方法
+子类默认调用父类的__init__方法
+"""
+class A:
+    def __init__(self, name):
+        self.name = name
+    
+class B(A):
+    def getname(self):
+        print(self.name)
+B("jack").getname()
+
+""" 第二种情况，子类重写__init__方法
+实例化时，调用子类方法，不会调用父类
+"""
+class A:
+    def __init__(self, name):
+        self.name = name
+    
+class B(A):
+    def __init__(self, name):
+        self.name = name+'_child'
+    def getname(self):
+        print(self.name)
+B("jack").getname()
+
+""" 第三种情况，继承父类的__init__方法
+在父类方法的基础上进行拓展,有两种方式
+super(子类, self).__init__(参数)
+父类.__init__(self,参数)
+"""
+class A:
+    def __init__(self, name):
+        self.name = name + '_parent'
+    
+class B(A):
+    def __init__(self, name):
+        super(B, self).__init__(name)
+        # A.__init__(self,name)
+        self.name += '_child'
+        
+    def getname(self):
+        print(self.name)
+        
+B("jack").getname()
 ```
 
-### 1.9 异常处理
+**self解释**
 
+1. self代表是类的实例，而不是类本身，self.class 才是类本身
+2. self只是一个约定俗成的写法，本身就是一个参数，所以是可以更改的，比如写成this
+3. **self是不能不写的**，比如有一个成员函数是Test类的成员函数是test，实例是a，解释器运行的时候是Test.test(a)把实例当成一个参数传入到self的位置，所以self是不能不写的。有一种情况可以不写，那就是类方法，只能通过Test.test()这种方式去调用。
+
+**方法命名方式**
+
+```python
+object #公用方法
+
+"""
+半保护,被看作是“protect”，意思是只有类对象和子类对象自己能访问到这些变量
+在模块或类外不可以使用，不能用’from module import *’导入。
+"""
+_object 
+
+"""
+全私有，全保护,私有成员“private”，意思是只有类对象自己能访问，
+连子类对象也不能访问到这个数据，不能用’from module import *’导入
+__object 也是为了避免与子类的属性或方法名称冲突， 对于该标识符描述的方法，父类的方法不能轻易地被子类的方法覆盖，他们的名字实际上是_classname__methodname
+"""
+__object
+
+"""
+内建方法，用户不要这样定义
+"""
+__object__ 
+
+"""
+当想要强行使用关键词作为变量名的时候，后面加一个下划线用作区分
+"""
+object_
 ```
+
+**一些原生方法**
+
+```python
+""" __new__ 和 __init__
+__init__是当实例对象创建完成后被调用的，然后设置对象属性的一些初始值。
+__new__ 第一个参数是这个类，__init__第一个参数是这个类的实例对象
+__new__是在实例创建之前被调用的，因为它的任务就是创建实例然后返回该实例，是个静态方法。
+即__new__在__init__之前被调用，__new__的返回值（实例）将传递给__init__方法的第一个参数，然后__init__给这个实例设置一些参数。
+__init__ 并不是其他语言中常说的构造函数，而是初始化函数，因为在调用init之前已经由new构造出了一个实例
+"""
+class foo:
+    def __new__(cls,*argv,**kwargv):
+        # 第一个参数是这个类，其余参数在调用成功后传递给__init__方法,默认是调用超类的__new__方法
+        # __new__ 方法的作用是以合适的参数调用超类的 __new__ 方法
+        return super.__new__(cls, *argv,**kwargv)
+    
+
+""" __name__
+模块也是一个对象，该对象有__name__ 属性
+"""
+import xxx_module
+# 输出结果是模块文件名，没有路径和文件名
+xxx_module.__name__
+
+# python xxx_module.py 如果直接运行模块，__name__ 是默认值__main__
+
+
+"""__repr__
+每个类都有一个__repr__方法，自定义print 实例化对象时的返回值，默认的输出是类名+object at + 内存地址
+"""
+class test:
+    def __init__(self):
+        pass
+	def __repr__(self):
+    	return 'xxx'
+print(test()) # 输出xxx
+
+
+"""__del__
+手动或者自动释放空间的时候，会调用__del__()方法,但是要注意不要随意重载，确保资源能够正确释放
+"""
+class test:
+    def __init__(self):
+        pass
+	def __del__(self):
+    	return 'xxx'
+    
+
+"""__dir__ 和 __dict__
+dir 返回对象拥有的所有方法和属性, dict 查看属性名和属性值组成的字典
+"""
+
+
+"""__call__
+相当于在类中重载‘()’运算符，使得类实例对象变成可调用对象。python中可以将“()”应用到本身执行，都称为“可调用对象”, 一般的情况下，新建类实例时，调用__init__方法, 但新建的实例本身并不能直接调用，如果执行，或报错说“xxx object is not callable”。但是如果在类定义中实现了__call__方法，则可以把类实例变成可调用对象。
+"""
+class foo:
+    def __init__(self)：
+    	print("111")
+    def __call__(self):
+        print("222")
+        
+a = foo()
+# 111 
+a()
+# 222
+
+
+"""getattr()  setattr() hasattr()
+"""
+hasattr(obj, name)# 属性和方法都属于attr，返回True false， 无法分清属性还是方法
+getattr(obj, name[, default]) # 返回属性值， 或者方法信息，如果属性或方法不存在对象中，返回default，如果没有指定默认值，抛出AttributeError
+setattr(obj, name, value)
+```
+
+**Reference**<br>[Python \_\_call\_\_()方法（详解版）](http://c.biancheng.net/view/2380.html)<br>[通俗的讲解Python中的\_\_new\_\_()方法](https://blog.csdn.net/sj2050/article/details/81172022)<br>[Python \_\_new\_\_()方法详解](http://c.biancheng.net/view/5484.html)<br>[一篇文章让你彻底搞清楚Python中self的含义](https://www.cnblogs.com/jessonluo/p/4717140.html)<br>[python子类继承父类构造函数](https://www.runoob.com/w3cnote/python-extends-init.html)
+
+### 1.9 exception
+
+```python
 try:  
-	do sth0
+	#do sth0
 except KeyError e:
-	do sth1
+	#do sth1
 else:  
-	do sth2
+	#do sth2
 finally:  
-	do sth3
+	#do sth3
 ```
 
 在没有return 的情况下：try首先执行，如有异常跳到except，如果没有执行else，finally是一直要执行的有return的情况下： 不管怎样，finally部分的代码是一定执行的，所以finally中有return的话，就按照finally 执行后的结果return 即使try部分，except，else 部分有return ，也是要先执行finally，finally没有return 就返回去return； 如果有就在finally 处return 了，不会回到原来的地方。所以结果可能和预计的不太一样。手动抛出异常raise ExceptionType('description')，常用的ExceptionType
@@ -291,58 +370,18 @@ finally:
 
 手动抛出异常常常不是用来让程序停下来，而是反过来，让程序能够顺利执行，因为raise经常用在try，exception语法的try语句中，当条件不满足时，例如用户输入类型错误，程序本身不会报错，但是结果会错误，所以故意抛出异常触发exception语句
 
-### 1.10 self解释
-
-1. self代表是类的实例，而不是类本身，self.__class__ 才是类本身
-2. self只是一个约定俗成的写法，本身就是一个参数，所以是可以更改的，比如写成this
-3. **self是不能不写的**，比如有一个成员函数是Test类的成员函数是test，实例是a，解释器运行的时候是Test.test(a)把实例当成一个参数传入到self的位置，所以self是不能不写的。有一种情况可以不写，那就是类方法，只能通过Test.test()这种方式去调用。
-
-**Reference**<br>[一篇文章让你彻底搞清楚Python中self的含义](https://www.cnblogs.com/jessonluo/p/4717140.html)
-
-### 1.11 Path相关
-
-首先是从sys.path下搜索
+**assert 语句**
 
 ```python
-import sys
-# 返回一个系统路径string 的list，可以像操作任何list一样操作sys.path
-sys.path
-# 添加搜索路径，只在当前python程序运行时间内生效
-sys.insert(0, 'path')
+'''
+如果assert 后面合法的python语句是True, assert do nothing 
+如果assert 不成立，抛出AssertionError Exception ，可以自定义错误信息
 
-
-import os
-# 返回current work directory
-os.getcwd()
-#改变工作目录,支持相对于当前工作路径的相对路径
-os.chdir(path)
-# 展示路径下所有文件名
-os.listdir(path)
-# 遍历路径下所有文件
-for file in os.listdir(path):
-    filepath = "{0}/{1}".format(path, file)
-# 判断文件是否存在或路径是否存在
-
-# 路径拼接
-os.path.join(path1, path2)
-# split会把路径分成目录路径和文件名
-dirpath, filename = os.path.split(path)
-# 把文件名和扩展名分开
-filename, extension = os.path.splitext(filename)
-
-# 内置的glob模块，给定通配符，返回符合条件的文件名
-import glob
-glob('dirpath/*.py')
-
+'''
+assert 1 + 1 ==2, 'error message'
 ```
 
-### 1.12 取整方式
-
-1. int(x); 直接抛去小数部分，保留整数部分，正负数皆如此
-2. round(x); 四舍五入
-3. math.ceil(x) 上取整
-
-### 1.13 文件
+### 1.10 file
 
 ```python
 # 输出会在test.txt原来文本的基础上多一个空行，因为read()在文件结尾处返回一个空字符串显示出来就是空行。可以使用rstrip删除掉
@@ -370,13 +409,56 @@ with open('test.txt', 'w') as file:
     file.write('xxxxxx')
 ```
 
-### 1.14 编程规范
+### 1.11 编程规范
 
 1. 先import标准库模块，再添加一个空行，再import自己编写的模块
 
-### 1.15 py2/py3区别
+### 1.12 py2/py3区别
 
 1. python2 math.floor(5.5) 返回5.0 python3 math.floor(5.5) 返回5
+
+### 1.13 datetime
+
+```python
+import datetime
+
+# 字符串
+st = '2017-11-23 16:10:20'
+
+# 当前时间戳
+dt = datetime.datetime.now() 
+
+# datetime to string
+dt.strftime("%Y-%m-%d %H:%M:%S")
+
+# string to datetime
+datetime.datetime.strptime(st, '%Y-%m-%d %H:%M:%S')
+
+# string to timestamp
+time.mktime(time.strptime(st,'%Y-%m-%d %H:%M:%S' ))
+
+# timestamp to string
+time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(sp))
+
+# dayofweek
+dt.weekday()
+
+# 日期差值转int天数
+(dt1-dt2).dt.days
+```
+
+### 1.14 其他
+
+python3 默认编码模式是utf-8，python2默认编码模式是ASCII，如果想指定编码格式
+
+```python
+# -*- coding: windows-1252 _*_
+
+# ord 返回string 对应的unicode code
+ord('a')
+# chr返回unicode code对应的string
+chr(97)
+```
 
 ## 2 进阶
 
@@ -386,7 +468,6 @@ with open('test.txt', 'w') as file:
 
 ```python
 from abc import abstractmethod, ABCMeta
-
 
 class LinearModel(metaclass=ABCMeta):
     @abstractmethod
@@ -400,6 +481,8 @@ class LinearModel(metaclass=ABCMeta):
 	def print(self):
         print('hello world')
 ```
+
+**Reference**<br>[python--接口类与抽象类](https://zhuanlan.zhihu.com/p/51216183)
 
 ### 2.2 装饰器
 
@@ -605,6 +688,91 @@ s1 == s2
 
 ```
 
+### 2.4 与os交互
+
+**Path相关**首先是从sys.path下搜索
+
+```python
+import sys
+# 返回一个系统路径string 的list，可以像操作任何list一样操作sys.path
+sys.path
+# 添加搜索路径，只在当前python程序运行时间内生效
+sys.insert(0, 'path')
+
+import os
+# 返回current work directory
+os.getcwd()
+#改变工作目录,支持相对于当前工作路径的相对路径
+os.chdir(path)
+# 展示路径下所有文件名
+os.listdir(path)
+# 遍历路径下所有文件
+for file in os.listdir(path):
+    filepath = "{0}/{1}".format(path, file)
+# 判断文件是否存在或路径是否存在
+
+# 和listdir 不同的是 walk 返回一个迭代器,通常通过for loop访问
+for root, dirs, files in os.walk(file_dir):  
+	print(root) # 当前目录路径  
+	print(dirs) # 当前路径下所有子目录  
+	print(files) # 当前路径下所有非目录子文件
+    
+# 路径拼接
+os.path.join(path1, path2)
+# split会把路径分成目录路径和文件名
+dirpath, filename = os.path.split(path)
+# 把文件名和扩展名分开
+filename, extension = os.path.splitext(filename)
+
+# 内置的glob模块，给定通配符，返回符合条件的文件名
+import glob
+glob('dirpath/*.py')
+
+```
+
+**执行其他脚本**
+
+```python
+#pythonfile1.py: 
+from time import sleep 
+sleep(10) 
+
+#pythonfile2.py 
+print('python file 2')  
+
+#python file 3: 
+import os 
+cmd = "python pythonfile1.py" 
+status = os.system(cmd) # 如果上面cmd成功执行返回0 否则...不同情况返回不同的值 
+if status ==0:  
+	cmd = 'python pythonfile2.py' 
+	os.system(cmd) 
+
+# 运行的时候会先sleep 10秒 然后在打印 python file 2. 说明会先等到上一个脚本的执行结果的返回才运行下一个cmd
+# 但是也有特殊情况 如果上一个cmd是用于提交cloud的指令，是不会等待cloud 运行完才返回；只要成功提交了cloud任务，cmd就会成功返回。
+```
+
+### 2.5 打包
+
+```python
+#在项目文件顶层文件夹下新建setup.py 文件,并且在想打包进package的文件夹下加上名为__init__.py的空文件
+
+# setup文件实例
+from setuptools import setup 
+setup( name = "modulename"， version = "1.0", packages = ["src"] ) 
+
+#完成setup.py文件 之后需要运行脚本生成package
+#创建egg包
+python setup.py bdist_egg
+#创建tar.gz 包
+python setup.py sdist --formats=gztar 
+
+#之后会在项目文件夹下生成新的几个文件夹，其中打包完的文件放在dist文件夹下上传tar包之前一定检查一下是不是包里包含所有需要的东西
+
+# 打包成exe, -F 表示打包成单一exe文件， -p表示其他依赖文件
+pyinstaller -F xxxx.py -p xxxx.py
+```
+
 ## 3 常用Module
 
 ### 3.1 sys Module
@@ -685,135 +853,4 @@ with open('test.json', 'w') as file:
 # json load
 with open('test.json', 'r') as file:
     data = json.load(file)
-```
-
-## 4 杂七杂八
-
-### 4.1 打包
-```python
-#在项目文件顶层文件夹下新建setup.py 文件,并且在想打包进package的文件夹下加上名为__init__.py的空文件
-
-# setup文件实例
-from setuptools import setup 
-setup( name = "modulename"， version = "1.0", packages = ["src"] ) 
-
-#完成setup.py文件 之后需要运行脚本生成package
-#创建egg包
-python setup.py bdist_egg
-#创建tar.gz 包
-python setup.py sdist --formats=gztar 
-
-#之后会在项目文件夹下生成新的几个文件夹，其中打包完的文件放在dist文件夹下上传tar包之前一定检查一下是不是包里包含所有需要的东西
-
-# 打包成exe, -F 表示打包成单一exe文件， -p表示其他依赖文件
-pyinstaller -F xxxx.py -p xxxx.py
-```
-### 4.2 执行脚本
-
-```python
-#pythonfile1.py: 
-from time import sleep 
-sleep(10) 
-
-#pythonfile2.py 
-print('python file 2')  
-
-#python file 3: 
-import os 
-cmd = "python pythonfile1.py" 
-status = os.system(cmd) # 如果上面cmd成功执行返回0 否则...不同情况返回不同的值 
-if status ==0:  
-	cmd = 'python pythonfile2.py' 
-	os.system(cmd) 
-
-# 运行的时候会先sleep 10秒 然后在打印 python file 2. 说明会先等到上一个脚本的执行结果的返回才运行下一个cmd
-# 但是也有特殊情况 如果上一个cmd是用于提交cloud的指令，是不会等待cloud 运行完才返回；只要成功提交了cloud任务，cmd就会成功返回。
-```
-
-### 4.4 变量赋值引用
-
-```python
-res = []
-
-#不会创建副本
-res.append(num) 
-
-#如果res是可变的 不会创建副本，如果是不可变的，会创建新的变量
-res+=[num] 
-
-#会创建副本
-new = res + [nums] 
-```
-
-### 4.6 自定义排序函数
-```python
-# 第一种方式
-def func(x,y):  
-	if x<y:   
-		return -1  
-	if x==y:    
-		return 0 
-	if x>y:    
-		return 1 
-
-unsorted = [3,6,2,8,4]
-sorted( unsorted, func)# 第二个参数是类型是func 所以不需要传递func（x，y） 
-
-# 第二种方式 lambda expression sorted( unsorted, lambda x: len(x) ) 
-```
-
-### 4.7 datetime&time&string
-
-```python
-import datetime
-
-# 字符串
-st = '2017-11-23 16:10:20'
-
-# 当前时间戳
-dt = datetime.datetime.now() 
-
-# datetime to string
-dt.strftime("%Y-%m-%d %H:%M:%S")
-
-# string to datetime
-datetime.datetime.strptime(st, '%Y-%m-%d %H:%M:%S')
-
-# string to timestamp
-time.mktime(time.strptime(st,'%Y-%m-%d %H:%M:%S' ))
-
-# timestamp to string
-time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(sp))
-
-# dayofweek
-dt.weekday()
-
-# 日期差值转int天数
-(dt1-dt2).dt.days
-```
-
-### 4.8 os交互
-
-```python
-import os 
-
-# 访问当前路径下文件名,不包含子目录中的文件; 返回一个文件名列表
-for file in os.listdir(path):  
-	print(file) 
-
-# 和listdir 不同的是 walk 返回一个迭代器,通常通过for loop访问
-for root, dirs, files in os.walk(file_dir):  
-	print(root) # 当前目录路径  
-	print(dirs) # 当前路径下所有子目录  
-	print(files) # 当前路径下所有非目录子文件
-
-```
-
-### 4.9 跨级引用
-
-需要把上一级module 的地址加入到系统路径中才能正常引用
-
-```python
-import sys
-sys.path.append('..')
 ```
