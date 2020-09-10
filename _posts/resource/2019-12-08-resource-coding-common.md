@@ -137,20 +137,51 @@ struct stu2
 
 ## 代码优化
 
-**大量的if else，复杂的判断逻辑**
+### if-else
+
+痛点：大量的if else，复杂的判断逻辑，if-else 使用场景无外乎下面三个场景，优化方向主要也是从这三个方向
+
+- 异常逻辑处理
+- 特殊case
+- 不同流程状态
 
 ```python
-""" 提前return 
+##################  异常逻辑处理角度 ##############
+
+""" 提前return ，避免if else中参与过多的异常流程处理,分离主流程和异常流程
 """ 
-if condition:
-    foo() 
+if condition1:
+    if condition2:
+        foo()
+     else:
+        print("condition2 fails")
 else:
+    
+# 把异常流程单独拉出来，干掉else
+if not condition1:
+    print("condition1 fails")
     return 
-# 优化是condition 取反，去掉else
-if not condition:
-    return 
+if not condition2:
+    print("condition2 fails")
+    return     
 foo()
 
+#################  特殊case 处理角度 ######################
+"""常规流程和特殊流程要区分开
+"""
+if contion1:
+    foo()
+    if contion2:
+        foo()
+    if sp_condition:
+        foo()
+# 把常规流程封装，区分常规和特殊
+commonFlow()
+if condition1 and sp_condition:
+    foo()
+    
+
+################# 不同流程处理角度 ######################
 """ 策略模式
 """
 if strategy='norm':
@@ -180,5 +211,65 @@ m = {
     'fast': FastStrategy(),
     'slow': SlowStrategy()
 }
+strategy = m[param]
+strategy.run()
+
+
+""" 表驱动法
+"""
+def getWeekdayStr(day):
+    if day == 1:
+        return "MON"
+    if day == 2:
+        return "TUE"
+    if day == 3:
+        return "WED"
+   	if day == 4:
+        return "THU"
+    if day == 5:
+        return "FRI"
+    if day == 6:
+        return "SAT"
+    if day == 7:
+        return "SUN"
+# 优化 把结果做成一张“表”，用查询代替逻辑判断
+weekday = ["MON","TUE","WED","THU","FRI","SAT","SUN"]
+weekday[day-1]
+
+
+"""当然表驱动法远不止这么简单,遇到嵌套的if else结构也可以用表驱动的方法解决
+"""
+if condition1:
+    if condition2:
+        if condition3:
+            pass
+        else:
+            pass
+    else:
+        pass
+else:
+    pass
+# 优化方法是把所有的嵌套摊平，然后用一套数据表来驱动判断
+# 或者编写一个简单的规则引擎, 或者把逻辑判断封装成方法
+def judge():
+    if condition1 and condition2 and condition3:
+        return 1
+    if condition1 and condition 2 and not condition3:
+        return 2
+    #...
+if judge() == 1:
+    pass
+if judge() == 2:
+    pass
+#...
+
+
+
 ```
+
+**Reference**<br>[知乎：优化代码中大量的if、else,你有什么方案](https://www.zhihu.com/question/344856665)<br>
+
+### 规则引擎
+
+**Reference**<br>[基于条件配置的简单规则引擎实现](https://www.cnblogs.com/Terry-Wu/p/9002138.html)<br>[再见if-else拥抱规则引擎](https://www.jianshu.com/p/9b67ab434795)<br>
 
