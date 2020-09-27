@@ -16,9 +16,9 @@ description: 推荐系统模型，算法，框架，相关论文
 
 ### **目的**
 
-1： 激发用户兴趣，促使用户去做某件事情，例如购物，看电影。
+- 激发用户兴趣，促使用户去做某件事情，例如购物，看电影。
 
-2：解决信息过载问题，从大集合中寻找出合适用户的内容。
+- 解决信息过载问题，从大集合中寻找出合适用户的内容。
 
 所以推荐系统同时涉及到**信息检索**和**信息过滤**，不同于搜索场景，有确定的query，用户需求明确； 推荐系统是没有用户的query，需要根据用户画像，内容画像从总体内容池中选出多样性的偏好内容。
 
@@ -61,7 +61,7 @@ description: 推荐系统模型，算法，框架，相关论文
 
 Ranking部分模型结构图
 
-![ytb-dnn-rank](/assets/img/recommendation_system/youtube-dnn-r**anking.png)**
+![ytb-dnn-rank](/assets/img/recommendation_system/youtube-dnn-ranking.png)
 
 **与召回层不同的是training 的最后一层是LR结构,** **训练目标大体是期望观看时长**，如果以CTR为优化目标，会偏向于推荐具有迷惑性的video，那么用户虽然点击但是没有观看完的video. 线上服务的时候使用e^(wx+b)作为激活函数，是期望停留时长的近似，也就是某个video最后的score. **Label 是曝光的视频是否点击，如果点击，则annotated with 浏览时长**
 
