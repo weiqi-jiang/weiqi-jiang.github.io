@@ -445,7 +445,13 @@ dt.weekday()
 
 # 日期差值转int天数
 (dt1-dt2).dt.days
+
+#加一天
+datetime.datetime.now+datetime.timedelta(days=1)
+
 ```
+
+**Reference**<br>[Python 日期时间datetime 加一天，减一天，加减一小时一分钟，加减一年一月](https://blog.csdn.net/lilongsy/article/details/80242427)
 
 ### 1.14 其他
 
@@ -730,6 +736,13 @@ glob('dirpath/*.py')
 
 ```
 
+**pyspark环境下显式指定python版本**
+
+```python
+import os 
+os.environ["PYSPARK_PYTHON"] = "/usr/bin/python3.6.5"
+```
+
 **执行其他脚本**
 
 ```python
@@ -775,7 +788,7 @@ pyinstaller -F xxxx.py -p xxxx.py
 
 ## 3 常用Module
 
-### 3.1 sys Module
+### 3.1 sys
 
 **指定编码格式**
 
@@ -803,7 +816,7 @@ importlib.reload(sys)
 
 **Reference**<br>[Python 解决 ：NameError: name 'reload' is not defined 问题](https://blog.csdn.net/github_35160620/article/details/52206868)<br>[python为什么需要reload(sys)后设置编码](https://www.cnblogs.com/fengff/p/8857360.html)
 
-### 3.2 logging Module
+### 3.2 logging
 
 ```python
 import logging 
@@ -813,7 +826,7 @@ logger.info("xxx") #输出info级别的信息
 logger.debug("xxx") # 文件级别是info的话 debug信息是不会输出的logger.warning("xxx") |
 ```
 
-### 3.3 argumentParser Module
+### 3.3 argumentParser
 
 ```python
 import argparse 
@@ -826,7 +839,7 @@ parser.add_argument("-a , --argname")
 parser.parse_args() # or parser.parse_known_args() 
 ```
 
-### 3.4 numpy Module
+### 3.4 numpy
 
 **reshape(-1,1)和reshape(1,-1)**
 
