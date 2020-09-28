@@ -39,7 +39,7 @@ markdown: kramdown
 kramdown: 
     math_engine: katex
 highlighter: rouge
-mathjax: disabled
+mathjax: enabled
 sass:
   style: compressed
 
