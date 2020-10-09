@@ -42,7 +42,7 @@ spark默认采取FIFO的调度策略。用一个queue保存已经提交的jobs�
 
 后续spark版本支持公平策略调度，采用round robin方式为每个job分配执行的tasks。sparks支持将不同的jobs划分到不同的调度池中，可以为每个调度池设置不同的属性调度池共享集群的资源，每个调度池内部，job是默认FIFO的方式运行的。
 
-### RDD(Resilent Distributed Datasets)
+### RDD
 
 spark API 的所有操作都是基于RDD的；数据不止存储在一台机器上，而是分布在多台机器上。RDD是一种“只读”的数据块，任何对RDD的操作都会产生一个新的RDD；RDD之间的transformation和action都会被记录成lineage，lineage形成一个有向无环图（DAG），计算过程不需要将中间结果放入磁盘保证容错，如果某个节点的数据丢失，按照DAG关系重新计算即可。
 
