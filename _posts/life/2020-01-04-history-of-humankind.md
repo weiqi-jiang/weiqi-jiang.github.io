@@ -2,7 +2,7 @@
 layout: post
 title: 人类简史读书笔记
 category: Life
-tags: 读书笔记，人类简史
+tags: 读书笔记
 description: 《人类简史》读书笔记
 ---
 
