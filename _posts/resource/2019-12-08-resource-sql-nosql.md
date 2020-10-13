@@ -43,11 +43,14 @@ SQL: table based; good for multirow transaction application
 ## **SQL DML 和DDL** 
 _数据操作语言_（DML）_数据定义语言_（DDL）
 DML： 查询和更新语句
+
 -  SELECT
 -  UPDATE
 -  DELETE
 -  INSERT
+
 DDL:  创建或删除表格
+
 -  CREATE DATABASE
 -  ALTER DATABASE
 -  CREATE TABLE
@@ -56,7 +59,7 @@ DDL:  创建或删除表格
 -  CREATE INDEX
 -  DROP INDEX
 
-## DataType/Constraint
+## 数据类型和约束
 
 **datatype**
 
@@ -79,7 +82,7 @@ DDL:  创建或删除表格
 - AUTO_INCREMENT
 
 
-## **Primary key 和 Foreign key**
+## 键
 
 - 理想的primary key 是较短的数字且永远不变
 - 但有时没有理想的主键，生成代理键，如propertyID 对用户来说没有任何意义，通常隐藏
