@@ -341,6 +341,49 @@ getattr(obj, name[, default]) # 返回属性值， 或者方法信息，如果�
 setattr(obj, name, value)
 ```
 
+**实例方法/类方法/静态方法**
+
+```python
+"""实例方法
+"""
+class foo:
+    def __init__(self,data):
+        self.data = data 
+    def print_data(self):
+        print(self.data)
+c1 = foo("hello world")
+c1.print_data()
+
+""" 类方法 
+用@classmethod修饰,调用时是类调用，不是实例调用 
+调用类方法的时候会把class foo传给cls。
+"""
+class foo:
+    num = 0
+    def __init__(self):
+        foo.num += 1
+    @classmethod
+    def print_num(cls):
+        print(cls.num)
+c1 = foo()        
+foo.print_num() # 1
+
+""" 静态方法
+@staticmethod修饰，静态方法依附于类，但调用时不需要引用实例或者类,通过类或实例都可以调用
+但不能直接像类外函数一样使用
+""" 
+class foo:
+    @staticmethod
+    def print_():
+        print("hello world")
+foo.print_() 
+c1 = foo()
+c1.print_()
+    
+```
+
+
+
 **Reference**<br>[Python \_\_call\_\_()方法（详解版）](http://c.biancheng.net/view/2380.html)<br>[通俗的讲解Python中的\_\_new\_\_()方法](https://blog.csdn.net/sj2050/article/details/81172022)<br>[Python \_\_new\_\_()方法详解](http://c.biancheng.net/view/5484.html)<br>[一篇文章让你彻底搞清楚Python中self的含义](https://www.cnblogs.com/jessonluo/p/4717140.html)<br>[python子类继承父类构造函数](https://www.runoob.com/w3cnote/python-extends-init.html)
 
 ### 1.9 exception
