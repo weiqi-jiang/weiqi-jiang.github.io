@@ -422,7 +422,9 @@ $$
 1. 每一台机器试一次
 2. 依据结果计算分数值$ \overline{x}_j(t)+ \sqrt{\frac{2lnt}{T_{j,t}}}$, 其中$x$是当前机器的收益均值$T_{j,t}$是当前机器的被试次数，$t$是总实验次数，每次选择都选择当前分数最高的机器实验，更新分数值
 
-收益均值大，分数高；被试次数少，分数高；于是均衡了exploit和explore的关系。
+UCB公式的前半部分衡量是收益的平均值，后半部分衡量了波动性，当前被试次数越少波动性越大，分数总和可以看做mean+std（置信区间）衡量了最大的潜在收益，如果一个机器mean很小，但是没有被试几次，std很大，那么潜在收益区间很大，倾向于被试，随着被试次数的上升，std收窄，渐渐倾向于mean大的机器，每次总是选择置信区间上界最大的那个机器。
+
+其实也可以选择置信区间下界最大，这样很保守$ \overline{x}_j(t) - \sqrt{\frac{2lnt}{T_{j,t}}}$, 从公式上来看，一个机器被试的次数越少，分数越低，平均收益越高，分数越高，也就是**倾向于选择平均收益高，而且被试了很多次，收益稳定的那台机器**。
 
 **Epsilon-Greedy**
 
@@ -434,4 +436,4 @@ $$
 
 **Bandit算法与推荐系统的联系**
 
-**Reference**<br>[Beta分布]([https://baike.baidu.com/item/%E8%B4%9D%E5%A1%94%E5%88%86%E5%B8%83/8994021?fr=aladdin](https://baike.baidu.com/item/贝塔分布/8994021?fr=aladdin))<br>[大白话解析模拟退火算法](https://www.cnblogs.com/heaad/archive/2010/12/20/1911614.html)<br>[【总结】Bandit算法与推荐系统](https://blog.csdn.net/dengxing1234/article/details/73188731)<br>[广告场景中的Explore与Exploit](https://zhuanlan.zhihu.com/p/136638444)
+**Reference**<br>[Beta分布]([https://baike.baidu.com/item/%E8%B4%9D%E5%A1%94%E5%88%86%E5%B8%83/8994021?fr=aladdin](https://baike.baidu.com/item/贝塔分布/8994021?fr=aladdin))<br>[大白话解析模拟退火算法](https://www.cnblogs.com/heaad/archive/2010/12/20/1911614.html)<br>[【总结】Bandit算法与推荐系统](https://blog.csdn.net/dengxing1234/article/details/73188731)<br>[广告场景中的Explore与Exploit](https://zhuanlan.zhihu.com/p/136638444)<br>[The Multi-Armed Bandit Problem and Its Solutions](https://lilianweng.github.io/lil-log/2018/01/23/the-multi-armed-bandit-problem-and-its-solutions.html)
