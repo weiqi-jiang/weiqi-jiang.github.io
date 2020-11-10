@@ -48,11 +48,89 @@ front = (front+1)%maxsize
   **下沉**：将该节点和两个子节点进行比较，如果父节点比子节点小，交互两个节点，循环直到到达叶子节点。存在两个叶子的情况下，交换叶子节点中较小的那一个，确保最小堆中某一个节点是以该节点为根节点的子树中最小的(以上详情参见github)
 
 ### Tree（树）
+
+```python
+"""
+前中后序遍历的递归版本
 - 中序遍历：左根右
 - 前序遍历：根左右
 - 后序遍历：左右根
-- Breadth First Traverse： 层级遍历， 使用queue结构协助，遍历的同时将左右节点enqueue
+- 层序遍历： BFS
+"""
+def InOrderTraversal(root,res):
+    if not root:
+        return 
+    InOrderTraversal(root.left)
+    res.append(root.val)
+    InOrderTraversal(root.right)
+    
+def PreOrderTraversal(root,res):
+    if not root:
+        return 
+    res.append(root.val)
+    PreOrderTraversal(root.left)
+    PreOrderTraversal(root.right)
+    
+def PostOrderTraversal(root,res):
+    if not root:
+        return 
+    PostOrderTraversal(root.left)
+    PostOrderTraversal(root.right)
+    res.append(root.val)
+"""
+非递归版本
+利用stack的特性来实现，不能使用queue！，不能用queue！，不能用queue！
+"""
+# 压栈先右后左，出栈先左后右，当前元素总是遍历
+def PreOrderTraversal(root,res):
+    stack = [root]
+    if not root:
+        return []
+    while stack:
+        node = stack.pop()
+        res.append(node.val)
+        if node.right:
+            stack.append(node.right)
+        if node.left:
+            stack.append(node.left)
+    return res
+# 先while循环压cur.left进栈,栈顶出栈就包含了左中，如果node.right,cur置为node.right
+# 然后while loop 压node.right.left 进栈
+def InOrderTraversal(root,res):
+    res = []
+    stack = []
+    cur = root
+    while True:
+        while cur:
+            stack.append(cur)
+            cur = cur.left
+        if not stack:
+            break
+        node = stack.pop()
+        res.append(node.val)
+        if node.right:
+            cur = node.right
+    return res
+# 双栈发
+# 第一个栈入栈顺序左右根，出栈顺序根右左
+# 第二个栈入栈顺序根右左，出栈顺序左右根
+# 为什么需要两个栈，第一个栈入栈顺序就是左右根，为什么不用queue直接输出呢？
+# 因为第一个栈的左右根顺序是当前节点的，不是整个树递归到叶子节点的“左右根”那么上层节点的“左右根”需要先压进栈，最后再输出
+def PostOrderTraversal(root, res):
+    stack1 = [node]
+    stack2 = []
+    while stack1:
+        node = stack1.pop()
+        stack2.append(node)
+        if node.left:
+            stack1.append(node.left)
+        if node.right:
+            stack1.append(node.right)
+    while len(stack2) > 0:
+		print(stack2.pop().val)
+```
 
+**Reference**<br>[Python 实现二叉树的前序、中序、后序、层次遍历（递归和非递归版本）](https://blog.csdn.net/m0_37324740/article/details/82763901)<br>
 
 ## Search Algorithm
 
@@ -65,6 +143,73 @@ front = (front+1)%maxsize
 - best case: O(logN)
 - worest case: O(N)
 - general case: O(logN)
+
+### BFS
+
+```python
+class TreeNode:
+    def __init__(self, val=0,left=None, right=None):
+        self.left = left 
+        self.val = val
+        self.right = right
+
+"""
+iterative form
+BFS使用queue辅助实现
+"""
+def bfs_iterative(root):
+    queue = [root]
+    while queue:
+        node = queue.pop(0)
+        print(node.val)
+        if node.left:
+            queue.append(node.left)
+        if node.right:
+            queue.append(node.right)
+
+"""
+recursive form
+一般BFS没有递归写法
+"""
+```
+
+### DFS
+
+```python
+class TreeNode:
+    def __init__(self, val=0,left=None, right=None):
+        self.left = left 
+        self.val = val
+        self.right = right
+
+"""
+iterative form
+DFS使用stack辅助实现， 先进后出
+"""
+def dfs_iterative(root):
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        print(node.val)
+       	if node.left:
+            stack.append(node.left)
+        if node.right:
+            stack.append(node.right)
+"""
+recursive form 
+本质上也是stack来实现
+"""
+def dfs_recursive(root):
+    print(root.val)
+   	if root.left:
+        dfs_recursive(root.left)
+    if root.right:
+        dfs_recursive(root.right)
+```
+
+
+
+
 
 ## Graph 图论
 
