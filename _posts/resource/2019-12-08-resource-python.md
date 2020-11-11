@@ -46,7 +46,7 @@ new = res + [nums]
 0.2*2 = 0.4 整数0，小数0.4
 0.4*2 = 0.8 整数0，小数0.8
 0.8*2 = 1.6 整数1 小数0.6
-0.6*2 = 1.2 整数2 小数0.2
+0.6*2 = 1.2 整数1 小数0.2
 重此开始了重复,但是计算中不能无限循环，保存精度有限，所以python默认精度有17位，16位精准，17开始不精准 
 ```
 
@@ -129,7 +129,7 @@ next 返回生成器的下一个输出值，这里有一个点需要注意，第
 ```python
 s = set()
 s.add(1)
-# 都会把set list中的每次元素执行一次add操作，如果元素已经存在于set，不会报错
+# 把set list中的每次元素执行一次add操作，如果元素已经存在于set，不会报错
 s.update({3,4,5},{6,3,4})
 s.update([2,5,7])
 # 如果discard元素存在set中，将之移除，如果不存在不会报错;remove如果不存在会报错
@@ -175,8 +175,10 @@ a>c # False
 ```python
 # O(n)
 if key in dict.keys()
-# O(1) 
-if dict.get(key)
+# O(1) get如果不存在key 返回None 可以设default
+if dict.get(key[, default_value]) != None
+
+
 ```
 
 ### 1.8 class

@@ -298,7 +298,11 @@ bagging： 使用装袋采样来获取数据子集训练基础学习器，分类
 
 **Reference**<br>[集成学习三大法宝-bagging、boosting、stacking](https://zhuanlan.zhihu.com/p/36161812)
 
-### 2.8 时间序列交叉验证
+### 2.8 交叉验证
+
+**为什么要用交叉验证？** 数据量太少！
+
+**时间序列**
 
 1 Predict Second Half
 
@@ -309,6 +313,18 @@ bagging： 使用装袋采样来获取数据子集训练基础学习器，分类
 ![img](/assets/img/ML/one-stop-machine-learning/forward-chain.jpg)
 
 用一天数据做验证和测试，其他时间作为训练，用一个外部循环来控制多次分割，最后平均一下测试误差
+
+**非时间序列**
+
+K-Fold Cross Validation,K为超参，把数据随机(当样本分布不均匀时，随机分存在把少数样本分在一起，其他组没有少数样本的情况)分为K份，K-1份作为训练集，1份留做test set。使用training set训练模型，用test set测试误差，再选取另一份为test set剩下的K-1份为training set 重复过程K遍，获得平均误差。当K等于样本量时，K折验证变成**留一验证**，即每次只留下一个sample作为test set剩下的全部作为training set。
+
+**K-Fold的作用**
+
+1. 评估模型性能， 用于模型选择，例如我想选XGBoost或者GBDT，在数据集有限的情况下，如果仅仅划分一次training set, testing set，用test set的误差来评估好坏，由于只有一次测试，无法知道模型的泛化能力，理想情况下，当然是增大测试集。但是在不扩展数据集的基础上，K-Fold相当于训练了K个模型，评估了K次，如果这K个模型的平均误差小，一定程度上可以说明该种模型由于另一种(特定模型经过调参，效果肯定会有提升，不能一棒子打死)。
+2. 确定超参，例如Random Forest中的DT个数，Grid search中使用K-Fold来确定当前超参取值下的平均误差
+3. 在数据量小的时候，避免over-fitting
+
+**Reference**<br>[A Gentle Introduction to K-Fold Cross Validation](https://machinelearningmastery.com/k-fold-cross-validation/)<br>[「交叉验证」到底如何选择K值？](https://zhuanlan.zhihu.com/p/31924220)
 
 ### 2.9 过拟合
 

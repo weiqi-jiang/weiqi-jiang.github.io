@@ -6,6 +6,12 @@ tags: MarkDown
 description: markdown 常用语法
 ---
 
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+</head>
+
 # <a id='index' >MarkDown 基本语法 </a>
 
 
@@ -51,6 +57,17 @@ _test_ / *test*  斜体
   ```code here ``` 方便展示这里不换行，如果换行，就会有两个代码块
 ```
 
+## 公式
+
+在要对齐的等号前面加\&
+$$
+\begin{equation}
+\begin{aligned}
+test &= aaa\\
+&=bbb
+\end{aligned}
+\end{equation}
+$$
 
 
 
@@ -89,6 +106,4 @@ _test_ / *test*  斜体
 
 
 
-**Reference** 
-
-[简书： markdown语法手册]( https://www.jianshu.com/p/8c1b2b39deb0 )
+**Reference**<br>[简书： markdown语法手册]( https://www.jianshu.com/p/8c1b2b39deb0 )
