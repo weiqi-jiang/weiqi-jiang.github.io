@@ -1,10 +1,8 @@
----
 layout: post
 title: 机器学习分类和回归模型汇总
 category: ML
 tags: Machine Learning
 description: 汇总常见的分类和回归模型
----
 
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
@@ -700,25 +698,63 @@ SVM 特点：
 
 ## Linear Regression
 
-cost Function：
+线性回归，顾名思义，我们想找到一个线性模型来“尽可能好”的拟合样本真实分布，线性模型在二维空间表现为一条线，在多维空间表现为一个超平面，首先定义损失函数，既然是回归问题，通常用MSE作为损失函数
 
-![img](/assets/img/ML/one-stop-machine-learning/LR-cost-func.png)
+$$
+J(w) = \frac{1}{2m}\sum_{i=1}^{m}(f(x_i)-y_i)^2 \qquad (1)
+$$
+其中$J(w)$表示损失函数，$f(x_i)$表示预测值 $y_i$表示真实值，把$f(x_i)$ 展开写
+$$
+f(x) = w_0x_0+w_1x_1+...w_nx_n
+$$
+其中$\quad x_0 = 1\quad w_0=b$ 进一步表示为
+$$
+f(x) = \begin{bmatrix}w_0w_1w2...w_n\end{bmatrix}\begin{bmatrix}x0\\x1\\...\\xn\\\end{bmatrix}\\
+f(x) = w^Tx \qquad (2)
+$$
+其中$x,w$分别表示n+1维的列向量,式(2) 带入式(1)可得
+$$
+J(w) = \frac{1}{2m}\sum_{i=1}^{m}(w^Tx-y_i)^2 \\
+\qquad= \frac{1}{2m}\sum_{i=1}^{m}(x_i^Tw-y_i)^2 \\
+\qquad\quad\qquad\qquad=\frac{1}{2m}(Xw-y)^T(Xw-y)\qquad (3)
+$$
+其中$X$ 是$m*(n+1)$维的矩阵设$(Xw-y)$为$k$, $J(w)=\frac{1}{2m}k^Tk$ 求解权重$w$矩阵有两种方法，**一种是直接矩阵求解，另一种是梯度下降**，首先推到矩阵求解方法,先列举几个用到的求导公式
+$$
+(x^TAx)^\prime = (A^T+A)x \\
+(Ax)^\prime = A^T\\
+I^T+I = 2I \\
+Ix = xI=x
+$$
+对损失函数求导
+$$
+J(w)^\prime = \frac{1}{2m}(k^Tk)^\prime k^\prime \\
+=\frac{1}{2m}(k^TIk)^\prime(Xw-y)^\prime\\
+=\frac{1}{2m}(I^T+I)k(X^T)\\
+=\frac{1}{m}kX^T \\
+=\frac{1}{m}(Xw-y)X^T
+$$
+可以证明$J(w)$是凸函数，且一般$XX^T$可逆，使损失函数导数为0
+$$
+w = (X^TX)^{-1}X^Ty \qquad (4)
+$$
+从上面的公式可以看得出来最大的时间复杂度可以达到O(n^3),当数据量非常大的时候，计算时长往往是不能忍受的，而且内存也不一定能全部一次性加载数据。为了在时间限制内求解权重，允许一定的误差，通常使用**梯度下降法,**对式(1)中的每个w求偏导，称为**梯度**
+$$
+\frac{\partial J(w)}{\partial w_j} =\frac{\partial \frac{1}{2m}\sum_{i=1}^{m}(w_0x_0+w_1x_1+...w_jx_j-y_i)^2}{\partial w_j} \\
+=\frac{1}{m}\sum^{m}_{i=1}(f(x_i)-y_i)x_j
+$$
+其中$i,j$分别表示第$i$个样本,第$j$个特征 ，更新后的权重为
+$$
+w_j = w_j - \alpha\frac{1}{m}\sum^{m}_{i=1}(f(x_i)-y_i)x_j \qquad (5)
+$$
+其中$\alpha$称之为学习率，如果值太小，收敛过慢，值太大，容易出现overshoot the minimum,在最小点附近震荡，一般先确定一个较大的learning rate，如果后期损失函数值变大，则取更小的learning rate。观察上式，每次迭代都需要计算所有样本在当前权重的情况下的输出，计算十分耗时，通常采用Batch Training的方式。
 
-cost function即为所有样本的均方误差
-
-为了求解权重theta，使用梯度下降法
-
-![img](/assets/img/ML/one-stop-machine-learning/LR-theta.png)
-
-**Reference**
-
-[机器学习入门：线性回归及梯度下降](https://blog.csdn.net/xiazdong/article/details/7950084)
+**Reference**<br>[机器学习入门：线性回归及梯度下降](https://blog.csdn.net/xiazdong/article/details/7950084)<br>[线性回归模型原理和推导](https://zhuanlan.zhihu.com/p/66192625)
 
 ## Logistics Regression
 
 线性分类模型在SVM部分已经介绍了这里简单回忆下：
 
-**线性函数：**
+**线性函数**
 $$
 y = w^Tx + b
 $$
@@ -729,35 +765,11 @@ $$
 y = \sigma(f(x)) = \sigma(w^Tx) = \frac{1}{1+e^{-w^Tx}}
 $$
 
-注意，**这里的w^T，x 都是已经包含了偏置项的，只需要在原来的基础上变成x_new = [x, 1] ,  w_new = [w，b]**
-
-一个样本，它类别为1 的概率为：
+一个样本，它类别为1 和0的概率分别为
 
 $$
-P_{y=1} = \frac{1}{1+e^{-w^Tx}}=p
-$$
-
-那么类别为0的概率
-
-$$
+P_{y=1} = \frac{1}{1+e^{-w^Tx}}=p\\
 P_{y=0} = 1-p
-$$
-
-一个事件发生也不发生的比例：
-
-$$
-\frac{P(y=1|x)}{P(y=0|x)} = \frac{p}{1-p} = e^{g(x)}
-$$
-
-称为事件发生比；记为odds
-写作：
-
-$$
-P(y|x) = 
-\begin{cases}
-	p, \text{y=1}\\
-    1-p, \text{y=0}
-\end{cases}
 $$
 
 统一一下形式，转为一个公式表示就是：
@@ -766,87 +778,114 @@ $$
 p(y_i|x_i) = p^{y_i}(1-p)^{1-y_i} \rightarrow 式1
 $$
 
-假设一组样本集有N个样本，那么这个样本集发生的概率就是单个样本发生概率的相乘，称为**联合分布，也是式1的\*似然函数\***：
+一个事件发生比不发生的比例
+$$
+\frac{P(y=1|x)}{P(y=0|x)} = \frac{p}{1-p} = e^{f(x)}
+$$
 
+称为**事件发生比，记为odds**
+
+现在的问题是我们需要找到一个损失函数，通过最大或者最小化这个损失函数来优化$w_i$,那我们选择什么损失函数合适呢？这其实是**从极大似然估计的角度去推导的**，假设一组样本集有N个样本，且样本之间是独立同分布的，那么这个样本集发生的概率就是单个样本发生概率的相乘，称为**联合分布**，也是式1的**似然函数**，这个似然函数的值随着我们$w$的变化而变化,我们最大化这个似然函数时对应的$w$就是我们最优化的$w$.
 $$
 P总 = P(y1|x1)P(y2|x2)P(y3|x3)...P(yN|xN) = \prod_{i=1}^{N}p^{y_n}(1-p)^{1-y_n} \rightarrow 式2
 $$
 
-连乘形式不方便计算，两边同时取对数：
+连乘形式不方便计算，两边同时取对数,不影响最优化过程
 
 $$
-\begin{equation*}
-\begin{split}
-F(w) = & ln(P总)\\
-&= ln(\prod_{n=1}^{N}p^{y_n}(1-p)^{1-y_n})\\
-&=\sum_{n=1}^{N}ln(p^{y_n}(1-p)^{1-y_n})\\
-&=\sum_{n=1}^{N}(y_nln(p)+(1-y_n)ln(1-p)) \text 式3
-\end{split}
-\end{equation*}
+F(w) =  ln(P总)\\
+\qquad\qquad\qquad\qquad= ln(\prod_{n=1}^{N}p^{y_n}(1-p)^{1-y_n})\\
+\qquad\qquad\qquad\qquad=\sum_{n=1}^{N}ln(p^{y_n}(1-p)^{1-y_n})\\
+\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad=\sum_{n=1}^{N}(y_nln(p)+(1-y_n)ln(1-p)) \quad (3)
 $$
 
-此时的**F(x)是LR模型的损失函数**，当然有的博客中的F(x)也可以除以N，不影响结果，但是为什么F(x)就是损失函数呢？
+此时的**F(x)是LR模型的损失函数**，当然有的博客中的F(x)也可以除以N，不影响结果，求解上式的方法和linear regression 相似，也有两种，**一种是极大似然估计+牛顿法迭代求解，另一种是梯度下降**。如果用极大似然法求解式3，上式中只有p中带有一个w是未知量。**我们现在要做的就是找到一组合适的W使得样本集的联合分布概率最大**。解释来说就是，样本集这个事件已经真实发生了，我们倒过去，我们要找一组权重，尽可能的使得它发生的概率最大，这样，这一组w就尽可能的接近真实w。例如，已知一个学校男生比女生7:3 ，一个是3:7，现在抽一个人是男生，那么最可能来自哪个学校？当然是第一个学校，虽然可能出错，不过已经是已知条件下概率最大的结果了。首先对$n+1$维权重（因为包含了偏置b）分别求偏导
 
-**这是由极大似然法推导而来**
+$$
+\frac{\partial F(w)}{\partial w_k} = \frac{\partial\sum_{n=1}^{N}(y_nlnp+(1-y_n)ln(1-p))}{\partial w_k}\\
+=\sum_{n=1}^{N}(\frac{y_n}{p}\frac{\partial p}{\partial w_k} + \frac{y_n-1}{1-p}\frac{\partial p}{\partial w_k})\\
+=\sum_{n=1}^{N}\frac{y_n-p}{p(1-p)}p(1-p)*x_{nk} \\
+=\sum_{n=1}^{N}(y_n-p)*x_{nk}\qquad (4)
+$$
+产生n+1 个等式，然后利用**牛顿法**迭代求解；到现在为止我们还是没有解释**为什么式3就是损失函数**，直到我们不用极大似然估计和牛顿法去求解而是用梯度上升/下降法去求解，就很明显了。
 
-**极大似然法**
+**梯度上升法/下降法** 
 
-如果用极大似然法求解式3，上式中只有p中带有一个w是未知量。**我们现在要做的就是找到一组合适的W使得样本集的联合分布概率最大**。解释来说就是，样本集这个事件已经真实发生了，我们倒过去，我们要找一组权重，尽可能的使得它发生的概率最大，这样，这一组w就尽可能的接近真实w。例如，已知一个学校男生比女生7:3 ，一个是3:7，现在抽一个人是男生，那么最可能来自哪个学校？当然是第一个学校，虽然可能出错，不过已经是已知条件下概率最大的结果了。
+我们同时也可以用**梯度上升法**求解式3，求得一组w使得式3的达到最大值。或者我们在式3前面乘上一个负因子,取平均
 
-首先对权重n+1（因为包含了偏置b）分别求偏导，假设对wk求偏导：
+$$
+F(w) = -\frac{1}{N}\sum_{n=1}^{N}(y_nln(p)+(1-y_n)ln(1-p))
+$$
+那么梯度上升法，就转换为了梯度下降法。**此时问题就变成了寻找一组w使得因子加权后的似然函数最小，是不是很熟悉，这个因子加权后的似然函数，不就是机器学习中常见的损失函数嘛**,对上式中每一个权重$w$求偏导，得到和式4一致的结果
+$$
+\frac{\partial F(w)}{\partial w_k}  =\frac{1}{N}\sum_{n=1}^{N}(y_n-p)*x_{nk}\\
+w_k: = w_k - \alpha\frac{1}{N}\sum_{n=1}^{N}(y_n-p)*x_{nk} \qquad (5)
+$$
+对比**Logistic Regression 和Linear Regression的式(5) 发现损失函数的梯度其实是一样的**，都是残差乘上特征取值
 
-![20140528205737500](/assets/img/ML/one-stop-machine-learning/max-likely.jpg)
-![20140528210021312](/assets/img/ML/one-stop-machine-learning/max-likely2.jpg)
+### 梯度下降过程向量化
 
-产生n+1 个等式，然后利用**牛顿法**迭代求解；
+见式5，每次梯度更新都需要遍历m个样本，但是在实际应用中，往往不用for loop实现，而是用vector 内积实现for循环的效果，记$w^Tx$ 即样本输入点乘权重的结果，经过sigmoid函数之前
 
-到现在为止我们还是没有解释为什么式3就是损失函数，直到我们不用极大似然估计和牛顿法去求解而是用梯度上升/下降法去求解，就很明显了。
+$$
+A = x^Tw = \begin{bmatrix}
+x_0^1\quad x_1^1\quad...\quad x_n^1 \\
+x_0^2\quad x_1^2\quad...\quad x_n^2 \\
+...\quad...\quad...\quad ...\\
+x_0^m\quad x_1^m \quad...\quad x_n^m \\
+\end{bmatrix} \bullet
+\begin{bmatrix} 
+w_0\\
+w_1\\
+...\\
+w_n
+\end{bmatrix} = \begin{bmatrix}
+w_0x_0^1+w_1x_1^1+...+w_nx_n^1\\
+w_0x_0^2+w_1x_1^2+...+w_nx_n^2\\
+...\\
+w_0x_0^n+w_1x_1^n+...+w_nx_n^n\\
+\end{bmatrix}
+$$
+基于向量A计算误差向量E,$f(x)=\frac{1}{1+e^{-x}}$
 
-**梯度上升法/下降法**
+$$
+E = f(x)-y=
+\begin{bmatrix}
+f(A^1)-y^1\\
+f(A^2)-y^2\\
+...\\
+f(A^m)-y^m
+\end{bmatrix}=\begin{bmatrix}e^1\\e^2\\...\\e^m\end{bmatrix} 
+$$
+有了误差向量E之后， 权重更新就可以实现向量化，省去for loop,其中$m,n$分别表示$m$个样本$n$个特征
+$$
+w_j:=w_j-\alpha(x_j^1,x_j^2...,x_j^m)\bullet E\\
+\begin{bmatrix}
+w_0\\
+w_1\\
+...\\
+w_n
+\end{bmatrix}:=\begin{bmatrix}
+w_0\\
+w_1\\
+...\\
+w_n
+\end{bmatrix}-\alpha\begin{bmatrix}
+x_0^1,x_0^2,...,x_0^m\\
+x_1^1,x_1^2,...,x_1^m\\
+x_2^1,x_2^2,...,x_2^m\\
+\end{bmatrix}\bullet\begin{bmatrix}e^1\\e^2\\...\\e^m\end{bmatrix}=w-\alpha \bullet x^T\bullet E
+$$
+每次更新的时候只需要更新$E$向量，迭代进行
 
-我们同时也可以用**梯度上升法**求解式3，求得一组w使得式3的达到最大值。或者我们在式3前面乘上一个负因子
+### 为什么用sigmoid函数?
 
-![gradient-asc](/assets/img/ML/one-stop-machine-learning/gradient-asc.jpg)
-
-那么梯度上升法，就转换为了梯度下降法。**此时问题就变成了寻找一组w使得因子加权后的似然函数最小，是不是很熟悉，这个因子加权后的似然函数，不就是机器学习中常见的损失函数嘛**
-
-![20131113203723187](/assets/img/ML/one-stop-machine-learning/LR-loss-solu.jpg)
-
-其中 g(x) = θT * x, 并且
-
-![20131113203741453](/assets/img/ML/one-stop-machine-learning/LR-loss-solu2.jpg)
-
-权重θ 更新函数：由于1/m是个常数，和学习率a合并
-
-![20131113205240203](/assets/img/ML/one-stop-machine-learning/LR-loss-func3.jpg)
-
-**梯度下降过程向量化**
-
-见公式15，每次梯度更新都需要遍历m个样本，但是在实际应用中，往往不用for loop实现，而是用vector 内积实现for循环的效果
-
-记θ*x 即样本输入点乘权重的结果，经过sigmoid函数之前
-
-![20131113204012546](/assets/img/ML/one-stop-machine-learning/LR-gd.jpg)
-
-基于向量A计算误差向量E：
-
-![20131113204103593](/assets/img/ML/one-stop-machine-learning/LR-gd2.jpg)
-
-有了误差向量E之后， 权重更新就可以实现向量化，省去for loop， θj可以表示为式23，整个权重θ统一表示为式24
-
-![20131113204138093](/assets/img/ML/one-stop-machine-learning/LR-gd3.jpg)
-![20131113204152062](/assets/img/ML/one-stop-machine-learning/LR-gd4.jpg)
-
-**逻辑回归为什么要用sigmoid函数？能不能用其他函数？**
-
-**为什么是sigmoid？**
-
-首先想到是用W*X来表示属于类别1的概率，因为w*x的值越大离分类面越远，有两个问题
+首先想到是用$w*x$来表示属于类别1的概率，因为$w*x$的值越大离分类面越远，有两个问题
 
 1. 这个值是负无穷到正无穷，需要归一化为0-1
-2. 现实中，w*x 非常大或者非常小的时候对概率值影响不大，但是w*x 在0范围附近，也就是在分类面的附近对概率影响愈来愈大。离分类面很远，再远一点也对概率值理论上影响不大
+2. 现实中，$w*x$非常大或者非常小的时候对概率值影响不大，但是$w*x$ 在0范围附近，也就是在分类面的附近对概率影响愈来愈大。离分类面很远，再远一点也对概率值理论上影响不大
 
-于是需要修正，首先想到的思路是时间的几率odds = p/(1-p)是0到正无穷，同时为了满足第二个条件，对odds取log 就同时满足了2个条件
+于是需要修正，首先想到的思路是事件发生比odds = p/(1-p)是0到正无穷，为了满足第二个条件，对odds取log 就同时满足了2个条件
 
 $$
 log(\frac{p}{1-p}) = w^Tx \Longrightarrow p=\frac{1}{1+e^{-w^Tx}}
@@ -860,9 +899,7 @@ $$
 
 2.最大熵解释
 
-该解释是说，在我们给定了某些假设之后，我们希望在给定假设前提下，分布尽可能的均匀。对于Logistic Regression，我们假设了对于{X,Y}，我们预测的目标是Y|X，并假设认为Y|X服从bernoulli distribution，所以我们只需要知道P(Y|X)；其次我们需要一个线性模型，所以P(Y|X)=f(wx)。接下来我们就只需要知道f是什么就行了。而我们可以通过最大熵原则推出的这个f，就是sigmoid
-
-无论是sigmoid函数还是probit函数都是**广义线性模型的连接函数**（link function）中的一种。选用联接函数是因为，从统计学角度而言，**普通线性回归模型是基于响应变量和误差项均服从正态分布的假设，且误差项具有零均值，同方差的特性**。但是，例如分类任务（判断肿瘤是否为良性、判断邮件是否为垃圾邮件），其响应变量一般不服从于正态分布，其服从于二项分布，所以选用普通线性回归模型来拟合是不准确的，因为不符合假设，所以，我们需要选用广义线性模型来拟合数据，通过标准联接函数(canonical link or standard link function)来映射响应变量，如：正态分布对应于恒等式，泊松分布对应于自然对数函数，二项分布对应于logit函数（二项分布是特殊的泊松分布）。
+该解释是说，在我们给定了某些假设之后，我们希望在给定假设前提下，分布尽可能的均匀。对于Logistic Regression，我们假设了对于{X,Y}，我们预测的目标是Y\|X，并假设认为Y\|X服从bernoulli distribution，所以我们只需要知道P(Y\|X)；其次我们需要一个线性模型，所以P(Y\|X)=f(wx)。接下来我们就只需要知道f是什么就行了。而我们可以通过最大熵原则推出的这个f，就是sigmoid。无论是sigmoid函数还是probit函数都是**广义线性模型的连接函数**（link function）中的一种。选用联接函数是因为，从统计学角度而言，**普通线性回归模型是基于响应变量和误差项均服从正态分布的假设，且误差项具有零均值，同方差的特性**。但是，例如分类任务（判断肿瘤是否为良性、判断邮件是否为垃圾邮件），其响应变量一般不服从于正态分布，其服从于二项分布，所以选用普通线性回归模型来拟合是不准确的，因为不符合假设，所以，我们需要选用广义线性模型来拟合数据，通过标准联接函数(canonical link or standard link function)来映射响应变量，如：正态分布对应于恒等式，泊松分布对应于自然对数函数，二项分布对应于logit函数（二项分布是特殊的泊松分布）。
 
 **Reference**<br>[Logistic回归原理及公式推导](https://blog.csdn.net/AriesSurfer/article/details/41310525)<br>[机器学习--Logistic回归计算过程的推导](https://blog.csdn.net/ligang_csdn/article/details/53838743)<br>[逻辑斯蒂回归原理篇](https://blog.csdn.net/a819825294/article/details/51172466 )<br>[sigmoid函数与softmax函数](https://www.jianshu.com/p/52fcd56f2406)<br>[逻辑回归(logistics regression)](https://blog.csdn.net/weixin_39445556/article/details/83930186)
 
@@ -903,15 +940,13 @@ KNN假设实例是n维空间中的一个点，点与点的距离是由标准欧�
 
 ## NaiveBayesian
 
-朴素贝叶斯属于生成式模型，学习输入和输出的联合概率分布。给定输入x，利用贝叶斯概率定理求出最大的后验概率作为输出y。首先肯定是贝叶斯公式, 其中P(B\|A)称为后验概率 P（A\|B）称为似然函数，P(A), P(B)为先验概率.
+朴素贝叶斯属于生成式模型，学习输入和输出的联合概率分布。给定输入x，利用贝叶斯概率定理求出最大的后验概率作为输出y。首先肯定是贝叶斯公式, 其中**P(B\|A)称为后验概率 P（A\|B）称为似然函数，P(A), P(B)为先验概率**.在预测时A表示样本，B表示某个类别，P(B\|A)表示A样本发生的条件下B类别的概率，遍历所有类别，找到最大的那个类别就可以了。
 
 $$
 P(B|A) = \frac{P(A|B)P(B)}{P(A)}
 $$
 
-朴素贝叶斯的思想很简单：给出一个待分类项，出现这个待分类项的情况下，各个类别出现的概率，那个高就取那个类别作为分类结果；就和看到一个黑人，预测他的国家，假设我们现在数据集中，70%黑人是非洲，20%美洲，10%欧洲，那肯定预测非洲更加准确。
-
-朴素贝叶斯之所以叫naive bayes，是因为它**假设了x的各个属性之间条件独立**，这个假设很胆大，在很多情况下是不成立的，所有朴素贝叶斯的效果很多时间都不太好。换言之，该假定说明给定实例的目标值情况下，观察到联合的$a_1a_2a_3a_4...a_n$的概率正好是对每个单独属性的概率乘积：
+朴素贝叶斯的思想很简单：给出一个待分类项，出现这个待分类项的情况下，各个类别出现的概率，那个高就取那个类别作为分类结果；就和看到一个黑人，预测他的国家，假设我们现在数据集中，70%黑人是非洲，20%美洲，10%欧洲，那肯定预测非洲更加准确。朴素贝叶斯之所以叫naive bayes，是因为它**假设了x的各个属性之间条件独立**，这个假设很胆大，在很多情况下是不成立的，所有朴素贝叶斯的效果很多时间都不太好。换言之，该假定说明给定实例的目标值情况下，观察到联合的$a_1a_2a_3a_4...a_n$的概率正好是对每个单独属性的概率乘积：
 
 $$
 P(a_1,a_2,...,a_n|b_j) = \prod_iP(a_i|b_j)
