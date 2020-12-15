@@ -314,33 +314,41 @@ $$
 \mathcal{L}^{(t)} = \sum_{i=1}^{n}l(y_i, \hat{y}_i^{(t-1)}+f_t(x_i)) + \Omega(f_t) \qquad (1)
 $$
 
-其中L(x,y)为任意损失函数, Ω(x)为惩罚项，f(x)为当前回归器的输出，如果损失函数为常用的平方误差函数，则目标函数如下：
+其中$l(y_i,\hat y_i^{(t-1)})$为任意损失函数, $\Omega(f_t)$为惩罚项，$f_t(x_i)$为当前回归器的输出，$\hat y_i^{(t-1)}$ 表示前t-1个分类器的输出，如果损失函数为常用的平方误差函数，则目标函数如下：
 
 $$
-\mathcal{L}^{(t)} = \sum_{i=1}^{n}(y_i-(\hat{y}_i^{(t-1)}+f_t(x_i))^2 + \Omega(f_t) \\ =\sum_{i=1}^{n}[(y_i-\hat{y}_i^{(t-1)})^2+2(\hat{y}_i^{(t-1)}-y_i)f_t+f_t^2]  \qquad (2)
+\mathcal{L}^{(t)} = \sum_{i=1}^{n}\frac{1}{2}(y_i-(\hat{y}_i^{(t-1)}+f_t(x_i))^2 + \Omega(f_t) \\ =\sum_{i=1}^{n}\frac{1}{2}[(y_i-\hat{y}_i^{(t-1)})^2+2(\hat{y}_i^{(t-1)}-y_i)f_t+f_t^2]+\Omega(f_t) \\
+ = \sum_{i=1}^{n}[(\hat{y}_i^{(t-1)}-y_i)f_t+\frac{1}{2}f_t^2] + \Omega(f_t)+constant  \qquad (2)
 $$
 
 对该目标函数求梯度
 
 $$
-\frac{\partial \mathcal{L}^{(t)}}{\partial \hat{y}_i^{(t-1)}} = 2\sum_{i=1}^{n}(\hat{y}_i^{(t-1)}-y_i)+constant \qquad (3)
+\frac{\partial \mathcal{L}^{(t)}}{\partial \hat{y}_i^{(t-1)}} = \sum_{i=1}^{n}(\hat{y}_i^{(t-1)}-y_i)+f_t \qquad (3)
 $$
 
 上式可以很明显的看出，当新加入的基分类器的输出正好是残差的时候，总损失函数最小，梯度为0，这个很好理解，我们要做的就是让基分类器的输出更可能的接近残差。那**如果损失函数不是平方误差函数呢**？因为平方误差函数在回归问题中经常被使用，基于它的理论推导十分的成熟，有没有可能使用不同的损失函数，但是共用一套理论推导，当然有可能！把式1泰勒二阶展开
 
 $$
-\mathcal{L}^{(t)} \simeq\sum_{i=1}^{n}[l(y_i,\hat{y}_i^{(t-1)})+g_if_t(x_i)+\frac{1}{2}h_if_t(x_i)^2]+\Omega(f_t)+constant
+taylor\_series: f(x+\triangle x) \simeq f(x)+f(x)^\prime\triangle x+\frac{1}{2}f(x)^{\prime\prime}\triangle x^2 
+\\ \mathcal{L}^{(t)} \simeq\sum_{i=1}^{n}[l(y_i,\hat{y}_i^{(t-1)})+g_if_t(x_i)+\frac{1}{2}h_if_t(x_i)^2]+\Omega(f_t)+constant \\
+g_i = \partial_{\hat{y}_i^{(t-1)}}l(y_i,\hat{y}_i^{(t-1)})\\
+ h_i=\partial_{\hat{y}_i^{(t-1)}}^2l(y_i,\hat{y}_i^{(t-1)})
 $$
 
-对任意损失函数进行泰勒二阶展开，**为什么要二阶展开？**1是因为二阶展开往往已经对原有函数有足够高的近似程度，2是因为二阶展开具有最高二阶项，和平方误差函数类似。
-
-- Xgboost官网上有说，当目标函数是MSE时，展开是一阶项（残差）+二阶项的形式（官网说这是一个nice form），而其他目标函数，如logloss的展开式就没有这样的形式。为了能有个统一的形式，所以采用泰勒展开来得到二阶项，这样就能把MSE推导的那套直接复用到其他自定义损失函数上。简短来说，就是为了统一损失函数求导的形式以支持自定义损失函数。这是从**为什么会想到引入泰勒二阶**的角度来说的
-- 二阶信息本身就能让梯度收敛更快更准确。这一点在优化算法里的牛顿法里已经证实了。可以简单认为一阶导指引梯度方向，二阶导指引梯度方向如何变化。这是从二阶导本身的性质，也就是**为什么要用泰勒二阶展开**的角度来说的
-
-其中要注意的事$l(y_i,\hat{y}_i^{(t-1)})$是上一级分类器的损失函数，是一个固定值，省略掉常数项，损失函数有一个统一的形式
-
+其中对任意损失函数进行泰勒二阶展开，**为什么要二阶展开？**1是因为二阶展开往往已经对原有函数有足够高的近似程度，2是因为二阶展开具有最高二阶项，和平方误差函数类似。Xgboost官网上有说，当目标函数是MSE时，展开是一阶项（残差）+二阶项的形式（官网说这是一个nice form），而其他目标函数，如logloss的展开式就没有这样的形式。为了能有个统一的形式，所以采用泰勒展开来得到二阶项，这样就能把MSE推导的那套直接复用到其他自定义损失函数上。现在假设xgboost就用均方误差作为损失函数，看看会发生什么
 $$
-\mathcal{L}^{(t)} =\sum_{i=1}^{n}[g_if_t(x_i)+\frac{1}{2}h_if_t(x_i)^2]+\Omega(ft)
+\mathcal{L}^{(t)} \simeq\sum_{i=1}^{n}[l(y_i,\hat{y}_i^{(t-1)})+g_if_t(x_i)+\frac{1}{2}h_if_t(x_i)^2]+\Omega(f_t)+constant \qquad (4) \\
+g_i = (\frac{1}{2}(y_i-\hat{y}_i^{(t-1)})^2)^\prime=\hat{y}_i^{(t-1)}-y_i \qquad (5)\\
+h_i = (\frac{1}{2}(y_i-\hat{y}_i^{(t-1)})^2)^{\prime\prime} = 1 \qquad (6) \\
+(5)(6) 式带入(4)式\\
+\sum_{i=1}^{n}[(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + \frac{1}{2}f_t(x_i)^2 + l(y_i,\hat{y}_i^{(t-1)})] + \Omega(f_t)+constant \qquad(7)
+$$
+很明显，式7和式2只有常数项的不同而已，简短来说，就是为了统一损失函数求导的形式以支持自定义损失函数。这是从**为什么会想到引入泰勒二阶**的角度来说的。同时，二阶信息本身就能让梯度收敛更快更准确。这一点在优化算法里的牛顿法里已经证实了。可以简单认为一阶导指引梯度方向，二阶导指引梯度方向如何变化。这是从二阶导本身的性质，也就是**为什么要用泰勒二阶展开**的角度来说的
+
+**哪里用到了二阶项信息呢**？如果损失函数是均方误差，二阶项是一个常数，看起来没有什么用，但是如果损失函数是任何一个可以二阶导的函数呢？二阶项不是常数的时候，就有信息可以利用了，换句话说，xgboost把均方误差损失函数这个特例给抽象化了；其中要注意的是式(7)中$l(y_i,\hat{y}_i^{(t-1)})$是上一级分类器的损失函数，是一个固定值，省略掉常数项，损失函数有一个统一的形式
+$$
+\mathcal{L}^{(t)} =\sum_{i=1}^{n}[g_if_t(x_i)+\frac{1}{2}h_if_t(x_i)^2]+\Omega(ft) \qquad (8)
 $$
 
 后续的理论推导都是基于上式，其中g,h分别是损失函数的一阶导和二阶导，到了只一步就可以看出XGBoost的厉害之处，上式中**包含了损失函数的一阶导和二阶导形式，但是并没有指出是哪一个具体的损失函数，也就是说任意一阶二阶可导的损失都可以适用于下述的所有推导, 使用不同的损失函数，就可以使XGBoost模型适用于不同的任务，回归，分类，排序。**
@@ -385,17 +393,21 @@ $$
 
 ![22](/assets/img/ML/one-stop-machine-learning/xgboost-tree-gain.png)
 
-有一个点值得注意，这个Gain表示增益当然是越大越好，可是obj应该是左子树+右子树应该小于不分割的情况啊。这是因为obj前面有负号，没有负号的Gain当然方向是反的，越大越好。**计算中不需要每次分割重新计算一遍G 和H**，因为这个变量只和上一级的模型损失函数有关，不管怎么分割每个样本该数值不变，所有只需要扫描一遍计算即可重复使用。但是和一般的决策树不同的是，XGBoost的训练停止条件不是无分割样本，所有样本属于同一种类，无可分割特征，**因为XGBoost加入了叶子节点复杂度惩罚项，如果分割带来的增益减去惩罚项之后增益不够大，甚至负增益那么也就不进行分割**
+有一个点值得注意，这个Gain表示增益当然是越大越好，可是obj应该是左子树+右子树应该小于不分割的情况啊。这是因为obj前面有负号，没有负号的Gain当然方向是反的，越大越好。**计算中不需要每次分割重新计算一遍G 和H**，因为这个变量只和上一级的模型损失函数有关，不管怎么分割每个样本该数值不变，所有只需要扫描一遍计算即可重复使用。单颗树训练过程是**Level-Wise**,一层一层训练。
+
+**XGBoost的分割停止条件**，1.引入了叶子节点复杂度惩罚项，如果分割带来的增益减去惩罚项之后增益不够大，甚至负增益就不进行分割；2.达到最大深度，越深的树越容易过拟合；3.在样本分割后，计算左右两个节点的样本权重和，如果其中任一个节点的样本权重低于某个阈值，就放弃这次分割，指如果分割后一个节点上的样本数量太少，避免分割，增大泛化能力。
 
 ### Details
 
-**缺失值处理**
+**缺失值/稀疏性处理**
 
-xgboost在节点分列时不考虑缺失值的数值，缺失值会被分别放到左右子树中计算损失，选择更优的一种划分，如果训练时没有缺失，预测时出现缺失，默认划分到右子树。
+xgboost在节点分裂时**不考虑缺失值的数值**，因为树模型在分割时，只需要确定好分割点就行，只要非缺失值涵盖了大部分特征取值值域就行，剩下的缺失样本不影响，缺失值会被分别放到左右子树中计算损失，选择更优的一种划分，返回值是划分以及缺失值划分的方向，如果训练时没有缺失，预测时出现缺失，默认划分到右子树。
 
-**过拟合** ： shrinkage，正则项
+![](C:\Users\jasper\Documents\GitHub\weiqi-jiang.github.io\assets\img\ML\one-stop-machine-learning\sparse-split.png)
 
-**分裂算法/并行化**
+**过拟合** ： shrinkage，正则项，列采样(忽略某些blocks)，样本采样(每次训练使用部分样本)
+
+**分裂算法**
 
 分裂算法有两种，一种是**精确的贪心算法**(常用于单机计算)，另一种是**基于权重直方图的近似算法**(常用于分布式计算)；精确的贪心算法时间复杂度$O(nm+mlog(m))$ n表示n个特征，m表示m个样本,计算所有样本当前损失函数的一阶导和二阶导，排序特征取值，遍历所有可行切分点，找到收益最大切分点。
 
@@ -405,9 +417,9 @@ xgboost在节点分列时不考虑缺失值的数值，缺失值会被分别放�
 
 ![](/assets/img/ML/one-stop-machine-learning/approximate.png)
 
-根据什么时候用权重直方图特征离散化，分成**全局选择和局部选择**。全局选择是per tree，在建树时依据所有样本对每维特征进行离散化，建立buckets，过程中重复利用buckets。局部选择是per split，在分裂时，基于当前节点上的样本计算buckets，在进行判断。很显然，局部选择的计算量明显大于全局选择， 但是精度也要更加接近Exact Greedy
+根据什么时候用权重直方图特征离散化，分成**全局选择和局部选择**。全局选择是per tree，在建树时依据所有样本对每维特征进行离散化，建立buckets，过程中重复利用buckets。局部选择是per split，在分裂时，基于当前节点上的样本计算buckets，在进行判断。很显然，局部选择的计算量明显大于全局选择， 但是精度也要更加接近Exact Greedy，XGBoost使用局部选择
 
-那具体是怎么用权重直方图的方法来划分的，这个离散化的点是怎么确定的呢？首先对特征取值排序，对每个取值$z$计算rank值,**rank 值表示取值小于$z$的样本的二阶导之和占所有样本总二阶导之和的比例**。
+那具体是怎么用权重直方图的方法来划分的，这个离散化的点是怎么确定的呢？首先对特征取值排序，对每个取值$z$计算rank值,**rank 值表示取值小于$z$的样本的损失函数二阶导之和占所有样本总二阶导之和的比例**。
 
 $$
 r_k(z) = \frac{1}{\sum_{(x,h)\in D_k h}}\sum_{(x,h) \in D_{k,x<z}}h
@@ -421,23 +433,44 @@ s_{k,1} = min_i(x_{ki}) \\
 s_{k,l} = max_i(x_{ki})
 $$
 
+则划分时潜在划分点就在$\{s_{k,1}, s_{k,2},...,s_{k,l}\}$ 序列中选择，与遍历所有取值相比，大幅减少了计算成本。很明显超参$\epsilon$ 越大，buckets数量越少，越小，buckets数量越多。
+
+**并行化** 
+
+xgboost的并行化主要体现在两个方便(1)特征的排序，在每层训练之前，对每个特征进行排序，并找出候选分割点(局部选择)，存储在内存单元中，成为Block，每个块中数据以压缩列格式存储，每列按照相应的特征值排序，block会在以后的迭代中重复使用，省去了排序消耗，以及大幅减少候选分割点。(2)分割点增益计算，有了block这种数据结构后，那特征和特征间增益计算可以并行计算。
+
 **xgboost 的特征重要性**
 
 - *importance_type=*weight（默认值），特征重要性使用特征在所有树中作为划分属性的次数。
 - *importance_type=*gain，特征重要性使用特征在作为划分属性时loss平均的降低量。
 - *importance_type=*cover，特征重要性使用特征在作为划分属性时对样本的覆盖度（就是有多少样本是通过这个特征划分开的）
 
+**不平衡数据**： 
+
+```sh
+For common cases such as ads clickthrough log, the dataset is extremely imbalanced. This can affect the training of xgboost model, 
+and there are two ways to improve it.
+  If you care only about the ranking order (AUC) of your prediction
+      Balance the positive and negative weights, via scale_pos_weight
+      Use AUC for evaluation
+  If you care about predicting the right probability
+      In such a case, you cannot re-balance the dataset
+      In such a case, set parameter max_delta_step to a finite number (say 1) will help convergence
+```
+
+如果使用AUC作为衡量标准，设置scale_pos_weight 参数来平衡数据权重，该参数用来给少数样本加权，例如正负样本比例为1:8，scale_pos_weight可以设置为8
+
 ### Features
 
 - “模块化”灵活性，GBDT以CART作为基分类器，XGBoost除此之外还支持线性分类器，此时XGBoost相当于带L1,L2的线性分类器。
 - 传统GBDT只利用了一阶导数信息，使用常用的平方误差损失函数，一阶导就是残差，XGBoost利用泰勒展开，使用了二阶导，实现虽然形式上和平方误差函数一致，但是更加模块化，只要函数可一阶二阶导，都可以喂进一个理论推导框架
-- 添加正则项，降低模型的variance，使得模型更加简单，避免过拟合
+- 添加正则项，**相当于预剪枝**，降低模型的variance，使得模型更加简单，避免过拟合
 - 和GBDT一样有shrinkage缩减操作
 - XGBoost的剪枝操作是后剪枝，先训练到最大深度，然后往前剪枝。后剪枝的好处在于不会因为一个负增益就放弃了后面可能的更大的正向增益
 - 可以处理缺失值
 - xgboost的并行化是特征粒度上的并行，把数据提前排序保存为block结构，在确实划分特征和划分值的时候，重复使用结构，可以并行计算
 
-**Reference**<br>[集成学习系列(3)-XGBOOST](https://zhuanlan.zhihu.com/p/61842123)
+**Reference**<br>[集成学习系列(3)-XGBOOST](https://zhuanlan.zhihu.com/p/61842123)<br>[XGBoost原理和应用](https://blog.csdn.net/q383700092/article/details/60954996)<br>[Xgboost: machine learning algorithm you can’t know](https://developpaper.com/xgboost-machine-learning-algorithm-you-cant-know/)<br>[Complete Guide to Parameter Tuning in XGBoost with codes in Python](https://www.analyticsvidhya.com/blog/2016/03/complete-guide-parameter-tuning-xgboost-with-codes-python/)<br>[20道XGBoost面试题](https://cloud.tencent.com/developer/article/1500914)
 
 ## SVM
 
