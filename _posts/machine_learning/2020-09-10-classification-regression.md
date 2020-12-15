@@ -262,6 +262,7 @@ randomly choose feature candidate reduce the correlation between trees
 $$
 \hat{\theta}_m = argmin\sum_{i=1}^{N}L(y_i,f_{m-1}(x_i) + T(x_i;\theta_m))
 $$
+
 其中L代表损失函数，$f_{m-1}(x)$ 为m-1个独立的分类器的输出, T为当前分类器的输出。损失函数可以不同，回归问题一般采用**均方误差函数**，分类问题一般采用**交叉熵损失函数**。**需要特别注意的是，在每一棵树生成的时候，无论是分类还是回归，都是按照两个子节点均方误差最小的标准**。**GBDT中全部都是回归树**（因为只有回归树累加才有意义，分类树累加无意义）每棵树拟合的都是上一个树的损失函数的负梯度方向。
 
 对于回归问题，一般采用**均方误差**作为损失函数，则**负梯度方向就等于残差，这里的残差具体是所有样本集的残差平均值**，下一级回归树所有训练样本集的label变为残差值
@@ -308,6 +309,7 @@ $$
 ### Theory
 
 XGBoost 和 GBDT 在结构上几乎一样，而且都采用additive training 方法, 加法模型损失函数有一个统一的形式
+
 $$
 \mathcal{L}^{(t)} = \sum_{i=1}^{n}l(y_i, \hat{y}_i^{(t-1)}+f_t(x_i)) + \Omega(f_t) \qquad (1)
 $$
@@ -355,6 +357,7 @@ $$
 =\sum_{j=1}^{T}[(\sum_{i\in I_j}g_i)w_j+\frac{1}{2}(\sum_{i\in I_j}h_i+\lambda )w_j^2]+\gamma T \\
 =\sum_{j=1}^{T}[G_iw_j+\frac{1}{2}(H_i+\lambda)w_j^2] + \gamma T
 $$
+
 公式解析
 
 - **w函数负责将叶子节点映射到它对应的输出上，q把输入映射到它应该在的叶子节点上**
@@ -368,6 +371,7 @@ $$
 w_j^* = -\frac{G_j}{H_j+\lambda} \\
 \mathcal{L}^{(t)}= -\frac{1}{2}\sum_{j=1}^{T}\frac{G_j^2}{H_j+\lambda}+\gamma T
 $$
+
 此时的损失函数表示当前树的结构不变的情况下，仅仅改变叶子节点的权重，最极限的情况下的目标函数最小值，那么此时的**叶子结点输出值是最优的**，称为**Structure Score**
 
 ![21](/assets/img/ML/one-stop-machine-learning/xgboost-tree-complexity-loss5.png)
@@ -404,16 +408,18 @@ xgboost在节点分列时不考虑缺失值的数值，缺失值会被分别放�
 根据什么时候用权重直方图特征离散化，分成**全局选择和局部选择**。全局选择是per tree，在建树时依据所有样本对每维特征进行离散化，建立buckets，过程中重复利用buckets。局部选择是per split，在分裂时，基于当前节点上的样本计算buckets，在进行判断。很显然，局部选择的计算量明显大于全局选择， 但是精度也要更加接近Exact Greedy
 
 那具体是怎么用权重直方图的方法来划分的，这个离散化的点是怎么确定的呢？首先对特征取值排序，对每个取值$z$计算rank值,**rank 值表示取值小于$z$的样本的二阶导之和占所有样本总二阶导之和的比例**。
+
 $$
 r_k(z) = \frac{1}{\sum_{(x,h)\in D_k h}}\sum_{(x,h) \in D_{k,x<z}}h
 $$
+
 其中$h$ 表示损失函数二阶导，$x$表示某个样本，$k$表示样本的第$k$个特征。 人为设定一个$\epsilon$ , 满足
+
 $$
 |r_k(s_{k,j}) - r_k(s_{k,j+1})| < \epsilon \\
 s_{k,1} = min_i(x_{ki}) \\
 s_{k,l} = max_i(x_{ki})
 $$
-
 
 **xgboost 的特征重要性**
 
@@ -493,6 +499,7 @@ $$
 $$
 min\frac{1}{2}||w||^2\quad s.t.\quad y_i(w^Tx_i+b)\geq1,i=1,...,n
 $$
+
 优化函数为二次函数，约束条件为线性条件，所以是一个凸二次规划问题。
 
 并且可以利用lagrange duality 转换为对偶问题求解，对偶问题（dual problem）达到最优解的时候，原问题也同时达到最优解。
@@ -507,6 +514,7 @@ $$
 $$
 L(w,b,a) = \frac{1}{2}||w||^2-\sum_{i=1}^{n}a_i(y_i(w^Tx_i+b)-1)
 $$
+
 如果有任意一个样本点满足$y_i(w^Tx_i+b)<1$， 在a无限大的情况下 ， 目标函数就会趋近于无限小。所以硬性要求所有的样本点的最小距离大于等于1.当且仅当所有样本的约束条件得到满足，即所有样本的距离都为1时，θ 等于原优化问题 1/2*（\|\|w\|\|）^2, 最小化该值；为了使所有约束条件满足：
 
 1. **所有support vector 的拉格朗日乘子可以不为零，因为y(wx+b)-1对于支撑向量来说等于0**
@@ -703,29 +711,39 @@ SVM 特点：
 $$
 J(w) = \frac{1}{2m}\sum_{i=1}^{m}(f(x_i)-y_i)^2 \qquad (1)
 $$
+
 其中$J(w)$表示损失函数，$f(x_i)$表示预测值 $y_i$表示真实值，把$f(x_i)$ 展开写
+
 $$
 f(x) = w_0x_0+w_1x_1+...w_nx_n
 $$
+
 其中$\quad x_0 = 1\quad w_0=b$ 进一步表示为
+
 $$
 f(x) = \begin{bmatrix}w_0w_1w2...w_n\end{bmatrix}\begin{bmatrix}x0\\x1\\...\\xn\\\end{bmatrix}\\
 f(x) = w^Tx \qquad (2)
 $$
+
 其中$x,w$分别表示n+1维的列向量,式(2) 带入式(1)可得
+
 $$
 J(w) = \frac{1}{2m}\sum_{i=1}^{m}(w^Tx-y_i)^2 \\
 \qquad= \frac{1}{2m}\sum_{i=1}^{m}(x_i^Tw-y_i)^2 \\
 \qquad\quad\qquad\qquad=\frac{1}{2m}(Xw-y)^T(Xw-y)\qquad (3)
 $$
+
 其中$X$ 是$m*(n+1)$维的矩阵设$(Xw-y)$为$k$, $J(w)=\frac{1}{2m}k^Tk$ 求解权重$w$矩阵有两种方法，**一种是直接矩阵求解，另一种是梯度下降**，首先推到矩阵求解方法,先列举几个用到的求导公式
+
 $$
 (x^TAx)^\prime = (A^T+A)x \\
 (Ax)^\prime = A^T\\
 I^T+I = 2I \\
 Ix = xI=x
 $$
+
 对损失函数求导
+
 $$
 J(w)^\prime = \frac{1}{2m}(k^Tk)^\prime k^\prime \\
 =\frac{1}{2m}(k^TIk)^\prime(Xw-y)^\prime\\
@@ -733,19 +751,26 @@ J(w)^\prime = \frac{1}{2m}(k^Tk)^\prime k^\prime \\
 =\frac{1}{m}kX^T \\
 =\frac{1}{m}(Xw-y)X^T
 $$
+
 可以证明$J(w)$是凸函数，且一般$XX^T$可逆，使损失函数导数为0
+
 $$
 w = (X^TX)^{-1}X^Ty \qquad (4)
 $$
+
 从上面的公式可以看得出来最大的时间复杂度可以达到O(n^3),当数据量非常大的时候，计算时长往往是不能忍受的，而且内存也不一定能全部一次性加载数据。为了在时间限制内求解权重，允许一定的误差，通常使用**梯度下降法,**对式(1)中的每个w求偏导，称为**梯度**
+
 $$
 \frac{\partial J(w)}{\partial w_j} =\frac{\partial \frac{1}{2m}\sum_{i=1}^{m}(w_0x_0+w_1x_1+...w_jx_j-y_i)^2}{\partial w_j} \\
 =\frac{1}{m}\sum^{m}_{i=1}(f(x_i)-y_i)x_j
 $$
+
 其中$i,j$分别表示第$i$个样本,第$j$个特征 ，更新后的权重为
+
 $$
 w_j = w_j - \alpha\frac{1}{m}\sum^{m}_{i=1}(f(x_i)-y_i)x_j \qquad (5)
 $$
+
 其中$\alpha$称之为学习率，如果值太小，收敛过慢，值太大，容易出现overshoot the minimum,在最小点附近震荡，一般先确定一个较大的learning rate，如果后期损失函数值变大，则取更小的learning rate。观察上式，每次迭代都需要计算所有样本在当前权重的情况下的输出，计算十分耗时，通常采用Batch Training的方式。
 
 **Reference**<br>[机器学习入门：线性回归及梯度下降](https://blog.csdn.net/xiazdong/article/details/7950084)<br>[线性回归模型原理和推导](https://zhuanlan.zhihu.com/p/66192625)
@@ -755,6 +780,7 @@ $$
 线性分类模型在SVM部分已经介绍了这里简单回忆下：
 
 **线性函数**
+
 $$
 y = w^Tx + b
 $$
@@ -779,6 +805,7 @@ p(y_i|x_i) = p^{y_i}(1-p)^{1-y_i} \rightarrow 式1
 $$
 
 一个事件发生比不发生的比例
+
 $$
 \frac{P(y=1|x)}{P(y=0|x)} = \frac{p}{1-p} = e^{f(x)}
 $$
@@ -786,6 +813,7 @@ $$
 称为**事件发生比，记为odds**
 
 现在的问题是我们需要找到一个损失函数，通过最大或者最小化这个损失函数来优化$w_i$,那我们选择什么损失函数合适呢？这其实是**从极大似然估计的角度去推导的**，假设一组样本集有N个样本，且样本之间是独立同分布的，那么这个样本集发生的概率就是单个样本发生概率的相乘，称为**联合分布**，也是式1的**似然函数**，这个似然函数的值随着我们$w$的变化而变化,我们最大化这个似然函数时对应的$w$就是我们最优化的$w$.
+
 $$
 P总 = P(y1|x1)P(y2|x2)P(y3|x3)...P(yN|xN) = \prod_{i=1}^{N}p^{y_n}(1-p)^{1-y_n} \rightarrow 式2
 $$
@@ -807,6 +835,7 @@ $$
 =\sum_{n=1}^{N}\frac{y_n-p}{p(1-p)}p(1-p)*x_{nk} \\
 =\sum_{n=1}^{N}(y_n-p)*x_{nk}\qquad (4)
 $$
+
 产生n+1 个等式，然后利用**牛顿法**迭代求解；到现在为止我们还是没有解释**为什么式3就是损失函数**，直到我们不用极大似然估计和牛顿法去求解而是用梯度上升/下降法去求解，就很明显了。
 
 **梯度上升法/下降法** 
@@ -816,11 +845,14 @@ $$
 $$
 F(w) = -\frac{1}{N}\sum_{n=1}^{N}(y_nln(p)+(1-y_n)ln(1-p))
 $$
+
 那么梯度上升法，就转换为了梯度下降法。**此时问题就变成了寻找一组w使得因子加权后的似然函数最小，是不是很熟悉，这个因子加权后的似然函数，不就是机器学习中常见的损失函数嘛**,对上式中每一个权重$w$求偏导，得到和式4一致的结果
+
 $$
 \frac{\partial F(w)}{\partial w_k}  =\frac{1}{N}\sum_{n=1}^{N}(y_n-p)*x_{nk}\\
 w_k: = w_k - \alpha\frac{1}{N}\sum_{n=1}^{N}(y_n-p)*x_{nk} \qquad (5)
 $$
+
 对比**Logistic Regression 和Linear Regression的式(5) 发现损失函数的梯度其实是一样的**，都是残差乘上特征取值
 
 ### 梯度下降过程向量化
@@ -846,6 +878,7 @@ w_0x_0^2+w_1x_1^2+...+w_nx_n^2\\
 w_0x_0^n+w_1x_1^n+...+w_nx_n^n\\
 \end{bmatrix}
 $$
+
 基于向量A计算误差向量E,$f(x)=\frac{1}{1+e^{-x}}$
 
 $$
@@ -857,7 +890,9 @@ f(A^2)-y^2\\
 f(A^m)-y^m
 \end{bmatrix}=\begin{bmatrix}e^1\\e^2\\...\\e^m\end{bmatrix} 
 $$
+
 有了误差向量E之后， 权重更新就可以实现向量化，省去for loop,其中$m,n$分别表示$m$个样本$n$个特征
+
 $$
 w_j:=w_j-\alpha(x_j^1,x_j^2...,x_j^m)\bullet E\\
 \begin{bmatrix}
@@ -876,6 +911,7 @@ x_1^1,x_1^2,...,x_1^m\\
 x_2^1,x_2^2,...,x_2^m\\
 \end{bmatrix}\bullet\begin{bmatrix}e^1\\e^2\\...\\e^m\end{bmatrix}=w-\alpha \bullet x^T\bullet E
 $$
+
 每次更新的时候只需要更新$E$向量，迭代进行
 
 ### 为什么用sigmoid函数?
