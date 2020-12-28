@@ -482,14 +482,14 @@ $$
 优化目标最大化下式
 
 $$
-object\quad\tilde{\gamma} = \frac{1}{||w||}\\
+object\quad\tilde{\gamma} = \frac{1}{\lVert w\rVert}\\
 s.t. \quad y_i(w^Tx_i+b)\geq1
 $$
 
 上述优化问题等价于下式
 
 $$
-min\frac{1}{2}||w||^2\quad s.t.\quad y_i(w^Tx_i+b)\geq1,i=1,...,n
+min\frac{1}{2}\lVert w\rVert^2\quad s.t.\quad y_i(w^Tx_i+b)\geq1,i=1,...,n
 $$
 
 优化函数为二次函数，约束条件为线性条件，所以是一个**凸二次规划问题**。并且可以利用lagrange duality 转换为对偶问题求解，对偶问题(dual problem)达到最优解的时候，原问题也同时达到最优解。对偶问题的好处在于
@@ -499,11 +499,11 @@ $$
 利用拉格朗日对偶性以及拉格朗日乘子法可以将原问题转换为如下对偶问题，拉格朗日对偶性就是对每一个约束条件加上一个拉格朗日乘子$\alpha$，定义拉格朗日函数（通过拉格朗日函数将约束条件融合到目标函数里去，从而只用一个函数表达式便能清楚的表达出我们的问题）如下
 
 $$
-\mathcal{L}(w,b,a) = \frac{1}{2}||w||^2-\sum_{i=1}^{n}a_i(y_i(w^Tx_i+b)-1) \\
+\mathcal{L}(w,b,a) = \frac{1}{2}\lVert w\rVert^2-\sum_{i=1}^{n}a_i(y_i(w^Tx_i+b)-1) \\
 \theta(w) = max_{\alpha_i\geq0}\mathcal{L}(w,b,\alpha)
 $$
 
-如果有任意一个样本点满足$y_i(w^Tx_i+b)<1$， 在$\alpha$无限大的情况下 ， $\theta(w)$就会趋近于无限大。所以硬性要求所有的样本点的最小距离大于等于1.当且仅当所有样本的约束条件得到满足，即所有样本的距离都为1时，$\theta(w)=\frac{1}{2}||w||^2$时 等于原来的待优化问题；为了使所有约束条件满足：
+如果有任意一个样本点满足$y_i(w^Tx_i+b)<1$， 在$\alpha$无限大的情况下 ， $\theta(w)$就会趋近于无限大。所以硬性要求所有的样本点的最小距离大于等于1.当且仅当所有样本的约束条件得到满足，即所有样本的距离都为1时，$\theta(w)=\frac{1}{2}\lVert w\rVert^2$时 等于原来的待优化问题；为了使所有约束条件满足：
 
 1. 所有support vector 的拉格朗日乘子可以不为零，因为$y_i(w^Tx_i+b)-1$对于支撑向量来说等于0
 2. 所有非支持向量的拉格朗日乘子$\alpha$为0
