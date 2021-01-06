@@ -147,6 +147,16 @@ struct stu2
 
 **remote**<br>远程仓库，版本最旧，可以被多个本地仓库修改
 
+**Git三部曲**<br>git add .  把所有工作区的变化提交到缓冲区，包括文件修改新增，不包含删除<br>git commit -m "message"<br>git push origin [branch]  [-f] 如果加了-f表示覆盖对应分支，十分危险<br>git commit -a -m "message" 合并了add 和commit的过程
+
+其他常用的指令<br>git clone 克隆远程仓库<br>git diff 比较工作区和暂存区的差异 git diff --cached 比较暂存区和本地库的差异<br>git status 查看状态<br>git branch  [newbranch]查看现在有哪些分支,如果有新分支名，表示创建新分支<br>git checkout [-b] branchname  -b表示创建并切换至新分支，没有-b则必须保证分支存在<br>git merge branch 合并指定分支到当前分支<br>
+
+**Git指令表**
+
+![](/assets/img/resource/common/git_command.png)
+
+**Reference**<br>[Git 常用指令大全，版本管理，文件过滤](https://blog.csdn.net/q610098308/article/details/104638514)<br>[3.2 Git 分支 - 分支的新建与合并]([https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%9A%84%E6%96%B0%E5%BB%BA%E4%B8%8E%E5%90%88%E5%B9%B6](https://git-scm.com/book/zh/v2/Git-分支-分支的新建与合并))
+
 ## 代码优化
 
 ### if-else
