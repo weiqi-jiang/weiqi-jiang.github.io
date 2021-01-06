@@ -444,8 +444,6 @@ if __name__  ==  "__main__":
     print(mergeSort_v2(nums))
 ```
 
-
-
 ## Graph 图论
 
 ### 邻接矩阵
