@@ -135,6 +135,18 @@ struct stu2
 
 **Reference**<br>[详解UML图之类图](http://www.uml.org.cn/oobject/201610282.asp)<br>在线画图[processon][https://www.processon.com/]
 
+### Git
+
+![](/assets/img/resource/common/git_framework.jpg)
+
+**workspace**<br>我们平时的工作一般是拷贝远程仓库中的一个分支，基于该分支进行操作，开发过程就是对工作区的操作。
+
+**stage**<br>.git目录下的index文件，暂存区保留git add添加的文件基本信息(文件名，大小，timestamp等)通过id指向每个文件实体，使用git status查看寄存区状态。寄存区标记当前工作区中那些文件是由git管理的。
+
+**repository**<br>本地仓库，版本通常比暂存区和工作区要旧，git commit操作把index目录同步到本地仓库
+
+**remote**<br>远程仓库，版本最旧，可以被多个本地仓库修改
+
 ## 代码优化
 
 ### if-else

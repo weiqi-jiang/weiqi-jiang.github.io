@@ -516,3 +516,99 @@ Embedding 的本质是降维，化稀疏为稠密（Turns positive integers(inde
 常见非参数模型： DT, 朴素贝叶斯,SVM, DNN；优点，可以拟合任意形式的目标函数，拟合效果也通常好于参数模型；缺点，需要大量的训练数据，速度慢，容易过拟合
 
 **Reference**<br>[机器学习中的参数模型和非参数模型理解](https://blog.csdn.net/FrankieHello/article/details/94022594)
+
+## 6 参数调优
+
+机器学习的参数调优过程通常是黑盒优化过程，每次调优的过程给定输入，得到输出，不能得到整体函数或者梯度信息。目前业界常用Grid Search， Random Search， Bayesian optimization。 一般的，Grid Search计算量最大，Random Search在Grid Search中随机抽样，方差大，但是计算量较少,贝叶斯优化应该是计算量最小的超参优化方法，但是效果通常是最好的。
+
+### 6.1 贝叶斯优化
+
+介绍贝叶斯优化之前，不得不提的一个知识点是**高斯过程(Gaussian processes)** <br>
+一元高斯分布,图像是熟悉的钟形曲线
+
+$$
+p(x) = \frac{1}{\sigma \sqrt{2\pi}}exp(-\frac{(x-\mu)^2}{2\sigma^2}) \quad 式(1)
+$$
+
+多元高斯分布，形状可以理解成空间中的钟形“超曲面”，其中$\mu_i,\sigma_i$ 分别表示第$i$维度的均值和标准差 
+
+$$
+p(x_1,x_2,x_3...,x_n) = \prod_{i=1}^{n}p(x_i) = \frac{1}{(2\pi)^{\frac{n}{2}}\sigma_1\sigma_2...\sigma_n}exp(-\frac{1}{2}[\frac{x_1-\mu_1}{\sigma_1^2}+\frac{x_2-\mu_2}{\sigma_2^2}+...+\frac{x_n-\mu_n}{\sigma_n^2}]) \quad 式(2)
+$$
+
+用矩阵形式表示，其中$\mu\in\mathbb{R}^n$ 均值向量，$K\in\mathbb{R}^{n\times n}$ 协方差矩阵，因为我们假设各维度之间相互独立，所以协方差矩阵是一个对角阵
+
+$$
+x-\mu = [x_1-\mu_1,x_2-\mu_2,...,x_n-\mu_n]^T\\
+K= \begin{bmatrix}  
+\sigma_1^2 & 0 & ... & 0 \\
+0 & \sigma_2^2 & ... & 0  \\
+...&...&\ddots&...\\
+0 & 0 & ... & \sigma_n^2 \\
+\end{bmatrix} \\
+\sigma_1\sigma_2\sigma_3...\sigma_n = \begin{vmatrix} K \end{vmatrix}^{\frac{1}{2}}
+$$
+
+代入式2
+
+$$
+p(x) = (2\pi)^{-\frac{n}{2}}\begin{vmatrix}K\end{vmatrix}^{-\frac{1}{2}}exp(-\frac{1}{2}(x-\mu)^TK^{-1}(x-\mu))
+$$
+
+简写成
+
+$$
+x \sim \mathcal{N}(\mu,K) \quad 式(3)
+$$
+
+到如前为止只是分布，**怎么从分布得到过程呢？**首先来看一个一维高斯分布的例子，我们假设每天7点的心率符合一个高斯分布，横轴是心率，纵轴是概率密度值。
+
+![](/assets/img/ML/one-stop-machine-learning/GP1.jpg)
+
+如果我们8点也采样四个点呢？ 8点的心率符合另一个高斯分布, 横轴是7点的心率，纵轴是8点的心率，画出二维等概率密度线
+
+![](/assets/img/ML/one-stop-machine-learning/GP2.jpg)
+
+那如果我们在时间轴上无数个点都采样四个点呢？，那就是无限维空间的一个等概率密度曲面，但是不好画图，我们把时间轴画在横轴，纵轴表示每个时间index对应采样的四个心率值。可以理解成每个时间节点都对应一个高斯分布，在同一个时间节点采样多次，结果是按照高斯分布波动的。跟着时间轴采样一遍就是图中的一条线(一个函数)，重复一遍就是另一条线，再重复就是另外一条线，例子中横轴是时间轴，当然也可以是其他维度。此时**关于点的概率密度函数变成了关于函数的分布**，**无限维高斯分布即为高斯过程**。
+
+![](/assets/img/ML/one-stop-machine-learning/GP3.jpg)
+
+高斯过程定义： 对于输入$x = [x_1,x_2,...,x_n]$ 函数的集合$f(x) = [f(x_1),f(x_2),...,f(x_n)]$ 都符从多元高斯分布 ,高斯过程f 表示为
+
+$$
+f(x) \sim \mathcal{N}(\mu(x),k(x,x)) \quad 式(4)
+$$
+
+$\mu(x): \mathbb{R}^n \rightarrow \mathbb{R}^n$表示均值函数，返回各个维度的均值，也就是上图中有一条线，表示所有线的均值所在。$k(x,x):\mathbb{R}^n\times \mathbb{R}^n \rightarrow \mathbb{R}^{n\times n}$ 表示协方差函数，表示各个维度的协方差矩阵。一个高斯过程由一个均值函数和一个协方差函数唯一定义，**一个高斯过程的有限维度子集都符合多维高斯分布**。
+
+解释了高斯过程之后，接着是介绍高斯回归方法，假设我们有一个函数$g(x)$ 具体函数形式未知，并且我们只能采样有限点的情况下， 尽可能拟合出目标函数。我们假设目标函数服从高斯过程，先验表示为$f(x) \sim \mathcal{N}(\mu_f,K_{ff})$,我们现在有一些观测数据$(x^\ast,y^\ast)$ 并且假设$y^\ast$ 和$f(x)$服从联合高斯分布
+
+$$
+\begin{bmatrix}f(x) \\y^\ast \end{bmatrix} \sim \mathcal{N}(\begin{bmatrix}\mu_f\\\mu_y\end{bmatrix}, \begin{bmatrix} K_{ff} & K_{fy} \\
+K^T_{fy} & K_{yy}
+\end{bmatrix}) \quad 式(5)
+$$
+
+其中$K_{ff} = k(x,x), K_{fy} = k(x,x^\ast), K_{yy} = k(x^\ast,x^\ast)$ ,有
+
+$$
+f \sim \mathcal{N}(K_{fy}^TK_{ff}^{-1}y+\mu_f,K_{yy}-K_{fy}^TK_{ff}^{-1}K_{fy}) \quad 式(6)
+$$
+
+表示我们给定观测数据之后，$f$依然是一个高斯过程，而且观察式6，发现新高斯过程的均值函数其实是观测点$y$的线性函数，协方差矩阵第一部分是先验协方差矩阵，后一部分是我们**通过已知观测数据得到的分布不确定性的减少量**。总结一下高斯回归的步骤：**首先提出高斯过程先验，基于先验和假设，加上观察到的数据去修正高斯过程的后验均值和协方差。**
+
+理解高斯过程和高斯过程回归之后，贝叶斯优化过程就很顺理成章了，我们在实际应用中，通常不能直接使用grid search方式调参原因如下<br>
+- 计算成本高，选择一组参数组合训练，得到表现结果的成本在大数据的背景下通常很高<br>
+- 梯度未知，假设不同的参数组合对应的训练效果存在一个函数表达，我们不知道该函数形式，更不知道当前函数梯度，我们没有信息去修正参数组合的选择“方向”<br>
+- 倾向于找到全局最优点，无论是grid search 函数random search，我们都不能保证当前找到的最优点是全局最优的<br>
+
+贝叶斯优化通过一种代理优化(surrogate optimization)的方法去在尽可能少的观测数据的情况下，逼近未知的目标函数。假设我们需要优化的超参数是$x$, 其他参数固定时，该超参数对应的模型表现为$p(x)$。首先我们需要几个初始点(冷启动问题，初始点的超参数如何选择?)用“代理函数”(通常为高斯过程)去做高斯过程回归拟合每个输入的均值和方差(如图中虚线和蓝色区域)，虚线越高表示模型的表现均值越大，蓝色区域越高，表示不确定性越大，“潜力”越大。
+
+![](/assets/img/ML/one-stop-machine-learning/bayes-opt.jpg)
+
+现在我们要选择下一个有可能是最优点的输入，很明显我们应该选择均值大且方差大的点，这种点是最有可能是最优点的，这是一个Exploitation-Exploration问题，需要量化均值和方差对选择的影响。通常类似于Bandit，采用$acquisition function = \mu+\alpha\sigma^2$ 即均值加上$\alpha$倍的方差，这其中$\alpha$ 是一个超参数，即**调整超参数方法的超参数**, 下一次选择分数最高的点对应的输入进行观测。重复操作，往往在样本量极小的情况下，也能获得较为优秀的效果。
+
+总结一下贝叶斯优化的过程<br>1. 初始高斯过程先验分布<br>2. 定义acquisition function，初始化几个观测点$x$，观测点$x$在当前先验分布的获取函数值最大。<br>3. 使用观测点$x$对应的参数组合训练模型，得到结果$y$ <br>4. 更新高斯过程先验，更新后的高斯过程作为下一轮迭代的先验<br>5. 找出当前获取函数最大的点作为下一次迭代的候选观测点<br>6. 重复3-5步骤多次迭代<br>7. 基于当前已知的高斯过程，得到最优解
+
+**Reference**<br>[高斯过程 Gaussian Processes 原理、可视化及代码实现](https://zhuanlan.zhihu.com/p/75589452)<br>[贝叶斯优化: 一种更好的超参数调优方式](https://zhuanlan.zhihu.com/p/29779000)<br>[通俗理解贝叶斯优化](https://mp.weixin.qq.com/s/SRBZUtWt17muCzKErZG0ag)
+
