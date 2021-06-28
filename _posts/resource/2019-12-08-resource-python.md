@@ -120,7 +120,25 @@ next 返回生成器的下一个输出值，这里有一个点需要注意，第
 
 ### 1.5 string
 
-**转义字符** python里面%d表数字，%s表示字符串，%%表示一个%；单引号内嵌套单引号需要转义字符/;单引号内嵌套双引号不需要嵌套；双引号内嵌套双引号需要转义字符/；双引号内引用单引号不需要转义字符；
+**转义字符** python里面%d表数字，%s表示字符串，**%%表示一个%**；单引号内嵌套单引号需要转义字符/;单引号内嵌套双引号不需要嵌套；双引号内嵌套双引号需要转义字符/；双引号内引用单引号不需要转义字符；
+
+```python
+name = '张三'
+sql = """
+	select 100 % 10 as score, %(name)s as name
+	from table1 
+	where conditions
+	""".format("name":name)
+# 如果像以上这么写会报错，not enough arguments for format string ， 因为% 如果不加转移的话会被解析为占位符
+# 修改如下
+sql = """
+	select 100 %% 10 as score, %(name)s as name
+	from table1 
+	where conditions
+	""".format("name":name)
+```
+
+
 
 ### 1.6 set
 
@@ -132,31 +150,43 @@ s.add(1)
 # 把set list中的每次元素执行一次add操作，如果元素已经存在于set，不会报错
 s.update({3,4,5},{6,3,4})
 s.update([2,5,7])
+
 # 如果discard元素存在set中，将之移除，如果不存在不会报错;remove如果不存在会报错
 s.discard(10)
 s.remove(10)
+
 # 清空
 s.clear()
+
 # set也有pop方法，但是是无序的,不在于输出顺序的时候可以用
 s.pop()
 
 # 两个set的交并补
 s1 = set()
 s2 = set()
+
 #并集
 s1.union(s2)
+
 # 交集
 s1.intersection(s2)
-# 在s1不在s2的元素
+
+# 差集
 s1.difference(s2)
-# 返回只出现在一个set中的元素
+s1 -s2
+
+# 对称差集，在且仅在s1,s2其中一个set中的元素
+s1 ^ s2 
+s2 ^ s1
 s1.symmetric_diffence(s2)
 
 # 两个set的关系
 # s1是否是s2的子集
 s1.issubset(s2)
+
 # s1是否是s2的父集
 s1.issuperset(s2)
+
 # 另一种方式判断包含关系
 a = [1,2,3,4]
 b = [1,2,3]
@@ -500,7 +530,7 @@ datetime.datetime.now+datetime.timedelta(days=1)
 
 ### 1.14 其他
 
-python3 默认编码模式是utf-8，python2默认编码模式是ASCII，如果想指定编码格式
+1： python3 默认编码模式是utf-8，python2默认编码模式是ASCII，如果想指定编码格式
 
 ```python
 # -*- coding: windows-1252 _*_
@@ -510,6 +540,23 @@ ord('a')
 # chr返回unicode code对应的string
 chr(97)
 ```
+
+2： 在python代码中临时(永久)修改环境变量, 可用性很高，例如指定python解释器地址，在不修改代码现行逻辑(不影响其他人之前的代码)的前提下，又可以有差异化。 python没有直接永久修改环境变量的能力，要借助于命令行，同时也不推荐永久改变环境变量。
+
+```python
+import os 
+
+env_dict = os.environ #返回dict形式的环境变量键值对
+os.getenv("PATH") # 返回环境变量PATH的值
+os.environ["PATH"] = "ABC"
+# 如果想要临时修改环境变量，很简单，先get对应的环境变量，然后修改之后重新赋值即可
+path_old = os.getenv("PATH")
+prefix = "/home/user/abc"
+path_new = "%s/bin:%s" % (prefix, path_old)
+os.environ["PATH"] = path_new
+```
+
+**Reference**<br>[python 如何设置linux环境变量？](https://www.zhihu.com/question/53235092)
 
 ## 2 进阶
 
@@ -830,6 +877,167 @@ python setup.py sdist --formats=gztar
 # 打包成exe, -F 表示打包成单一exe文件， -p表示其他依赖文件
 pyinstaller -F xxxx.py -p xxxx.py
 ```
+
+### 2.6 并行化
+
+并行化涉及到多进程(mutil-process)和多线程(thread)编程，同时也涉及到数据共享的问题。
+
+**多进程**
+
+多进程之间是相互独立的，内存独立，通过共享内存在进程之间共享对象，多个进程可以访问同一个变量(地址相同，变量名可能不同)，但会导致进程间竞争
+
+```python
+# 使用process 定义多进程
+from multiprocessing import Process 
+import os 
+import time 
+
+def time_consuming_task(n):
+    print("子进程： {}".format(os.getpid()))
+    sleep(n)
+
+if __name__ == "__main__":
+    print("母进程： {}".format(os.getpid()))
+    processes = []
+    processes.append(Process(target = time_consuming_task, args=(10,)))
+    processes.append(Process(target = time_consuming_task, args=(10,)))
+    [p.start() for p in processes]
+    [p.join() for p in processes]
+    # 有一个母进程和两个子进程，用join()让母进程阻塞，等待所有子进程完成，才开始继续执行
+    # 一般可同时运行的进程数，受制于CPU核数
+```
+
+```python
+# 利用multiprocessing.Pool类
+from multiprocessing import Pool
+
+def time_consuming_task(n):
+    print("子进程： {}".format(os.getpid()))
+    sleep(n)
+
+if __name__ == "__main__":
+    print("母进程： {}".format(os.getpid()))
+   	p = Pool(4)
+    # 这里不推荐使用比核数更多的并发数，因为假设5个进程四个核，那么第五个进程会等待前面的进程结束
+    for i in range(4):
+        p.apply_async(time_consuming_task, args=(10,))
+    p.close()
+    p.join()
+    
+```
+
+
+
+**多线程**
+
+多个线程同属一个进程，所以共享内存，任何一个变量都可以被任何一个线程更改，因此危险在于数据被改乱，
+
+```python
+import threading
+import time
+
+def time_consuming_task(n):
+    print("子线程： {}".format(threading.current_thread()))
+    sleep(n)
+    
+if __name__ == "__main__":
+    print("主线程： {}".format(threading.current_thread()))
+    threads = []
+    for i in range(4):
+        t = threading.Thread(target=time_consuming_task, args = (i,))
+        threads.append(t)
+        t.setDaemon(True) # 如果想要主线程结束子线程跟着结束，set这个参数为True
+    [t.start() for t in threads]
+    [t.join() for t in threads] # 如果不加join，主线程不等待子线程，主线程结束，子线程还会接着运行
+    
+```
+
+利用线程锁来确保一次只有一个线程能修改它
+
+```python
+import threading
+class Account:
+    def __init__(self):
+        self.balance = 0
+
+    def add(self, lock):
+        lock.acquire()
+        for i in range(0, 100000):
+            self.balance += 1
+        lock.release()
+
+    def delete(self, lock):
+        lock.acquire()
+        for i in range(0, 100000):
+            self.balance -= 1
+        lock.release()
+
+
+if __name__ == "__main__":
+    account = Account()
+    lock = threading.Lock()
+    # 创建线程
+    threads = []
+   	threads.append(threading.Thread(target=account.add, args=(lock,), name='Add'))
+   	threads.append(threading.Thread(target=account.delete, args=(lock,), name='Delete'))
+	[t.start() for t in threads]
+    [t.join() for t in threads]
+```
+
+或者利用队列实现消费者，生成者分离，队列是线程安全的
+
+```python
+from queue import Queue
+import random, threading, time
+
+class Producer(threading.Thread):
+    def __init__(self, name, queue):
+        threading.Thread.__init__(self, name=name)
+        self.queue = queue
+
+    def run(self):
+        for i in range(1, 5):
+            print("{} is producing {} to the queue!".format(self.getName(), i))
+            self.queue.put(i)
+            time.sleep(random.randrange(10) / 5)
+        print("%s finished!" % self.getName())
+
+class Consumer(threading.Thread):
+    def __init__(self, name, queue):
+        threading.Thread.__init__(self, name=name)
+        self.queue = queue
+
+    def run(self):
+        for i in range(1, 5):
+            val = self.queue.get()
+            print("{} is consuming {} in the queue.".format(self.getName(), val))
+            time.sleep(random.randrange(10))
+        print("%s finished!" % self.getName())
+
+
+def main():
+    queue = Queue()
+    producer = Producer('Producer', queue)
+    consumer = Consumer('Consumer', queue)
+
+    producer.start()
+    consumer.start()
+
+    producer.join()
+    consumer.join()
+    print('All threads finished!')
+
+if __name__ == '__main__':
+    main()
+```
+
+put 和 get方法在分别遇到队列满，队列空的情况时，会堵塞，直到队列有空余或者有元素。queue虽然是队列安全的，元素按照给定的顺序put进去，同时按照给定的顺序get出来。但是因为是多线程，如果有判断队列状态的语句，例如queue.empty()， queue.full() 在**得到状态和使用状态之间的时间内，状态可能修改**。
+
+**Reference**<br>[一文看懂Python多进程与多线程编程(工作学习面试必读)](https://zhuanlan.zhihu.com/p/46368084)
+
+
+
+
 
 ## 3 常用Module
 

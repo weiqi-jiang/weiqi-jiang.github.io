@@ -41,9 +41,9 @@ scala -cp . xxx
 
 Reference<br>[Can compile scala programs but cannot run them](https://stackoverflow.com/questions/27998824/can-compile-scala-programs-but-cant-run-them)
 
-### Var
+### Var&Val
 
-**val 不可变指的是不能改变初始化指向的类的实例对象，但是对象的值可以变；var可变指的是可以改变初始化指向的类的实例对象，而且实例对象自己也可以变**。关于var变量的赋值有一个和python大不一样的地方，简单理解就是除非新声明变量，否则不能同时给多个变量赋值. 但如果一个函数需要返回不同的数据类型的一组值，推荐新建一个类，类中包含相应的字段(典型的java作风)
+**val 不可变指的是不能改变初始化指向的类的实例对象，但是对象的值可以变；var可变指的是可以改变初始化指向的类的实例对象，而且实例对象自己也可以变**。关于var变量的赋值有一个和python大不一样的地方，简单理解就是除非新声明变量，否则不能同时给多个变量赋值. 但如果一个**函数需要返回不同的数据类型的一组值，推荐新建一个类，类中包含相应的字段(典型的java作风)**
 
 ```scala
 //al，var都必须要定义时赋值，var可以使用默认初始化,但是必须指定数据类型，否则报错, ()表示没有值
@@ -78,7 +78,7 @@ c=e; d=f;
 lazy val a = 0
 ```
 
-Reference<br>[scala学习手记5 - 元组与多重赋值](https://www.cnblogs.com/amunote/p/5559867.html)
+**Reference**<br>[scala学习手记5 - 元组与多重赋值](https://www.cnblogs.com/amunote/p/5559867.html)
 
 ### Operator
 
@@ -88,11 +88,13 @@ scala中有一个特殊的点在于**操作符实际上是方法**，a 方法 b 
 val a = 4 
 val b = a + 3 // b = 7
 val c = a.+(3) // b= 7 使用方法和使用操作符的结果一致 
+a += 1  // 递增
+b -= 1  // 递减
 ```
 
 ### String
 
-字符串元素访问使用“()” 并不是“[]”, 索引的过程可以看成一个根据index拿到字符的过程，这个过程是通过一个“映射函数”来完成的，所以使用“()”。
+字符串元素访问使用“()” 并不是“[]”, 索引的过程可以看成一个根据index拿到字符的过程，这个过程是通过一个“**映射函数**”来完成的，所以使用“()”。
 
 ```scala
 val a = "hello world"
@@ -114,7 +116,76 @@ val score = 0.5
 printf(f"score is $score%.2f")
 ```
 
-**Reference**<br>[scala字符串前加s使用$](https://www.cnblogs.com/pursue339/p/10619581.html)
+split() 函数中的特殊符号， 同样的，**scala正则匹配中这些符号也要这么处理**
+
+```scala
+val s = ""
+string.split("[.]")  // 点
+string.split("\\|") // 竖线
+string.split("\\*") // 星号
+sring.split("\\\\") // 斜线
+sring.split("\\[\\]") // 中括号
+
+```
+
+
+
+**Reference**<br>[scala字符串前加s使用$](https://www.cnblogs.com/pursue339/p/10619581.html)<br>[scala中split特殊符号](https://blog.csdn.net/a280966503/article/details/78822094)
+
+### Date&Timestamp
+
+获取当前时间并格式化
+
+```scala
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+
+val dataFormat = new SimpleDateFormat("yyyyMMddHHmm")
+val cla = Calendar.getInstance()
+// 格式化好的时间
+val date = dataFormat.format(cla.getTime)
+// 小时,分钟等
+val hour = cla.get(Calendar.HOUR_OF_DAY).toString
+val min = cla.get(Calendar.MINUTE).toString
+val day_of_week = cla.get(Calendar.DAY_OF_WEEK)
+val day_of_year = cla.get(Calendar.DAY_OF_YEAR)
+// 获取时间戳
+val now = new Date()
+println(now.getTime)
+// 指定日期时间戳
+val dateFormat = new SimpleDateFormat("yyyyMMdd")
+val date = dateFormat.parse("20210304")
+println(date.getTime)
+// 时间差
+// 可以两个时间都先获得时间戳， 时间戳相减，得到ms为单位的差值，进行数值运算就行
+date1 = dateFormat.parse("20210301")
+date2 = dateFormat.parse("20210304")
+(date2.getTime - date1.getTime)/1000/3600/24
+```
+
+时间戳转时间
+
+```scala
+import java.text.SimpleDateFormat
+import java.util.Date
+
+object test {
+  def main(args: Array[String]): Unit = {
+    val tm = "1502036122000"
+    val a = tranTimeToString(tm)
+    println(a)
+
+  }
+  def tranTimeToString(tm:String) :String={
+    val fm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    val tim = fm.format(new Date(tm.toLong))
+    tim
+  }
+}
+```
+
+**Reference**<br>[scala时间和时间戳互转](https://www.cnblogs.com/TTyb/p/7307887.html)<br>[Scala 获取时间，时间戳，时间差](https://blog.csdn.net/BIT_666/article/details/105767551)
 
 ### Function
 
@@ -285,6 +356,15 @@ object Main{
 **Reference**<br>[scala泛型](https://fangjian0423.github.io/2015/06/07/scala-generic/)<br>[scala 课堂](https://twitter.github.io/scala_school/zh_cn/index.html)<br>[Scala 函数柯里化(Currying)](https://www.runoob.com/scala/currying-functions.html)<br>[scala中的函数哪些有返回值,哪些没有返回值??](https://blog.csdn.net/u010916338/article/details/77585213)<br>[scala 闭包](https://www.runoob.com/scala/scala-closures.html)<br>[scala中call by name 和call by value的区别](http://blog.sina.com.cn/s/blog_6d27562901019oxw.html)<br>[scala函数式编程](https://zhuanlan.zhihu.com/p/25484213)
 
 ### Control Structure
+
+**range**
+
+```scala
+1 to 5 // 左闭右闭  等同于 1.to(5)
+1 until 4 // 左闭右开
+1 to 10 by 2 // 步长为2
+0.5f to 10.0f by 0.5f // float类型
+```
 
 **if...else...** 
 
@@ -683,6 +763,19 @@ val numbers = List(1,2,3,4,5)
 val numbers = Set(1,2,3,4,5)
 ```
 
+**iterator **适用于集合很大，不能同时放入内存时
+
+```scala
+//两个基本操作 next， hasNext
+val iter = Iterator("Hadoop","Spark","Scala")
+while(iter.hasNext){
+    print(iter.next)
+}
+for(element <- iter){
+	println(element)    
+}
+```
+
 ### Pattern Matching
 
 ```scala
@@ -693,7 +786,7 @@ val time = times match {
     case "SAT"|"SUN" => "WEEKEND"
     case _ => "Other"
 }
-//或者是
+//或者 使用守卫(加判断)
 val times = "WED"
 val time = times match {
     case i if i == "MON"|"TUE"|"WED"|"THU"|"FRI" => "WEEKDAY"
@@ -708,6 +801,16 @@ def testmatch(o: Any): Any = {
         case i: Int => i+1
         case d: Double => d+0.1
         case text: String => text+'s'
+    }
+}
+// 注意！以上 case i 中的i不表示变量，仅区分用途，如果就是想要用变量来匹配
+def matchTest(x: String): String = {
+    val S1 = "a"
+    val s2 = "b"
+    x match { 
+    	case `S1` => "A"
+        case `S2` => "B"
+        case _ => "C"
     }
 }
 ```
@@ -744,7 +847,7 @@ println(showNotification(someVoiceRecording))
 
 **Reference**<br>[官方文档：模式匹配](https://docs.scala-lang.org/zh-cn/tour/pattern-matching.html)
 
-### Collection Function
+### RDD Operators
 
 **map**<br>对RDD集合中的每个元素应用指定的function，一般来说，如果想实现一个for循环对一个iterable结构进行遍历执行某个操作，都可以用map代替。执行结果替代元素值, 值得注意一点就是原List 如果是不可变的类型的话，经过map function是不会改变原来的值的，如果需要保存结果就需要把结果赋值给其他变量
 
@@ -792,9 +895,33 @@ testList.flatten(num => num.map(num=>num*2))
 
 求和：.reduce(\_+\_) 
 求最大值： .reduce( (a,b)=> if(a>b) a else b ) 
-集合对应位置相加： .reduce((a,b) => (a._1+b._1, a._2+b._2, a._3+b._3))
+集合对应位置相加： .reduce((a,b) => (a.\_1+b.\_1, a.\_2+b.\_2, a.\_3+b.\_3))
 
 reduceByKey 对象是key-value类型的RDD，返回值也是RDD类型，如果是3元及以上的RDD，需要转换为二元key-value 例如（1,2,3,4）不能直接reduceByKey，先转换为（1，（2,3,4））,"\_"占位符代表是value元素 .reduceByKey(\_+\_)
+
+**groupByKey**<br>仅适用于二元类型rdd， rdd.groupByKey().map(line=>(line.\_1, line.\_2.toSet)).collectAsMap
+
+**计算集合的交并补集**
+
+```scala
+import org.apache.spark.{SparkConf, SparkContext}
+
+val conf: SparkConf = new SparkConf().setAppName(this.getClass.getSimpleName)
+val sc = new SparkContext(conf)
+
+val rdd1 = sc.parallelize(List("e", "d","c"))
+val rdd2 = sc.parallelize(List("a", "b","c"))
+// 并集
+rdd1.union(rdd2)
+// 交集
+rdd1.intersection(rdd2)
+// 差集
+rdd1.subtract(rdd2)
+// 不同时出现在两个集合的元素
+rdd1.union(rdd2).subtract(rdd1.intersection(rdd2))
+```
+
+
 
 ### Design Pattern
 
@@ -970,16 +1097,16 @@ Map(key)
 
 spark 中的dataframe 和RDD一样也是一个分布式的存储结构，并不是pandas中dataframe in memory 的数据结构[详细对比](http://www.lining0806.com/spark%e4%b8%8epandas%e4%b8%addataframe%e5%af%b9%e6%af%94/)
 
-```
-# pandas dataframe to spark dataframe
+```scala
+// pandas dataframe to spark dataframe
 SQLContext.createDataFrame(pandas_df) 
 
-# spark dataframe to pandas dataframe 需要保证spark_df 很小，因为pandas_df 不是分布式的结构，需要全部加载进内存的
+// spark dataframe to pandas dataframe 需要保证spark_df 很小，因为pandas_df 不是分布式的结构，需要全部加载进内存的
 pandas_df = spark_df.toPandas() 
 
-# spark.dataframe 虽然是分布式存储的，但是可以显示的指明加载到内存
-# 虽然全部加载到内存，但是类型还是spark.dataframe
-# SQLContext.sql('''xxx''')的返回值就是spark.dataframe类型
+// spark.dataframe 虽然是分布式存储的，但是可以显示的指明加载到内存
+// 虽然全部加载到内存，但是类型还是spark.dataframe
+// SQLContext.sql('''xxx''')的返回值就是spark.dataframe类型
 spark_df.persist() / spark_df.cache()  
 ```
 
@@ -989,7 +1116,7 @@ debug:
 
 
 
-## Scala 写SparkSQL
+## Scala&SparkSQL
 
 不多说，直接上代码
 
@@ -1104,6 +1231,174 @@ pom文件要添加相应的依赖, 并且用mvn clean package指令打包，如�
 如果一切顺利，现在已经在target文件夹下生成了相应的jar包了，对照spark-submit的参数把jar包提交spark环境运行即可
 
 **Reference**<br>[Maven生成可以直接运行的jar包的多种方式](https://blog.csdn.net/xiao__gui/article/details/47341385)<br>[spark作业配置及spark-submit参数说明](https://blog.csdn.net/feng12345zi/article/details/80100317)
+
+## Scala&Protobuf
+
+假设我们需要scala读conf文件，confg文件格式是protobuf定义好的message，最终程序打jar包提交spark集群运行，如何实现？设计到两个点。1： 读取jar中conf文件(路径问题)，2：按照protobuf定义的格式解析conf
+
+首先定义conf message格式, 编译
+
+```protobuf
+syntax = "proto2"
+package com.person
+option java_outer_classname = "ConfigProtos"
+
+enum Gender {
+    FEMALE = 0;
+    MALE = 1;
+}
+
+message PersonConfig {
+	optional string first_name = 0;
+	optional string last_name = 1;
+	optional Gender gender = 2;
+	repeated string relations = 3;
+}
+```
+
+.scala 文件
+
+```scala
+import java.io.InputStream
+import scala.io.Source.fromInputStream
+import com.person.PersonConfig
+import scala.collection.mutable.ArrayBuffer
+import com.google.protobuf.TextFormat 
+import collection.JavaConverters._
+
+object Foo {
+	val CONFIG_PATH_IN_JAR= "/path/to/xxx.conf"
+    
+    def parseConfig(path: String) = {
+        // ############读取配置文件###############
+        val strategy_names = new ArrayBuffer[String]()
+        // 在jar包读conf文件，目前只找到这种方式是有效的，getClass.getResourceAsStream(path) 
+        val stream: InputStream = getClass.getResourceAsStream(path)
+        // 转为Array[String]格式
+        val lines = fromInputStream(stream).getLines.toArray
+        
+        // ########### 解析配置文件 ###############
+        // Method 1 （亲测可用）借用Textformat.builder 来解析
+        val configBuilder = PersonConfig.newBuilder()
+        TextFormat.merge(lines.mkString("\n"), configBuilder)
+        val config: PersonConfig = configBuilder.build()
+        // 此时config变量的类型是PersonConfig
+        config
+        
+        // Method 2 （不明原因用不了，可能是版本问题，但官方文档是这么写的，肯定是可以尝试的）
+        try{
+            val config:PersonConfig = PersonConfig.parseFrom(new FileInputStream(path))
+        } catch (IOException e1) {
+            e1.printStackTrace()
+        } finally {}
+    }
+	
+    def parseField(config) = {
+        // 解析的时候以 hasFiledName(驼峰) getFildName, getFildNameList(如果是repeated)
+        var first_name = ""
+        var last_name = ""
+        var relations = new ArrayBuffer[String]()
+        if (config.hasFirstName) {
+            first_name = config.getFirstName
+        }
+        if (config.hasLastName) {
+            last_name = config.getLastName
+        }
+        // 注意getFileNameList返回格式是java.util.List[String] 并不能直接foreach操作需要转成scala容器
+        for(relation <- config.getRelationsList.asScala){
+            relations.append(relation)
+        }
+        (first_name, last_name, relations)
+    }
+
+    
+    def main(args:Array[String]): Unit = {
+        val config = parseConfig(CONFIG_PATH_IN_JAR)
+        val fileds = parseFiled(config)
+    }
+}
+```
+
+**Reference**<br>[JAVA 和SCALA容器的转换](https://docs.scala-lang.org/zh-cn/overviews/collections/conversions-between-java-and-scala-collections.html)<br>[protobuf的基本使用（读取和写入）——java](https://blog.csdn.net/wild46cat/article/details/80739888)<br>[Java读取Jar包里的文件](https://segmentfault.com/a/1190000000423350)<br>[Spark读取jar包中的文件](http://jschenxiaoyu.blogspot.com/2016/01/sparkjar.html)
+
+## Scala&HDFS
+
+**文件读取**
+
+支持的格式有: text, JSON, CSV, SequenceFiles, Protocol Buffers, 对象文件
+
+```scala
+// 读取不同路径下的多个文件,比如有很多个不同的策略文件，每个策略文件需要读取最新的分区，就需要同时读取不同路径下的多个文件
+val input = sc.textFile("path1,path2,path3")  // 多个路径用“,”分割
+
+// 文本文件
+val input = sc.textFile("path_on_hdfs") // 如果是目录，会读取所有文件part
+val input = sc.wholeTextFiles("path") // 返回一个pair RDD,key是文件名(绝对路径)
+input.saveAsTextFile("path") // 保存
+
+```
+
+**Reference**<br>[Spark学习笔记4：数据读取与保存](https://www.cnblogs.com/caiyisen/p/7527459.html)<br>[scala spark通过textfile读取多个不同目录下的多个文件](https://blog.csdn.net/donyzh/article/details/88570070)
+
+**和HDFS交互**
+
+```scala
+import org.apache.hadoop.fs.FileSystem
+import org.apache.hadoop.fs.Path
+import org.apache.spark.{SparkConf, SparkContext}
+
+//配置
+val conf: SparkConf = new SparkConf().setAppName(this.getClass.getSimpleName)
+val sc = new SparkContext(conf)
+val fs = path.getFileSystem(sc.hadoopConfiguration)
+
+
+// 获得路径下所有文件的修改时间，格式为时间戳，利用Date&Timestamp小节说到的方法格式化
+val filestatus = fs.listStatus(new Path(dir))
+filestatus.foreach(f=>getModificationTime)
+// 获得文件名称
+val filenames = fs.listStatus(new Path(dir)).foreach(f=>f.getPath.getName.toString)
+// 判断是文件还是路径还是文件
+fs.listStatus(new Path(dir)).filter(f=> f.isDirectory())
+//
+fs.listStatus(new Path(dir)).foreach( f => {
+    val len = f.getLen() // 文件长度
+    val path = f.getPath.toString // 文件路径
+    val parentPaht = f.getPath.getParent.toString // 上一级目录
+    val blocksize = f.getBlockSize // 文件块大小
+    val accessTiem = f.getAccessTime() // 上一次访问时间
+	}
+)
+
+```
+
+如果直接调用rdd.saveAsTextFile()方法，会生成一个文件夹，文件名以part-xxxxx，但假设下游代码已经写好，指定了数据命令格式，现在进行上游的代码优化，为了避免下游代码也要重写，需要输出的文件命名格式和下游保持一致
+
+```scala
+  def saveDF2HDFSAsTxt(DF: DataFrame, fullPath: String, suffix: String): String = {
+    val hdfs: FileSystem = org.apache.hadoop.fs.FileSystem.get(new org.apache.hadoop.conf.Configuration())
+    //首先，先删除原有的文件目录
+    if (hdfs.exists(new Path(fullPath))) {
+      hdfs.delete(new Path(fullPath), true)
+    }
+    if (!hdfs.exists(new Path(fullPath))) {
+      //1.先转换rdd，再保存
+      DF.coalesce(1).rdd.saveAsTextFile(fullPath)
+      //2.替换名称  这里可能还要判断替换的名称是否存在，避免报错或者数据覆盖
+      hdfs.rename(new Path(s"$fullPath/part-00000"), new Path(s"$fullPath.$suffix"))
+      //3.删除临时目录
+      hdfs.delete(new Path(fullPath), true)
+    }
+    val finalhdfspath=s"$fullPath.$suffix"
+    finalhdfspath
+  }
+```
+
+**Reference**<br>[Hadoop基础-HDFS递归列出文件系统-FileStatus与listFiles两种方法](https://www.cnblogs.com/yinzhengjie/p/9094087.html)<br>[Spark指定保存到HDFS的具体文件名称](https://blog.csdn.net/u010886217/article/details/109688874)<br>[scala - 如何获取HDFS上存在的文件的创建日期？](https://www.coder.work/article/735199)
+
+## Debug
+
+**Bug1** : println的时候输出类型\[Ljava.lang.String;@4554617c<br>**Solution1**：参见[java输出的错误](https://blog.csdn.net/weixin_45906830/article/details/107954954)
 
 ## Others
 

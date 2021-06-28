@@ -28,13 +28,10 @@ Hadoop 和 Spark的关系：hadoop的大致框架是由HDFS负责静态数据的
 
 ### Spark 作业调度
 
-spark目前的资源分配有三种：
-
-1 standalon 原生资源管理，由master负责资源分配
-
-2 apache mesos： 和hadoop mr兼容性好的一种资源调度框架
-
-3 hadoop yarn： 指yarn中的额resource manager
+spark目前的资源分配有三种<br>
+1 standalon 原生资源管理，由master负责资源分配<br>
+2 apache mesos： 和hadoop mr兼容性好的一种资源调度框架<br>
+3 hadoop yarn： 指yarn中的额resource manager<br>
 
 yarn 是一个资源调度平台，负责为运算程序提供服务器运行资源，相当于个分布式的操作系统，yarn并不知道用户提交的程序逻辑，只负责提供资源的调度；其中resource manager相当于master节点，具体提供运算资源的事node manager，yarn和用户程序完全解耦，可以运行各种类型的分布式运算程序，如Mapreduce，spark。
 
@@ -58,13 +55,14 @@ Action： count,collection,take,save,show 返回值不是RDD，会形成DAG，�
 
 **Shuffle and stage**
 
-RDD在lineage有两种依赖方式：
+RDD在lineage有两种依赖方式
 
-> - 窄依赖是指父RDD的每一个分区最多被一个子RDD的分区所用，表现为一个父RDD的分区对应于一个子RDD的分区 
->   或多个父RDD的分区对应于一个子RDD的分区，也就是说一个父RDD的一个分区不可能对应一个子RDD的多个分区。 
->   1个父RDD分区对应1个子RDD分区，这其中又分两种情况：1个子RDD分区对应1个父RDD分区（如map、filter等算子），1个子RDD分区对应N个父RDD分区（如co-paritioned（协同划分）过的Join）。
-> - 宽依赖是指子RDD的分区依赖于父RDD的多个分区或所有分区，即存在一个父RDD的一个分区对应一个子RDD的多个分区。 
->   1个父RDD分区对应多个子RDD分区，这其中又分两种情况：1个父RDD对应所有子RDD分区（未经协同划分的Join）或者1个父RDD对应非全部的多个RDD分区（如groupByKey）。 
+- 窄依赖是指父RDD的每一个分区最多被一个子RDD的分区所用，表现为一个父RDD的分区对应于一个子RDD的分区 
+  或多个父RDD的分区对应于一个子RDD的分区，也就是说一个父RDD的一个分区不可能对应一个子RDD的多个分区。 
+  1个父RDD分区对应1个子RDD分区，这其中又分两种情况：1个子RDD分区对应1个父RDD分区（如map、filter等算子），1个子RDD分区对应N个父RDD分区（如co-paritioned（协同划分）过的Join）。
+
+- 宽依赖是指子RDD的分区依赖于父RDD的多个分区或所有分区，即存在一个父RDD的一个分区对应一个子RDD的多个分区。 
+  1个父RDD分区对应多个子RDD分区，这其中又分两种情况：1个父RDD对应所有子RDD分区（未经协同划分的Join）或者1个父RDD对应非全部的多个RDD分区（如groupByKey）。 
 
 在容错机制中，如果一个节点死机了，而且运算窄依赖，则只要把丢失的父RDD分区重算即可，不依赖于其他节点。而宽依赖需要父RDD的所有分区都存在，重算就很昂贵了。可以这样理解开销的经济与否：在窄依赖中，在子RDD的分区丢失、重算父RDD分区时，父RDD相应分区的所有数据都是子RDD分区的数据，并不存在冗余计算。在宽依赖情况下，丢失一个子RDD分区重算的每个父RDD的每个分区的所有数据并不是都给丢失的子RDD分区用的，会有一部分数据相当于对应的是未丢失的子RDD分区中需要的数据，这样就会产生冗余计算开销，这也是宽依赖开销更大的原因。因此如果使用Checkpoint算子来做检查点，不仅要考虑Lineage是否足够长，也要考虑是否有宽依赖，对宽依赖加Checkpoint是最物有所值的。
 
@@ -74,8 +72,7 @@ driver根据是否有shuffle（类似reduceByKey，join）操作将作业分为�
 
 parquet是一种**面向分析**的，通用的**列式存储格式**，首先就要区别列式存储和行式存储的区别，顾名思义列存储就是以列为序列存储数据，行存储以遍历行为序列存储数据，总结起来列存储更适合**OLAP**，行存储更适合**OLTP**. OLAP(On-Line Analytical Processing) 支持复杂的分析操作，偏向于决策支持；OLTP(On-Line Transaction Processing)是传统的关系型数据库的主要应用，偏向基本的，日常的事务处理。简单的来理解的话，OLTP的常用场景是录入，删除，修改，查找一条完整的记录，OLAP是提取聚合后的数据进行分析操作。所以很明显，在spark大数据分析场景下，更多的是使用列存储格式。
 
-parquet或者说列式存储的特点主要体现在
-
+parquet或者说列式存储的特点主要体现在<br>
 - 列裁剪，只加载需要的列，减少IO操作
 - 谓词下推，将过滤表达式尽可能的下沉到靠近数据源的地方，减少map,reduce操作的数据量
 - 优化存储空间，同一列的数据类型相同，可以使用更合适的编码格式，降低存储空间
